@@ -62,11 +62,14 @@ module.exports = {
 		'react/no-unstable-nested-components': 'off',
 		'@typescript-eslint/no-empty-interface': 'off',
 		'@typescript-eslint/ban-ts-comment': 'off',
+		'prefer-template': 'off',
 		'@typescript-eslint/no-unsafe-argument': 'off',
 		'@typescript-eslint/no-unsafe-return': 'off',
 		'@typescript-eslint/no-unsafe-member-access': 'off',
 		'@typescript-eslint/no-use-before-define': 'off',
 		'no-param-reassign': 'off',
+		'@typescript-eslint/restrict-plus-operands': 'off',
+		'react/destructuring-assignment': 'off',
 		'prettier/prettier': [
 			'off',
 			{

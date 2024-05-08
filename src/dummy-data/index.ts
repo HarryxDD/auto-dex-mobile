@@ -87,3 +87,22 @@ export const HISTORY_DATA = [
     tokenAmount: "3,293,482.00 BLOCK",
   },
 ];
+
+export const PROFILE_PIE_CHART = [
+  {
+    value: 47,
+    color: "#009FFF",
+    gradientCenterColor: "#006DFF",
+    focused: true,
+  },
+  { value: 40, color: "#93FCF8", gradientCenterColor: "#3BE9DE" },
+  { value: 16, color: "#BDB2FA", gradientCenterColor: "#8F80F3" },
+  { value: 3, color: "#FFA5BA", gradientCenterColor: "#FF7F97" },
+];
+
+export const PROFILE_LINE_CHART = [
+  { value: 15 },
+  { value: 30 },
+  { value: 26 },
+  { value: 40 },
+];

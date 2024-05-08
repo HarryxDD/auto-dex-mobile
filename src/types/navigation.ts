@@ -6,6 +6,7 @@ import {
   SCREEN_STRATEGY,
   STACK_MAIN,
   SCREEN_POCKET_DETAIL,
+  SCREEN_PNL_ANALYSIS,
 } from "@/navigators/route-names";
 import type { StackScreenProps } from "@react-navigation/stack";
 
@@ -19,6 +20,7 @@ export type ApplicationScreenProps =
 export type MainParamList = {
   [BOTTOM_TABS]: undefined;
   [SCREEN_POCKET_DETAIL]: {pocketId: string | number};
+  [SCREEN_PNL_ANALYSIS]: undefined;
 };
 
 export type BottomTabsParamList = {

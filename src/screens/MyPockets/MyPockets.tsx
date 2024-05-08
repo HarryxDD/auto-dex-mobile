@@ -7,10 +7,9 @@ import {
 } from "react-native";
 import { useTheme } from "@/theme";
 import { SafeScreen } from "@/components/template";
-import { UiCol, UiRow } from "@/components";
+import { UiCol, UiMultiSwitch, UiRow } from "@/components";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { SHARED_STYLES } from "@/theme/shared";
-import MultiSwitch from "react-native-multiple-switch";
 import { useState } from "react";
 import { useInput } from "@/theme/hooks/useInput";
 import {} from "@gorhom/bottom-sheet";
@@ -108,7 +107,7 @@ function MyPockets() {
     <SafeScreen>
       <UiCol.X style={[SHARED_STYLES.screenPadding]}>
         {renderScreenHeader()}
-        <MultiSwitch
+        <UiMultiSwitch
           items={screenTabs}
           value={currentTab}
           onChange={setCurrentTab}

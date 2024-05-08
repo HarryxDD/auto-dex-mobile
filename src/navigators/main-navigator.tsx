@@ -1,8 +1,13 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import { BOTTOM_TABS, SCREEN_POCKET_DETAIL } from "@/navigators/route-names";
+import {
+  BOTTOM_TABS,
+  SCREEN_POCKET_DETAIL,
+  SCREEN_PNL_ANALYSIS,
+} from "@/navigators/route-names";
 import { MainParamList } from "@/types/navigation";
 import BottomTabsNavigator from "@/navigators/bottom-tabs-navigator";
 import PocketDetail from "@/screens/PocketDetail/PocketDetail";
+import PNLAnalysis from "@/screens/PNLAnalysis/PNLAnalysis";
 import { AppHeaderBackButton } from "./config";
 
 const MainStack = createStackNavigator<MainParamList>();
@@ -24,6 +29,15 @@ export const MainNavigator = () => {
           headerShown: true,
           headerLeft: () => <AppHeaderBackButton />,
           headerTitle: "Pocket details",
+        }}
+      />
+      <MainStack.Screen
+        name={SCREEN_PNL_ANALYSIS}
+        component={PNLAnalysis}
+        options={{
+          headerShown: true,
+          headerLeft: () => <AppHeaderBackButton />,
+          headerTitle: "PNL Analysis",
         }}
       />
     </MainStack.Navigator>
