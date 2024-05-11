@@ -1,6 +1,14 @@
+import "@walletconnect/react-native-compat";
+import { WagmiConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MMKV } from "react-native-mmkv";
+import { mainnet, polygon, arbitrum } from "viem/chains";
+import {
+  createWeb3Modal,
+  defaultWagmiConfig,
+  Web3Modal,
+} from "@web3modal/wagmi-react-native";
 
 import { ThemeProvider } from "@/theme";
 
@@ -12,13 +20,40 @@ const queryClient = new QueryClient();
 
 export const storage = new MMKV();
 
+// Setup wallet
+const projectId = process.env.WALLET_CONNECT_PROJECT_ID || "";
+
+const metadata = {
+  name: "AutoDex",
+  description: "AutoDex Description",
+  url: "",
+  icons: ["https://avatars.githubusercontent.com/u/37784886"],
+  redirect: {
+    native: "YOUR_APP_SCHEME://",
+    universal: "YOUR_APP_UNIVERSAL_LINK.com",
+  },
+};
+
+const chains = [mainnet, polygon, arbitrum];
+const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
+
+createWeb3Modal({
+  projectId,
+  chains,
+  wagmiConfig,
+  enableAnalytics: false, // Optional - defaults to your Cloud configuration
+});
+
 function App() {
   return (
     <GestureHandlerRootView>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider storage={storage}>
           <AppProvider>
-            <ApplicationNavigator />
+            <WagmiConfig config={wagmiConfig}>
+              <ApplicationNavigator />
+              <Web3Modal />
+            </WagmiConfig>
           </AppProvider>
         </ThemeProvider>
       </QueryClientProvider>
