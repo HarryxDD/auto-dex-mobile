@@ -106,3 +106,10 @@ export const PROFILE_LINE_CHART = [
   { value: 26 },
   { value: 40 },
 ];
+
+export const SELECT_TOKEN_DATA = [
+  { abbr: "BTC", name: "Bitcoin", value: "$29,213.13" },
+  { abbr: "ETH", name: "Ethereum", value: "$1.212" },
+  { abbr: "BNB", name: "BNB", value: "$323,03" },
+  { abbr: "XRP", name: "XRP", value: "$0,512" },
+];

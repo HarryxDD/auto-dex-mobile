@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const BottomTabsHeaderRight = () => {
+export const BottomTabsHeaderRight = () => {
   const { colors, gutters } = useTheme();
   const { selectChainModalRef } = useApp();
 

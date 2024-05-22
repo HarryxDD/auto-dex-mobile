@@ -99,4 +99,7 @@ export const SHARED_STYLES = StyleSheet.create({
   displayNone: {
     display: "none",
   },
+  textAlignCenter: {
+    textAlign: "center",
+  },
 });

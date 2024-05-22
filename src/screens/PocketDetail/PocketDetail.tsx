@@ -81,7 +81,7 @@ function PocketDetail() {
     </UiCol>
   );
 
-  const renderTPSQLSection = () => (
+  const renderTPSLSection = () => (
     <UiCol>
       <Text style={[fonts.bold, fonts.size_16, gutters.marginBottom_10]}>
         TP/SL
@@ -151,7 +151,7 @@ function PocketDetail() {
           {renderNextBatchSection()}
           {renderPoolInfoSection()}
           {renderEndConditionSection()}
-          {renderTPSQLSection()}
+          {renderTPSLSection()}
           {renderTransactionsSection()}
         </UiCol>
       </ScrollView>

@@ -2,7 +2,6 @@ import { StyleSheet, Text, TouchableWithoutFeedback } from "react-native";
 import { useTheme } from "@/theme";
 import { SafeScreen } from "@/components/template";
 import { UiCol, UiRow } from "@/components";
-import { EStrategyType } from "@/constants/strategy";
 import {
   IconBasketDCA,
   IconLimitOrder,
@@ -10,6 +9,8 @@ import {
   IconTWAP,
 } from "@/theme/assets/icons/svg";
 import { SHARED_STYLES } from "@/theme/shared";
+import { SCREEN_SINGLE_TOKEN, STACK_MAIN } from "@/navigators/route-names";
+import { useNavigation } from "@react-navigation/native";
 
 const StrategyItem = ({
   title,
@@ -57,9 +58,13 @@ const StrategyItem = ({
 
 function Strategy() {
   const { fonts, colors } = useTheme();
+  const { navigate } = useNavigation();
 
-  const handleChooseDCA = (strategy: EStrategyType) => {
-    console.log(123, strategy);
+  const handleChooseDCA = (screenName: string) => {
+    // @ts-ignore
+    navigate(STACK_MAIN, {
+      screen: screenName,
+    });
   };
 
   const handlePressLearnHow = () => {};
@@ -72,25 +77,25 @@ function Strategy() {
           desc="Automatically buys a certain token based on pre-set parameters
                 (time-based or price-based)"
           icon={<IconSingleToken />}
-          onPress={() => handleChooseDCA(EStrategyType.SINGLE_TOKEN)}
+          onPress={() => handleChooseDCA(SCREEN_SINGLE_TOKEN)}
         />
         <StrategyItem
           title="Limit Order"
           desc="Places an order to buy or sell at a specific price"
           icon={<IconLimitOrder />}
-          onPress={() => handleChooseDCA(EStrategyType.LIMIT_ORDER)}
+          onPress={() => handleChooseDCA(SCREEN_SINGLE_TOKEN)}
         />
         <StrategyItem
           title="TWAP"
           desc="Averages trades over time to minimize market impact"
           icon={<IconTWAP />}
-          onPress={() => handleChooseDCA(EStrategyType.TWAP)}
+          onPress={() => handleChooseDCA(SCREEN_SINGLE_TOKEN)}
         />
         <StrategyItem
           title="Basket DCA"
           desc="Automatically purchases multiple tokens over time based on pre-set parameters (time-based or price-based)"
           icon={<IconBasketDCA />}
-          onPress={() => handleChooseDCA(EStrategyType.BASKET_DCA)}
+          onPress={() => handleChooseDCA(SCREEN_SINGLE_TOKEN)}
         />
         <TouchableWithoutFeedback onPress={handlePressLearnHow}>
           <Text style={[fonts.bold, { color: colors.main }]}>

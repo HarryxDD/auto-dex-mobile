@@ -18,6 +18,7 @@ import type { ThemeConfiguration } from "@/types/theme/config";
 const colorsDark = {
   white: "#FFFFFF",
   red500: "#C13333",
+  red400: "#f44949",
   gray800: "#E0E0E0",
   gray400: "#969696",
   gray200: "#BABABA",

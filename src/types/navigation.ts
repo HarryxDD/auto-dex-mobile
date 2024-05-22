@@ -7,6 +7,7 @@ import {
   STACK_MAIN,
   SCREEN_POCKET_DETAIL,
   SCREEN_PNL_ANALYSIS,
+  SCREEN_SINGLE_TOKEN,
 } from "@/navigators/route-names";
 import type { StackScreenProps } from "@react-navigation/stack";
 
@@ -19,8 +20,9 @@ export type ApplicationScreenProps =
 
 export type MainParamList = {
   [BOTTOM_TABS]: undefined;
-  [SCREEN_POCKET_DETAIL]: {pocketId: string | number};
+  [SCREEN_POCKET_DETAIL]: { pocketId: string | number };
   [SCREEN_PNL_ANALYSIS]: undefined;
+  [SCREEN_SINGLE_TOKEN]: undefined;
 };
 
 export type BottomTabsParamList = {

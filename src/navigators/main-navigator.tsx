@@ -3,11 +3,13 @@ import {
   BOTTOM_TABS,
   SCREEN_POCKET_DETAIL,
   SCREEN_PNL_ANALYSIS,
+  SCREEN_SINGLE_TOKEN,
 } from "@/navigators/route-names";
 import { MainParamList } from "@/types/navigation";
 import BottomTabsNavigator from "@/navigators/bottom-tabs-navigator";
 import PocketDetail from "@/screens/PocketDetail/PocketDetail";
 import PNLAnalysis from "@/screens/PNLAnalysis/PNLAnalysis";
+import SingleTokenScreen from "@/screens/SingleToken/SingleToken";
 import { AppHeaderBackButton } from "./config";
 
 const MainStack = createStackNavigator<MainParamList>();
@@ -38,6 +40,14 @@ export const MainNavigator = () => {
           headerShown: true,
           headerLeft: () => <AppHeaderBackButton />,
           headerTitle: "PNL Analysis",
+        }}
+      />
+      <MainStack.Screen
+        name={SCREEN_SINGLE_TOKEN}
+        component={SingleTokenScreen}
+        options={{
+          headerShown: true,
+          headerLeft: () => <AppHeaderBackButton />,
         }}
       />
     </MainStack.Navigator>
