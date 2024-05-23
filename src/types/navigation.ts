@@ -8,11 +8,14 @@ import {
   SCREEN_POCKET_DETAIL,
   SCREEN_PNL_ANALYSIS,
   SCREEN_SINGLE_TOKEN,
+  SCREEN_ONBOARDING,
+  STACK_AUTH,
 } from "@/navigators/route-names";
 import type { StackScreenProps } from "@react-navigation/stack";
 
 export type ApplicationStackParamList = {
   [STACK_MAIN]: undefined;
+  [STACK_AUTH]: undefined;
 };
 
 export type ApplicationScreenProps =
@@ -24,6 +27,10 @@ export type MainParamList = {
   [SCREEN_PNL_ANALYSIS]: undefined;
   [SCREEN_SINGLE_TOKEN]: undefined;
 };
+
+export type AuthParamList = {
+  [SCREEN_ONBOARDING]: undefined;
+}
 
 export type BottomTabsParamList = {
   [SCREEN_MY_POCKETS]: undefined;

@@ -34,10 +34,18 @@ function History() {
         />
       </UiRow.C.X>
       <UiRow.LR style={gutters.marginVertical_20}>
-        <Text style={[fonts.semiBold, fonts.size_12]}>Filter by</Text>
+        <Text style={[fonts.semiBold, fonts.size_12, { color: colors.white }]}>
+          Filter by
+        </Text>
         <TouchableWithoutFeedback onPress={() => {}}>
           <UiRow.C style={[components.secondaryBtn]}>
-            <Text style={[gutters.marginRight_8, fonts.bold]}>
+            <Text
+              style={[
+                gutters.marginRight_8,
+                fonts.bold,
+                { color: colors.white },
+              ]}
+            >
               Last 3 months
             </Text>
             <Ionicons name="calendar-outline" color={colors.main} size={18} />
@@ -55,7 +63,11 @@ function History() {
           {historyData.map((item) => (
             <UiCol key={item.id}>
               <UiRow.LR style={gutters.marginBottom_10}>
-                <Text style={[fonts.bold, fonts.size_12]}>{item.date}</Text>
+                <Text
+                  style={[fonts.bold, fonts.size_12, { color: colors.white }]}
+                >
+                  {item.date}
+                </Text>
                 <Text style={[fonts.semiBold, { color: colors.grayText }]}>
                   {item.hash}
                 </Text>

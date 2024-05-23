@@ -37,7 +37,9 @@ function PNLAnalysis() {
           >
             ~ 45.19 SOL
           </Text>
-          <Text style={fonts.size_10}>(~ $8,803.24)</Text>
+          <Text style={[fonts.size_10, { color: colors.white }]}>
+            (~ $8,803.24)
+          </Text>
         </UiCol>
       </UiRow>
       <UiRow.LR>
@@ -64,7 +66,9 @@ function PNLAnalysis() {
   const renderCumulativePNL = () => (
     <UiCol style={gutters.marginVertical_24}>
       <UiRow.LR>
-        <Text style={[fonts.semiBold, fonts.size_16]}>Cumulative PNL (%)</Text>
+        <Text style={[fonts.semiBold, fonts.size_16, { color: colors.white }]}>
+          Cumulative PNL (%)
+        </Text>
         <Text style={[fonts.size_12, { color: colors.grayText }]}>
           2023-04-05
         </Text>
@@ -83,7 +87,14 @@ function PNLAnalysis() {
           </Text>
           <UiRow.L style={gutters.marginBottom_20}>
             <CircularDot color={colors.main} />
-            <Text style={[gutters.marginLeft_4, fonts.size_12, fonts.bold]}>
+            <Text
+              style={[
+                gutters.marginLeft_4,
+                fonts.size_12,
+                fonts.bold,
+                { color: colors.white },
+              ]}
+            >
               Cumlative PNL
             </Text>
           </UiRow.L>
@@ -93,7 +104,6 @@ function PNLAnalysis() {
             thickness={3}
             hideDataPoints
             spacing={80}
-            
             curved
             hideRules
           />

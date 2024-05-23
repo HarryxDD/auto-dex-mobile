@@ -57,7 +57,7 @@ const CollapsibleComponent = ({
             size={18}
             style={gutters.marginRight_4}
           />
-          <Text style={styles.title}>{title}</Text>
+          <Text style={[styles.title, { color: colors.white }]}>{title}</Text>
         </Animated.View>
       </TouchableOpacity>
       <Animated.View

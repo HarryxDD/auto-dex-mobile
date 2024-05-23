@@ -36,6 +36,7 @@ const SuccessModal = ({ visible, onClose, title, children }: Props) => {
               fonts.size_18,
               gutters.marginVertical_10,
               SHARED_STYLES.selfCenter,
+              { color: colors.white },
             ]}
           >
             {title}

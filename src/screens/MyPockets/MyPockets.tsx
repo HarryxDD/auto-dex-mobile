@@ -55,7 +55,9 @@ function MyPockets() {
 
   const renderScreenHeader = () => (
     <UiRow.LR style={styles.topSection}>
-      <Text style={[fonts.size_20, fonts.bold]}>My Pockets</Text>
+      <Text style={[fonts.size_20, fonts.bold, { color: colors.white }]}>
+        My Pockets
+      </Text>
       <TouchableWithoutFeedback onPress={handleSync}>
         <UiRow.C style={[components.secondaryBtn]}>
           <Text
@@ -99,9 +101,11 @@ function MyPockets() {
     </UiRow>
   );
 
-  const renderPocket = ({ item }: { item: typeof MYPOCKETS[EPocketTab.HISTORY][0] }) => (
-    <PocketItem pocket={item}/>
-  );
+  const renderPocket = ({
+    item,
+  }: {
+    item: (typeof MYPOCKETS)[EPocketTab.HISTORY][0];
+  }) => <PocketItem pocket={item} />;
 
   return (
     <SafeScreen>
@@ -126,7 +130,7 @@ function MyPockets() {
           data={pockets}
           renderItem={renderPocket}
           showsVerticalScrollIndicator={false}
-          keyExtractor={item => `${item.id}`}
+          keyExtractor={(item) => `${item.id}`}
           contentContainerStyle={SHARED_STYLES.growX}
           // onEndReached={handleLoadMore}
           // ListEmptyComponent={renderListEmpty}

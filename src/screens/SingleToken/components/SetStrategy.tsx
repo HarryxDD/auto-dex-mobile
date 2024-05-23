@@ -287,7 +287,9 @@ const SetStrategy = ({
               { backgroundColor: colors.charlestonGreen },
             ]}
           >
-            <Text>{getSelectedDate(inputs.firstBatchDate)}</Text>
+            <Text style={[{ color: colors.white }]}>
+              {getSelectedDate(inputs.firstBatchDate)}
+            </Text>
             <Ionicons
               name="calendar-outline"
               color={colors.grayText}
@@ -305,7 +307,7 @@ const SetStrategy = ({
               { backgroundColor: colors.charlestonGreen },
             ]}
           >
-            <Text style={gutters.marginRight_10}>
+            <Text style={[gutters.marginRight_10, { color: colors.white }]}>
               {getSelectedTime(inputs.firstBatchTime)}
             </Text>
             <Ionicons
@@ -400,7 +402,14 @@ const SetStrategy = ({
                   </UiRow.X>
                   {inputs.conditionOperator === EConditionOperator.BETWEEN && (
                     <>
-                      <Text style={gutters.marginHorizontal_20}>and</Text>
+                      <Text
+                        style={[
+                          gutters.marginHorizontal_20,
+                          { color: colors.white },
+                        ]}
+                      >
+                        and
+                      </Text>
                       <UiRow.X
                         style={[
                           components.inputContainer,
@@ -526,13 +535,13 @@ const SetStrategy = ({
               </UiRow.C>
             </CollapsibleView>
             <CollapsibleView title="Add target SOL amount" maxHeight={90}>
-              <Text>abc</Text>
+              <Text style={[{ color: colors.white }]}>abc</Text>
             </CollapsibleView>
             <CollapsibleView
               title="Add target batches purchased"
               maxHeight={90}
             >
-              <Text>abc</Text>
+              <Text style={[{ color: colors.white }]}>abc</Text>
             </CollapsibleView>
           </UiCol>
 

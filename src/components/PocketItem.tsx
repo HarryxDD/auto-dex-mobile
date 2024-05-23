@@ -38,16 +38,22 @@ export const PocketItem = (props: Props) => {
           ]}
         >
           <UiCol>
-            <Text style={fonts.bold}>{pocket.chain.name}</Text>
+            <Text style={[fonts.bold, { color: colors.white }]}>
+              {pocket.chain.name}
+            </Text>
             <Text style={[{ color: colors.grayText }, fonts.size_12]}>
               {pocket.chain.subname}
             </Text>
           </UiCol>
-          <Text>{truncateString(pocket.chain.address, 4)}</Text>
+          <Text style={[{ color: colors.white }]}>
+            {truncateString(pocket.chain.address, 4)}
+          </Text>
         </UiRow.LR>
         <PocketItemSection title="Strategy">
           <UiCol.R>
-            <Text style={fonts.semiBold}>{pocket.strategy}</Text>
+            <Text style={[fonts.semiBold, { color: colors.white }]}>
+              {pocket.strategy}
+            </Text>
             <Text style={[{ color: colors.grayText }, fonts.size_10]}>
               {pocket.strategyDesc}
             </Text>
@@ -64,7 +70,7 @@ export const PocketItem = (props: Props) => {
         </PocketItemSection>
         <PocketItemSection title="Average price" value={pocket.avgPrice} />
         <PocketItemSection title="Status">
-          <Text>{pocket.status}</Text>
+          <Text style={[{ color: colors.white }]}>{pocket.status}</Text>
         </PocketItemSection>
       </UiCol>
     </TouchableWithoutFeedback>

@@ -59,7 +59,9 @@ export const StrategyConditionModal = forwardRef(
                 onPress={() => handleSelectCondition(condition)}
               >
                 <UiRow.C style={gutters.marginVertical_14}>
-                  <Text style={[fonts.size_16]}>{condition}</Text>
+                  <Text style={[fonts.size_16, { color: colors.white }]}>
+                    {condition}
+                  </Text>
                 </UiRow.C>
               </TouchableOpacity>
             ))}

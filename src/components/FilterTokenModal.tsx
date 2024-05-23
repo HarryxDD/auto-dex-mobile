@@ -31,7 +31,7 @@ export const FilterTokenModal = forwardRef(
           {...rest}
         >
           <UiCol.C.X>
-            <Text>Filter token modal!</Text>
+            <Text style={[{ color: colors.white }]}>Filter token modal!</Text>
           </UiCol.C.X>
         </BottomSheetModal>
       </BottomSheetModalProvider>

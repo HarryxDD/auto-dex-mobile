@@ -42,7 +42,14 @@ const StrategyItem = ({
           {icon}
         </UiCol.C>
         <UiCol.X style={gutters.paddingRight_20}>
-          <Text style={[fonts.size_16, fonts.bold, gutters.marginBottom_4]}>
+          <Text
+            style={[
+              fonts.size_16,
+              fonts.bold,
+              gutters.marginBottom_4,
+              { color: colors.white },
+            ]}
+          >
             {title}
           </Text>
           <Text

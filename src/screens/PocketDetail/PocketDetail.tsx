@@ -15,7 +15,14 @@ function PocketDetail() {
 
   const renderProgressSection = () => (
     <UiCol>
-      <Text style={[fonts.bold, fonts.size_16, gutters.marginBottom_10]}>
+      <Text
+        style={[
+          fonts.bold,
+          fonts.size_16,
+          gutters.marginBottom_10,
+          { color: colors.white },
+        ]}
+      >
         Progress
       </Text>
       <UiCol
@@ -25,9 +32,15 @@ function PocketDetail() {
         <PocketItemSection title="Batch bought" value="10 BATCHES" />
         <PocketItemSection title="Token hold">
           <UiCol.R>
-            <Text style={fonts.semiBold}>0.001 SOL = 0.000062 BTC</Text>
-            <Text style={fonts.semiBold}>0.001 SOL = 0.0675 BNB</Text>
-            <Text style={fonts.semiBold}>0.001 SOL = 0.74 USDC</Text>
+            <Text style={[fonts.semiBold, { color: colors.white }]}>
+              0.001 SOL = 0.000062 BTC
+            </Text>
+            <Text style={[fonts.semiBold, { color: colors.white }]}>
+              0.001 SOL = 0.0675 BNB
+            </Text>
+            <Text style={[fonts.semiBold, { color: colors.white }]}>
+              0.001 SOL = 0.74 USDC
+            </Text>
           </UiCol.R>
         </PocketItemSection>
         <PocketItemSection title="APL (ROI)">
@@ -41,7 +54,14 @@ function PocketDetail() {
 
   const renderNextBatchSection = () => (
     <UiCol>
-      <Text style={[fonts.bold, fonts.size_16, gutters.marginBottom_10]}>
+      <Text
+        style={[
+          fonts.bold,
+          fonts.size_16,
+          gutters.marginBottom_10,
+          { color: colors.white },
+        ]}
+      >
         Next batch
       </Text>
       <UiCol
@@ -55,7 +75,14 @@ function PocketDetail() {
 
   const renderPoolInfoSection = () => (
     <UiCol>
-      <Text style={[fonts.bold, fonts.size_16, gutters.marginBottom_10]}>
+      <Text
+        style={[
+          fonts.bold,
+          fonts.size_16,
+          gutters.marginBottom_10,
+          { color: colors.white },
+        ]}
+      >
         Pool info
       </Text>
       <UiCol
@@ -69,7 +96,14 @@ function PocketDetail() {
 
   const renderEndConditionSection = () => (
     <UiCol>
-      <Text style={[fonts.bold, fonts.size_16, gutters.marginBottom_10]}>
+      <Text
+        style={[
+          fonts.bold,
+          fonts.size_16,
+          gutters.marginBottom_10,
+          { color: colors.white },
+        ]}
+      >
         End Conditions
       </Text>
       <UiCol
@@ -83,7 +117,14 @@ function PocketDetail() {
 
   const renderTPSLSection = () => (
     <UiCol>
-      <Text style={[fonts.bold, fonts.size_16, gutters.marginBottom_10]}>
+      <Text
+        style={[
+          fonts.bold,
+          fonts.size_16,
+          gutters.marginBottom_10,
+          { color: colors.white },
+        ]}
+      >
         TP/SL
       </Text>
       <UiCol
@@ -97,7 +138,14 @@ function PocketDetail() {
 
   const renderTransactionsSection = () => (
     <UiCol>
-      <Text style={[fonts.bold, fonts.size_16, gutters.marginBottom_10]}>
+      <Text
+        style={[
+          fonts.bold,
+          fonts.size_16,
+          gutters.marginBottom_10,
+          { color: colors.white },
+        ]}
+      >
         Bought transaction
       </Text>
       <UiCol
@@ -135,12 +183,12 @@ function PocketDetail() {
             ]}
           >
             <UiCol>
-              <Text style={fonts.bold}>SOL/BTC</Text>
+              <Text style={[fonts.bold, { color: colors.white }]}>SOL/BTC</Text>
               <Text style={[{ color: colors.grayText }, fonts.size_12]}>
                 Blockasset
               </Text>
             </UiCol>
-            <Text>#146...423</Text>
+            <Text style={[{ color: colors.white }]}>#146...423</Text>
           </UiRow.LR>
           <PocketItemSection
             title="Strategy"

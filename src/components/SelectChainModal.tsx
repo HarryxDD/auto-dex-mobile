@@ -31,7 +31,7 @@ export const SelectChainModal = forwardRef(
           {...rest}
         >
           <UiCol.C.X>
-            <Text>Coming soon!</Text>
+            <Text style={[{ color: colors.white }]}>Coming soon!</Text>
           </UiCol.C.X>
         </BottomSheetModal>
       </BottomSheetModalProvider>

@@ -85,7 +85,9 @@ function Profile() {
           >
             ~ 45.19 SOL
           </Text>
-          <Text style={fonts.size_10}>(~ $8,803.24)</Text>
+          <Text style={[fonts.size_10, { color: colors.white }]}>
+            (~ $8,803.24)
+          </Text>
         </UiCol>
       </UiRow>
       <UiCol.R>
@@ -93,7 +95,7 @@ function Profile() {
           isVisible={showTip}
           content={
             <UiCol>
-              <Text>
+              <Text style={[{ color: colors.white }]}>
                 The profit or loss from financial trades on a specific day. PNL
                 stands for &quot;profit and lost&quot;
               </Text>
@@ -133,7 +135,9 @@ function Profile() {
 
   const renderDetailContent = () => (
     <UiCol>
-      <Text style={[fonts.size_16, fonts.semiBold]}>Assets (12)</Text>
+      <Text style={[fonts.size_16, fonts.semiBold, { color: colors.white }]}>
+        Assets (12)
+      </Text>
     </UiCol>
   );
 

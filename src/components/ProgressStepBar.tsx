@@ -36,7 +36,7 @@ const StepsProgressBar: React.FC<Props> = ({
                 },
               ]}
             >
-              <Text>{index + 1}</Text>
+              <Text style={[{ color: colors.white }]}>{index + 1}</Text>
             </UiCol.C>
             <UiCol
               style={[

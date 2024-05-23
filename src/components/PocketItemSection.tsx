@@ -18,7 +18,9 @@ export const PocketItemSection = ({
   return (
     <UiRow.LRT style={[gutters.paddingVertical_10, containerStyle]}>
       <Text style={{ color: colors.ceil }}>{title}</Text>
-      {children ?? <Text style={fonts.semiBold}>{value}</Text>}
+      {children ?? (
+        <Text style={[fonts.semiBold, { color: colors.white }]}>{value}</Text>
+      )}
     </UiRow.LRT>
   );
 };
