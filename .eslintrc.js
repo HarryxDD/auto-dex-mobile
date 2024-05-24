@@ -70,6 +70,7 @@ module.exports = {
 		'no-param-reassign': 'off',
 		'@typescript-eslint/restrict-plus-operands': 'off',
 		'react/destructuring-assignment': 'off',
+		'@typescript-eslint/no-misused-promises': 'off',
 		'prettier/prettier': [
 			'off',
 			{

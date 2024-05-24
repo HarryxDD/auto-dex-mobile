@@ -4,12 +4,18 @@ import {
   SCREEN_POCKET_DETAIL,
   SCREEN_PNL_ANALYSIS,
   SCREEN_SINGLE_TOKEN,
+  SCREEN_LIMIT_ORDER,
+  SCREEN_TWAP,
+  SCREEN_BASKET_DCA,
 } from "@/navigators/route-names";
 import { MainParamList } from "@/types/navigation";
 import BottomTabsNavigator from "@/navigators/bottom-tabs-navigator";
 import PocketDetail from "@/screens/PocketDetail/PocketDetail";
 import PNLAnalysis from "@/screens/PNLAnalysis/PNLAnalysis";
 import SingleTokenScreen from "@/screens/SingleToken/SingleToken";
+import LimitOrderScreen from "@/screens/LimitOrder/LimitOrder";
+import TWAPScreen from "@/screens/TWAP/TWAP";
+import BasketDCAScreen from "@/screens/BasketDCA/BasketDCA";
 import { AppHeaderBackButton } from "./config";
 
 const MainStack = createStackNavigator<MainParamList>();
@@ -48,6 +54,30 @@ export const MainNavigator = () => {
         options={{
           headerShown: true,
           headerLeft: () => <AppHeaderBackButton />,
+        }}
+      />
+      <MainStack.Screen
+        name={SCREEN_LIMIT_ORDER}
+        component={LimitOrderScreen}
+        options={{
+          headerShown: true,
+          headerTitle: "Limit Order",
+        }}
+      />
+      <MainStack.Screen
+        name={SCREEN_TWAP}
+        component={TWAPScreen}
+        options={{
+          headerShown: true,
+          headerTitle: "TWAP",
+        }}
+      />
+      <MainStack.Screen
+        name={SCREEN_BASKET_DCA}
+        component={BasketDCAScreen}
+        options={{
+          headerShown: true,
+          headerTitle: "Limit Order",
         }}
       />
     </MainStack.Navigator>

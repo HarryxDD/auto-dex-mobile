@@ -42,7 +42,7 @@ function BottomTabsContent({
             {renderIcon?.({
               focused: isFocused,
               color: isFocused ? colors.main : colors.grayText,
-              size: 24,
+              size: 30,
             })}
             <Text
               style={[

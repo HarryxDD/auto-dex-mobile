@@ -9,13 +9,14 @@ import { SelectChainModal } from "@/components/SelectChainModal";
 import { useApp } from "@/contexts/app.context";
 import { FilterTokenModal } from "@/components/FilterTokenModal";
 import NavigationRef from "@/utils/navigation-ref";
+import { useAccount } from "wagmi";
 import { AuthNavigator } from "./auth-navigator";
 
 const Stack = createStackNavigator<ApplicationStackParamList>();
 
 export const RootStack = () => {
   const { variant } = useTheme();
-  const isConnect = true;
+  const { address } = useAccount();
 
   const renderScreens = () => {
     const screens = [];
@@ -49,7 +50,7 @@ export const RootStack = () => {
     // );
     // }
 
-    if (!isConnect) {
+    if (!address) {
       screens.push(
         <Stack.Screen
           key={STACK_AUTH}

@@ -16,6 +16,7 @@ import { PieChart } from "react-native-gifted-charts";
 import { PROFILE_PIE_CHART } from "@/dummy-data";
 import { SCREEN_PNL_ANALYSIS, STACK_MAIN } from "@/navigators/route-names";
 import { useNavigation } from "@react-navigation/native";
+import { useAccount } from "wagmi";
 
 function Profile() {
   const { colors, fonts, gutters } = useTheme();
@@ -23,11 +24,10 @@ function Profile() {
   const screenTabs = [EProfileTab.DETAILS, EProfileTab.STATISTICS];
   const [currentTab, setCurrentTab] = useState(EProfileTab.DETAILS);
   const { navigate } = useNavigation();
-
-  const walletAddress = "0xgfdads8fds6a6fdsafdsa";
+  const { address: walletAddress } = useAccount();
 
   const handleCopyAddress = () => {
-    Clipboard?.setString(walletAddress);
+    Clipboard?.setString(walletAddress || "");
   };
 
   const handleNavigateToAnalysis = () => {
@@ -49,7 +49,7 @@ function Profile() {
             { color: colors.main },
           ]}
         >
-          {truncateAddress(walletAddress)}
+          {truncateAddress(walletAddress || "")}
         </Text>
         <TouchableWithoutFeedback onPress={handleCopyAddress}>
           <Ionicons name="copy" color={colors.grayText} />

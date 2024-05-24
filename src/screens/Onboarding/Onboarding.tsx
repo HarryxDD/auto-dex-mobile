@@ -3,10 +3,16 @@ import { ImageVariant } from "@/components/atoms";
 import { useTheme } from "@/theme";
 import OnboardingImg from "@/theme/assets/images/onboarding.png";
 import { SHARED_STYLES } from "@/theme/shared";
+import { useWeb3Modal } from "@web3modal/wagmi-react-native";
 import { StyleSheet, Text, TouchableWithoutFeedback } from "react-native";
 
 const OnboardingScreen = () => {
   const { colors, fonts, components, gutters } = useTheme();
+  const { open: openWeb3Modal } = useWeb3Modal();
+
+  const handleConnectWallet = async () => {
+    await openWeb3Modal();
+  };
 
   return (
     <UiCol.X style={SHARED_STYLES.screenPadding}>
@@ -26,11 +32,11 @@ const OnboardingScreen = () => {
           Please connect your wallet
         </Text>
       </UiCol.X>
-      <TouchableWithoutFeedback onPress={() => {}}>
+      <TouchableWithoutFeedback onPress={handleConnectWallet}>
         <UiRow.C
           style={[
             components.primaryBtn,
-            gutters.marginBottom_40,
+            gutters.marginBottom_56,
             gutters.paddingVertical_10,
           ]}
         >

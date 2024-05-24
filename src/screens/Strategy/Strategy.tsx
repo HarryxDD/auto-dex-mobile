@@ -9,7 +9,13 @@ import {
   IconTWAP,
 } from "@/theme/assets/icons/svg";
 import { SHARED_STYLES } from "@/theme/shared";
-import { SCREEN_SINGLE_TOKEN, STACK_MAIN } from "@/navigators/route-names";
+import {
+  SCREEN_BASKET_DCA,
+  SCREEN_LIMIT_ORDER,
+  SCREEN_SINGLE_TOKEN,
+  SCREEN_TWAP,
+  STACK_MAIN,
+} from "@/navigators/route-names";
 import { useNavigation } from "@react-navigation/native";
 
 const StrategyItem = ({
@@ -90,19 +96,19 @@ function Strategy() {
           title="Limit Order"
           desc="Places an order to buy or sell at a specific price"
           icon={<IconLimitOrder />}
-          onPress={() => handleChooseDCA(SCREEN_SINGLE_TOKEN)}
+          onPress={() => handleChooseDCA(SCREEN_LIMIT_ORDER)}
         />
         <StrategyItem
           title="TWAP"
           desc="Averages trades over time to minimize market impact"
           icon={<IconTWAP />}
-          onPress={() => handleChooseDCA(SCREEN_SINGLE_TOKEN)}
+          onPress={() => handleChooseDCA(SCREEN_TWAP)}
         />
         <StrategyItem
           title="Basket DCA"
           desc="Automatically purchases multiple tokens over time based on pre-set parameters (time-based or price-based)"
           icon={<IconBasketDCA />}
-          onPress={() => handleChooseDCA(SCREEN_SINGLE_TOKEN)}
+          onPress={() => handleChooseDCA(SCREEN_BASKET_DCA)}
         />
         <TouchableWithoutFeedback onPress={handlePressLearnHow}>
           <Text style={[fonts.bold, { color: colors.main }]}>

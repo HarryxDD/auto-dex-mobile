@@ -8,3 +8,13 @@ export { default as CircularDot } from "./circulardot.svg";
 export { default as QuestionMark } from "./question.svg";
 export { default as TrashCan } from "./trashcan.svg";
 export { default as IconSuccess } from "./successicon.svg";
+
+// Bottom tab icons
+export { default as IconMyPocketFill } from "./mypocket-fill.svg";
+export { default as IconStrategyFill } from "./strategy-fill.svg";
+export { default as IconHistoryFill } from "./history-fill.svg";
+export { default as IconProfileFill } from "./profile-fill.svg";
+export { default as IconMyPocketOutline } from "./mypocket-outline.svg";
+export { default as IconStrategyOutline } from "./strategy-outline.svg";
+export { default as IconHistoryOutline } from "./history-outline.svg";
+export { default as IconProfileOutline } from "./profile-outline.svg";

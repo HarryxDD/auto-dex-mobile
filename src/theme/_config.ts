@@ -37,7 +37,7 @@ const colorsDark = {
   main: "#735CF7",
 } as const;
 
-const sizes = [2, 4, 8, 10, 12, 14, 16, 18, 20, 24, 32, 40, 80] as const;
+const sizes = [2, 4, 8, 10, 12, 14, 16, 18, 20, 24, 32, 40, 56, 80] as const;
 
 export const config = {
   colors: colorsDark,

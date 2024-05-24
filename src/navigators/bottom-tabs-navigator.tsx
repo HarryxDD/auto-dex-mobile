@@ -8,7 +8,16 @@ import {
 } from "@/navigators/route-names";
 import { History, MyPockets, Profile, Strategy } from "@/screens";
 import BottomTabsContent from "@/components/BottomTabsContent";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import {
+  IconHistoryFill,
+  IconHistoryOutline,
+  IconMyPocketFill,
+  IconMyPocketOutline,
+  IconProfileFill,
+  IconProfileOutline,
+  IconStrategyFill,
+  IconStrategyOutline,
+} from "@/theme/assets/icons/svg";
 import { bottomTabsScreenOptions } from "./config";
 
 const Tab = createBottomTabNavigator<BottomTabsParamList>();
@@ -22,13 +31,12 @@ function BottomTabsNavigator() {
         options={{
           ...bottomTabsScreenOptions,
           title: "My Pockets",
-          tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
-              name={`grid${!focused ? "-outline" : ""}`}
-              color={color}
-              size={size}
-            />
-          ),
+          tabBarIcon: ({ focused, size }) =>
+            !focused ? (
+              <IconMyPocketOutline width={size} />
+            ) : (
+              <IconMyPocketFill width={size} />
+            ),
         }}
       />
       <Tab.Screen
@@ -37,13 +45,12 @@ function BottomTabsNavigator() {
         options={{
           ...bottomTabsScreenOptions,
           title: "Strategy",
-          tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
-              name={`bar-chart${!focused ? "-outline" : ""}`}
-              color={color}
-              size={size}
-            />
-          ),
+          tabBarIcon: ({ focused, size }) =>
+            !focused ? (
+              <IconStrategyOutline width={size} />
+            ) : (
+              <IconStrategyFill width={size} />
+            ),
         }}
       />
       <Tab.Screen
@@ -52,13 +59,12 @@ function BottomTabsNavigator() {
         options={{
           ...bottomTabsScreenOptions,
           title: "History",
-          tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
-              name={`time${!focused ? "-outline" : ""}`}
-              color={color}
-              size={size}
-            />
-          ),
+          tabBarIcon: ({ focused, size }) =>
+            !focused ? (
+              <IconHistoryOutline width={size} />
+            ) : (
+              <IconHistoryFill width={size} />
+            ),
         }}
       />
       <Tab.Screen
@@ -66,13 +72,12 @@ function BottomTabsNavigator() {
         component={Profile}
         options={{
           title: "Profile",
-          tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
-              name={`person${!focused ? "-outline" : ""}`}
-              color={color}
-              size={size}
-            />
-          ),
+          tabBarIcon: ({ focused, size }) =>
+            !focused ? (
+              <IconProfileOutline width={size} />
+            ) : (
+              <IconProfileFill width={size} />
+            ),
         }}
       />
     </Tab.Navigator>
