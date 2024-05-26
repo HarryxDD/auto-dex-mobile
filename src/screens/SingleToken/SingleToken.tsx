@@ -1,10 +1,21 @@
 import { SafeScreen } from "@/components/template";
 import { NavigationProp } from "@react-navigation/native";
 import { BottomTabsHeaderRight } from "@/navigators/config";
-import { useEffect, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import ProgressStepBar from "@/components/ProgressStepBar";
 import { SHARED_STYLES } from "@/theme/shared";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { useInput } from "@/hooks/useInput";
+import { EStrategyFrequency } from "@/constants/strategy";
+import { SingleTokenParams } from "@/types/strategy";
 import SelectPair from "./components/SelectPair";
 import SetStrategy from "./components/SetStrategy";
 import Confirm from "./components/Confirm";
@@ -15,6 +26,43 @@ const SINGLE_TOKEN_SCREENS = [
   { title: "Deposit & Confirm", cpn: Confirm },
 ];
 
+type SingleTokenContextType = {
+  inputs: SingleTokenParams;
+  setInputs: Dispatch<SetStateAction<Partial<SingleTokenParams | undefined>>>;
+};
+
+const SingleTokenContext = createContext<SingleTokenContextType | undefined>(
+  undefined
+);
+
+export function useSingleToken(): SingleTokenContextType {
+  const context = useContext(SingleTokenContext);
+  if (!context) {
+    throw new Error("Must be used within Single Token Provider");
+  }
+  return context;
+}
+
+const getDefaultParams = (): SingleTokenParams => {
+  return {
+    firstPairItem: "",
+    secondPairItem: "",
+    amountEachBatch: 0,
+    frequency: EStrategyFrequency.DAILY,
+    firstBatchDate: new Date(),
+    firstBatchTime: new Date(),
+    byAtMarketCondition: "",
+    endDate: null,
+    endTime: null,
+    targetTokenAmount: null,
+    targetSOLAmount: null,
+    targetBatchesPurchased: null,
+    takeProfit: null,
+    stopLoss: null,
+    depositAmount: 0,
+  };
+};
+
 const SingleTokenScreen = ({
   navigation,
 }: {
@@ -22,6 +70,8 @@ const SingleTokenScreen = ({
 }) => {
   const [singleTokenProgress, setSingleTokenProgress] = useState(0);
   const StrategyContent = SINGLE_TOKEN_SCREENS[singleTokenProgress].cpn || null;
+  const defaultParams = getDefaultParams();
+  const [inputs, setInputs] = useInput(defaultParams);
 
   useEffect(() => {
     if (singleTokenProgress === 0) {
@@ -38,19 +88,23 @@ const SingleTokenScreen = ({
   }, [singleTokenProgress]);
 
   return (
-    <BottomSheetModalProvider>
-      <SafeScreen>
-        <ProgressStepBar
-          steps={SINGLE_TOKEN_SCREENS}
-          activeStep={singleTokenProgress}
-          containerStyle={SHARED_STYLES.screenPadding}
-        />
-        <StrategyContent
-          singleTokenProgress={singleTokenProgress}
-          setSingleTokenProgress={setSingleTokenProgress}
-        />
-      </SafeScreen>
-    </BottomSheetModalProvider>
+    <SingleTokenContext.Provider
+      value={useMemo(() => ({ inputs, setInputs }), [inputs, setInputs])}
+    >
+      <BottomSheetModalProvider>
+        <SafeScreen>
+          <ProgressStepBar
+            steps={SINGLE_TOKEN_SCREENS}
+            activeStep={singleTokenProgress}
+            containerStyle={SHARED_STYLES.screenPadding}
+          />
+          <StrategyContent
+            singleTokenProgress={singleTokenProgress}
+            setSingleTokenProgress={setSingleTokenProgress}
+          />
+        </SafeScreen>
+      </BottomSheetModalProvider>
+    </SingleTokenContext.Provider>
   );
 };
 

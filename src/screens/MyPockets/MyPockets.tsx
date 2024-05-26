@@ -11,7 +11,7 @@ import { UiCol, UiMultiSwitch, UiRow } from "@/components";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { SHARED_STYLES } from "@/theme/shared";
 import { useState } from "react";
-import { useInput } from "@/theme/hooks/useInput";
+import { useInput } from "@/hooks/useInput";
 import {} from "@gorhom/bottom-sheet";
 import { useApp } from "@/contexts/app.context";
 import { EPocketTab } from "@/constants/mypocket";

@@ -5,7 +5,7 @@ import {
 } from "@gorhom/bottom-sheet";
 import { ForwardedRef, forwardRef } from "react";
 import { StyleProp, Text, ViewStyle } from "react-native";
-import { useDismissModal } from "@/theme/hooks/useDismissModal";
+import { useDismissModal } from "@/hooks/useDismissModal";
 import { ModalBackdrop } from "@/components/ModalBackdrop";
 import { UiRow, UiCol } from "@/components";
 import { EConditionOperator, STRATEGY_CONDITIONS } from "@/constants/strategy";

@@ -7,7 +7,6 @@ import {
 } from "@/constants/strategy";
 import { useTheme } from "@/theme";
 import { IconBNB, QuestionMark, TrashCan } from "@/theme/assets/icons/svg";
-import { useInput } from "@/theme/hooks/useInput";
 import { SHARED_STYLES } from "@/theme/shared";
 import { SetStateAction, useRef, useState } from "react";
 import {
@@ -26,6 +25,8 @@ import {
 } from "@/components/DateTimePickerModal/helper";
 import { StrategyConditionModal } from "@/components/StrategyConditionModal";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { useBoolBag } from "@/hooks/useBoolBag";
+import { useSingleToken } from "@/screens/SingleToken/SingleToken";
 
 const SetStrategy = ({
   singleTokenProgress,
@@ -37,15 +38,14 @@ const SetStrategy = ({
   const { fonts, colors, components, gutters } = useTheme();
   const [isShowAdvanceSetup, setIsShowAdvanceSetup] = useState<boolean>(false);
   const strategyConditionModalRef = useRef<BottomSheetModal>(null);
-  const [inputs, setInputs] = useInput({
-    searchValue: "",
-    frequency: null,
+  const [conditionOperator, setConditionOperator] =
+    useState<EConditionOperator>(EConditionOperator.BETWEEN);
+  const { inputs, setInputs } = useSingleToken();
+  const { boolBag, setBoolBag } = useBoolBag({
     showDatePicker: false,
     showTimePicker: false,
-    firstBatchDate: new Date(),
-    firstBatchTime: new Date(),
-    conditionOperator: EConditionOperator.BETWEEN,
   });
+  const { showDatePicker, showTimePicker } = boolBag;
   const [selectedFrequency, setSelectedFrequency] = useState(
     EStrategyFrequency.DAILY
   );
@@ -59,11 +59,13 @@ const SetStrategy = ({
   };
 
   const handleConfirmFirstBatchTime = (mode: string, date: Date) => {
-    setInputs(
-      mode === "date"
-        ? { firstBatchDate: date, showDatePicker: false }
-        : { firstBatchTime: date, showTimePicker: false }
-    );
+    if (mode === "date") {
+      setInputs({ firstBatchDate: date });
+      setBoolBag({ showDatePicker: false });
+    } else {
+      setInputs({ firstBatchTime: date });
+      setBoolBag({ showTimePicker: false });
+    }
   };
 
   const handleShowStrategyConditionModal = () => {
@@ -72,7 +74,7 @@ const SetStrategy = ({
   };
 
   const handleSelectCondition = (condition: EConditionOperator) => {
-    setInputs({ conditionOperator: condition });
+    setConditionOperator(condition);
   };
 
   const renderDCAPairSection = () => (
@@ -186,9 +188,9 @@ const SetStrategy = ({
         <IconBNB width={18} height={18} style={gutters.marginRight_2} />
         <TextInput
           placeholder="From 0.1 SOL"
-          value={inputs.searchValue}
+          value={inputs.amountEachBatch.toString()}
           onChangeText={(text) => {
-            setInputs({ searchValue: text });
+            setInputs({ amountEachBatch: +text });
           }}
           style={styles.textInputStyle}
           placeholderTextColor={colors.grayText}
@@ -219,7 +221,7 @@ const SetStrategy = ({
             key={frequency.name}
             onPress={() => {
               setSelectedFrequency(frequency.name);
-              setInputs({ frequency: frequency.value });
+              setInputs({ frequency: frequency.name });
             }}
           >
             <UiCol.C
@@ -255,18 +257,18 @@ const SetStrategy = ({
   const renderFirstBatchTimeSection = () => (
     <UiCol style={styles.sectionWrapper}>
       <DateTimePickerModal
-        isVisible={inputs.showTimePicker}
+        isVisible={showTimePicker}
         date={inputs.firstBatchTime}
         mode="time"
         onConfirm={(date) => handleConfirmFirstBatchTime("time", date)}
-        onCancel={() => setInputs({ showTimePicker: false })}
+        onCancel={() => setBoolBag({ showTimePicker: false })}
       />
       <DateTimePickerModal
-        isVisible={inputs.showDatePicker}
+        isVisible={showDatePicker}
         date={inputs.firstBatchDate}
         mode="date"
         onConfirm={(date) => handleConfirmFirstBatchTime("date", date)}
-        onCancel={() => setInputs({ showDatePicker: false })}
+        onCancel={() => setBoolBag({ showDatePicker: false })}
       />
       <UiRow.L>
         <Text style={[fonts.semiBold, fonts.size_16, { color: colors.white }]}>
@@ -279,7 +281,7 @@ const SetStrategy = ({
       </UiRow.L>
       <UiRow style={styles.firstBatchTimeItem}>
         <TouchableWithoutFeedback
-          onPress={() => setInputs({ showDatePicker: true })}
+          onPress={() => setBoolBag({ showDatePicker: true })}
         >
           <UiRow.LR.X
             style={[
@@ -299,7 +301,7 @@ const SetStrategy = ({
           </UiRow.LR.X>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
-          onPress={() => setInputs({ showTimePicker: true })}
+          onPress={() => setBoolBag({ showTimePicker: true })}
         >
           <UiRow.C
             style={[
@@ -377,7 +379,7 @@ const SetStrategy = ({
                     <Text
                       style={[{ color: colors.white }, gutters.marginRight_10]}
                     >
-                      {inputs.conditionOperator}
+                      {conditionOperator}
                     </Text>
                     <Ionicons
                       name="chevron-down-outline"
@@ -400,7 +402,7 @@ const SetStrategy = ({
                       placeholderTextColor={colors.grayText}
                     />
                   </UiRow.X>
-                  {inputs.conditionOperator === EConditionOperator.BETWEEN && (
+                  {conditionOperator === EConditionOperator.BETWEEN && (
                     <>
                       <Text
                         style={[
@@ -458,29 +460,31 @@ const SetStrategy = ({
                 Close pocket when reach
               </Text>
             </UiRow.L>
-            <CollapsibleView title="Add end time" maxHeight={90}>
-              <UiRow style={styles.gap10}>
-                <UiRow.C.X
-                  style={[
-                    components.inputContainer,
-                    { backgroundColor: colors.charlestonGreen },
-                  ]}
+            <CollapsibleView title="Add end time" maxHeight={85}>
+              <UiRow style={styles.endTimeWrapper}>
+                <TouchableWithoutFeedback
+                  onPress={() => setBoolBag({ showDatePicker: true })}
                 >
-                  <Ionicons
-                    name="search-outline"
-                    color={colors.grayText}
-                    size={18}
-                  />
-                  <TextInput
-                    placeholder="Search"
-                    value={inputs.searchValue}
-                    onChangeText={(text) => {
-                      setInputs({ searchValue: text });
-                    }}
-                    placeholderTextColor={colors.grayText}
-                  />
-                </UiRow.C.X>
-                <TouchableWithoutFeedback>
+                  <UiRow.LR.X
+                    style={[
+                      components.inputContainer,
+                      { backgroundColor: colors.charlestonGreen },
+                    ]}
+                  >
+                    <Text style={[{ color: colors.white }]}>
+                      {getSelectedDate(inputs.firstBatchDate)}
+                    </Text>
+                    <Ionicons
+                      name="calendar-outline"
+                      color={colors.grayText}
+                      size={18}
+                      style={gutters.marginTop_2}
+                    />
+                  </UiRow.LR.X>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => setBoolBag({ showTimePicker: true })}
+                >
                   <UiRow.C
                     style={[
                       components.inputContainer,
@@ -488,12 +492,9 @@ const SetStrategy = ({
                     ]}
                   >
                     <Text
-                      style={[
-                        { color: colors.grayText },
-                        gutters.marginRight_10,
-                      ]}
+                      style={[gutters.marginRight_10, { color: colors.white }]}
                     >
-                      00:00
+                      {getSelectedTime(inputs.firstBatchTime)}
                     </Text>
                     <Ionicons
                       name="chevron-down-outline"
@@ -509,16 +510,16 @@ const SetStrategy = ({
               <UiRow.C
                 style={[
                   components.inputContainer,
-                  gutters.marginTop_16,
+                  gutters.marginTop_4,
                   { backgroundColor: colors.charlestonGreen },
                 ]}
               >
                 <IconBNB width={18} height={18} style={gutters.marginRight_2} />
                 <TextInput
                   placeholder="From 0.1 SOL"
-                  value={inputs.searchValue}
+                  value={inputs.targetTokenAmount?.toString()}
                   onChangeText={(text) => {
-                    setInputs({ searchValue: text });
+                    setInputs({ targetTokenAmount: +text });
                   }}
                   style={styles.textInputStyle}
                   placeholderTextColor={colors.grayText}
@@ -535,13 +536,65 @@ const SetStrategy = ({
               </UiRow.C>
             </CollapsibleView>
             <CollapsibleView title="Add target SOL amount" maxHeight={90}>
-              <Text style={[{ color: colors.white }]}>abc</Text>
+              <UiRow.C
+                style={[
+                  components.inputContainer,
+                  gutters.marginTop_4,
+                  { backgroundColor: colors.charlestonGreen },
+                ]}
+              >
+                <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+                <TextInput
+                  placeholder="From 0.1 SOL"
+                  value={inputs.targetSOLAmount?.toString()}
+                  onChangeText={(text) => {
+                    setInputs({ targetSOLAmount: +text });
+                  }}
+                  style={styles.textInputStyle}
+                  placeholderTextColor={colors.grayText}
+                />
+                <Text
+                  style={[
+                    fonts.semiBold,
+                    fonts.size_14,
+                    { color: colors.white },
+                  ]}
+                >
+                  BNB
+                </Text>
+              </UiRow.C>
             </CollapsibleView>
             <CollapsibleView
               title="Add target batches purchased"
               maxHeight={90}
             >
-              <Text style={[{ color: colors.white }]}>abc</Text>
+              <UiRow.C
+                style={[
+                  components.inputContainer,
+                  gutters.marginTop_4,
+                  { backgroundColor: colors.charlestonGreen },
+                ]}
+              >
+                <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+                <TextInput
+                  placeholder="From 0.1 SOL"
+                  value={inputs.targetBatchesPurchased?.toString()}
+                  onChangeText={(text) => {
+                    setInputs({ targetBatchesPurchased: +text });
+                  }}
+                  style={styles.textInputStyle}
+                  placeholderTextColor={colors.grayText}
+                />
+                <Text
+                  style={[
+                    fonts.semiBold,
+                    fonts.size_14,
+                    { color: colors.white },
+                  ]}
+                >
+                  BNB
+                </Text>
+              </UiRow.C>
             </CollapsibleView>
           </UiCol>
 
@@ -575,9 +628,9 @@ const SetStrategy = ({
               <IconBNB width={18} height={18} style={gutters.marginRight_2} />
               <TextInput
                 placeholder="Input price take profit"
-                value={inputs.searchValue}
+                value={inputs.takeProfit?.toString()}
                 onChangeText={(text) => {
-                  setInputs({ searchValue: text });
+                  setInputs({ takeProfit: +text });
                 }}
                 style={styles.textInputStyle}
                 placeholderTextColor={colors.grayText}
@@ -620,9 +673,9 @@ const SetStrategy = ({
               <IconBNB width={18} height={18} style={gutters.marginRight_2} />
               <TextInput
                 placeholder="Input price stop loss"
-                value={inputs.searchValue}
+                value={inputs.stopLoss?.toString()}
                 onChangeText={(text) => {
-                  setInputs({ searchValue: text });
+                  setInputs({ stopLoss: +text });
                 }}
                 style={styles.textInputStyle}
                 placeholderTextColor={colors.grayText}
@@ -682,7 +735,7 @@ const SetStrategy = ({
     <>
       <StrategyConditionModal
         ref={strategyConditionModalRef}
-        selectedCondition={inputs.conditionOperator}
+        selectedCondition={conditionOperator}
         onSelectCondition={handleSelectCondition}
       />
       <ScrollView>
@@ -720,6 +773,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 1,
     marginLeft: 6,
+    color: "white",
   },
   frequencyItem: {
     paddingVertical: 10,
@@ -731,6 +785,9 @@ const styles = StyleSheet.create({
   firstBatchTimeItem: {
     gap: 10,
     marginTop: 16,
+  },
+  endTimeWrapper: {
+    gap: 10,
   },
   buttonWrapper: {
     gap: 16,

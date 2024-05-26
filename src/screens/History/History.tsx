@@ -10,7 +10,7 @@ import { SafeScreen } from "@/components/template";
 import { UiCol, UiRow } from "@/components";
 import { SHARED_STYLES } from "@/theme/shared";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { useInput } from "@/theme/hooks/useInput";
+import { useInput } from "@/hooks/useInput";
 import { PocketItemSection } from "@/components/PocketItemSection";
 import { HISTORY_DATA } from "@/dummy-data";
 

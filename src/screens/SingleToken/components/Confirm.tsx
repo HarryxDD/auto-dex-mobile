@@ -3,7 +3,6 @@ import { PocketItemSection } from "@/components/PocketItemSection";
 import SuccessModal from "@/components/SuccessModal";
 import { useTheme } from "@/theme";
 import { IconBNB } from "@/theme/assets/icons/svg";
-import { useInput } from "@/theme/hooks/useInput";
 import { SHARED_STYLES } from "@/theme/shared";
 import NavigationRef from "@/utils/navigation-ref";
 import { SetStateAction } from "react";
@@ -15,6 +14,8 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useSingleToken } from "@/screens/SingleToken/SingleToken";
+import { useBoolBag } from "@/hooks/useBoolBag";
 
 const Confirm = ({
   singleTokenProgress,
@@ -24,10 +25,12 @@ const Confirm = ({
   setSingleTokenProgress: React.Dispatch<SetStateAction<number>>;
 }) => {
   const { fonts, colors, components, gutters } = useTheme();
-  const [inputs, setInputs] = useInput({
-    depositAmount: "",
+  const { inputs, setInputs } = useSingleToken();
+  const { boolBag, setBoolBag } = useBoolBag({
     showSuccessModal: false,
   });
+  const { showSuccessModal } = boolBag;
+  const isDisableCreateBtn = inputs.depositAmount === 0;
 
   const handleGoBack = () => {
     NavigationRef.goBack();
@@ -38,12 +41,12 @@ const Confirm = ({
   };
 
   const handlePressDoneSuccessModal = () => {
-    setInputs({ showSuccessModal: false });
+    setBoolBag({ showSuccessModal: false });
     handleGoBack();
   };
 
   const handlePressCreatePocket = () => {
-    setInputs({ showSuccessModal: true });
+    setBoolBag({ showSuccessModal: true });
   };
 
   const renderDepositAmountSection = () => (
@@ -67,9 +70,9 @@ const Confirm = ({
         <IconBNB width={18} height={18} style={gutters.marginRight_2} />
         <TextInput
           placeholder="From 0.1 SOL"
-          value={inputs.depositAmount}
+          value={inputs.depositAmount.toString()}
           onChangeText={(text) => {
-            setInputs({ depositAmount: text });
+            setInputs({ depositAmount: +text });
           }}
           style={styles.textInputStyle}
           placeholderTextColor={colors.grayText}
@@ -233,8 +236,18 @@ const Confirm = ({
           <Text style={[{ color: colors.main }, fonts.bold]}>Back</Text>
         </UiRow.C.X>
       </TouchableWithoutFeedback>
-      <TouchableWithoutFeedback onPress={handlePressCreatePocket}>
-        <UiRow.C.X style={[components.primaryBtn, gutters.paddingVertical_10]}>
+      <TouchableWithoutFeedback
+        disabled={isDisableCreateBtn}
+        onPress={handlePressCreatePocket}
+      >
+        <UiRow.C.X
+          style={[
+            !isDisableCreateBtn
+              ? components.primaryBtn
+              : components.disablePrimaryBtn,
+            gutters.paddingVertical_10,
+          ]}
+        >
           <Text style={[{ color: colors.white }, fonts.bold]}>
             Create pocket
           </Text>
@@ -246,7 +259,7 @@ const Confirm = ({
   return (
     <>
       <SuccessModal
-        visible={inputs.showSuccessModal}
+        visible={showSuccessModal}
         onClose={handlePressDoneSuccessModal}
         title="Success!"
       >
@@ -311,6 +324,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 1,
     marginLeft: 6,
+    color: "white",
   },
   sectionWrapper: {
     marginVertical: 30,

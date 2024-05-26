@@ -2,7 +2,7 @@ import { UiCol, UiRow } from "@/components";
 import { useApp } from "@/contexts/app.context";
 import { SELECT_TOKEN_DATA } from "@/dummy-data";
 import { useTheme } from "@/theme";
-import { useInput } from "@/theme/hooks/useInput";
+import { useInput } from "@/hooks/useInput";
 import { SHARED_STYLES } from "@/theme/shared";
 import { SetStateAction } from "react";
 import {

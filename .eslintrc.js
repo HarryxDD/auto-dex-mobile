@@ -71,6 +71,7 @@ module.exports = {
 		'@typescript-eslint/restrict-plus-operands': 'off',
 		'react/destructuring-assignment': 'off',
 		'@typescript-eslint/no-misused-promises': 'off',
+		'import/no-cycle' : 'off',
 		'prettier/prettier': [
 			'off',
 			{
