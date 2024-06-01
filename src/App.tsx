@@ -3,7 +3,7 @@ import { WagmiConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MMKV } from "react-native-mmkv";
-import { mainnet, polygon, arbitrum } from "viem/chains";
+import { avalanche } from "viem/chains";
 import {
   createWeb3Modal,
   defaultWagmiConfig,
@@ -34,7 +34,7 @@ const metadata = {
   },
 };
 
-const chains = [mainnet, polygon, arbitrum];
+const chains = [avalanche];
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 
 createWeb3Modal({
@@ -50,7 +50,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider storage={storage}>
           <AppProvider>
-            <WagmiConfig config={wagmiConfig}>
+            <WagmiConfig config={wagmiConfig as any}>
               <ApplicationNavigator />
               <Web3Modal />
             </WagmiConfig>

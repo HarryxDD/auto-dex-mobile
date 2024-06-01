@@ -453,4 +453,21 @@ export class UtilsProvider {
   public instanceToPlain(obj: any) {
     return this.cloneObject(obj);
   }
+
+  public mergeDateAndTime(date: Date, time: Date) {
+    // Extract date components from firstBatchDate
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+
+    // Extract time components from firstBatchTime
+    const hours = time.getHours();
+    const minutes = time.getMinutes();
+    const seconds = time.getSeconds();
+    const milliseconds = time.getMilliseconds();
+
+    // Create a new Date object combining both date and time components
+    const combinedDateTime = new Date(year, month, day, hours, minutes, seconds, milliseconds);
+    return combinedDateTime;
+  }
 }

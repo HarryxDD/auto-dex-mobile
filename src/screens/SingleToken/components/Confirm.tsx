@@ -5,7 +5,7 @@ import { useTheme } from "@/theme";
 import { IconBNB } from "@/theme/assets/icons/svg";
 import { SHARED_STYLES } from "@/theme/shared";
 import NavigationRef from "@/utils/navigation-ref";
-import { SetStateAction } from "react";
+import { SetStateAction, useCallback } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -45,9 +45,17 @@ const Confirm = ({
     handleGoBack();
   };
 
-  const handlePressCreatePocket = () => {
-    setBoolBag({ showSuccessModal: true });
-  };
+  const handlePressCreatePocket = useCallback(() => {
+    try {
+      setBoolBag({ showSuccessModal: true });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn("Error: ", error);
+    }
+    finally {
+      setBoolBag({ showSuccessModal: false });
+    }
+  }, []);
 
   const renderDepositAmountSection = () => (
     <UiCol style={styles.sectionWrapper}>
