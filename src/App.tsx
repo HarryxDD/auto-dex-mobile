@@ -15,6 +15,7 @@ import { ThemeProvider } from "@/theme";
 import ApplicationNavigator from "./navigators/Application";
 import "./translations";
 import { AppProvider } from "./contexts/app.context";
+import { TokenProvider } from "./hooks/useToken";
 
 const queryClient = new QueryClient();
 
@@ -51,8 +52,10 @@ function App() {
         <ThemeProvider storage={storage}>
           <AppProvider>
             <WagmiConfig config={wagmiConfig as any}>
-              <ApplicationNavigator />
-              <Web3Modal />
+              <TokenProvider>
+                <ApplicationNavigator />
+                <Web3Modal />
+              </TokenProvider>
             </WagmiConfig>
           </AppProvider>
         </ThemeProvider>

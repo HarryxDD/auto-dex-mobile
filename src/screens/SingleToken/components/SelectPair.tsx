@@ -13,6 +13,8 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { platformConfig } from "@/libs/entities/platform-config.entity";
+import { useToken } from "@/hooks/useToken";
 
 const SelectPair = ({
   singleTokenProgress,
@@ -21,6 +23,8 @@ const SelectPair = ({
   singleTokenProgress: number;
   setSingleTokenProgress: React.Dispatch<SetStateAction<number>>;
 }) => {
+  const { whiteListedTokens } = useToken();
+
   const { fonts, colors, components, gutters } = useTheme();
   const [inputs, setInputs] = useInput({ searchValue: "" });
   const { filterTokenModalRef } = useApp();
@@ -67,9 +71,9 @@ const SelectPair = ({
     <UiCol.LRT style={SHARED_STYLES.screenPadding}>
       {renderSearchSection()}
       <ScrollView>
-        {SELECT_TOKEN_DATA.map((token) => (
+        {whiteListedTokens.map((token) => (
           <TouchableWithoutFeedback
-            key={token.abbr}
+            key={token.symbol}
             onPress={handleMoveToNextStep}
           >
             <UiRow.LR style={gutters.marginBottom_24}>
@@ -81,14 +85,14 @@ const SelectPair = ({
                     { color: colors.white },
                   ]}
                 >
-                  {token.abbr}
+                  {token.name}
                 </Text>
                 <Text style={[fonts.size_12, { color: colors.grayText }]}>
-                  {token.name}
+                  {token.symbol}
                 </Text>
               </UiCol>
               <Text style={[fonts.semiBold, { color: colors.white }]}>
-                {token.value}
+                {token.estimatedValue}
               </Text>
             </UiRow.LR>
           </TouchableWithoutFeedback>

@@ -1,6 +1,6 @@
 import { useApp } from "@/contexts/app.context";
 import { useTheme } from "@/theme";
-import { IconBNB } from "@/theme/assets/icons/svg";
+import { IconAvaxc } from "@/theme/assets/icons/svg";
 import NavigationRef from "@/utils/navigation-ref";
 import { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
 import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
@@ -41,8 +41,8 @@ export const BottomTabsHeaderRight = () => {
       <View
         style={[styles.container, { backgroundColor: colors.charlestonGreen }]}
       >
-        <IconBNB width={18} height={18} style={gutters.marginRight_2} />
-        <Text style={[styles.text, { color: colors.grayText }]}>BNB</Text>
+        <IconAvaxc width={18} height={18} style={gutters.marginRight_2} />
+        <Text style={[styles.text, { color: colors.grayText }]}>AVAXC</Text>
         <Ionicons
           name="chevron-down-outline"
           color={colors.grayText}

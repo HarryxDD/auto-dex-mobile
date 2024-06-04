@@ -34,6 +34,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "strictPropertyInitialization": false,
+    "strictNullChecks": false,
     "skipLibCheck": true,
     // Causes issues with package.json "exports"
     "forceConsistentCasingInFileNames": false,
