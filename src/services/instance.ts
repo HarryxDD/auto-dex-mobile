@@ -12,7 +12,7 @@ export const instance = ky.extend({
 });
 
 export const axiosInstance = axios.create({
-	baseURL: `${process.env.API_URL ? process.env.API_URL : ''}/`,
+	baseURL: `https://f052-116-110-245-125.ngrok-free.app`,
 	headers: {
 		Accept: 'application/json',
 	},

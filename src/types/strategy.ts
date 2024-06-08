@@ -1,19 +1,21 @@
-import { EStrategyFrequency } from "@/constants/strategy";
+import { EConditionOperator, EStrategyFrequency } from "@/constants/strategy";
+
+export interface EBuyCondition { type: EConditionOperator, values: string[] | null };
 
 export interface SingleTokenParams {
   firstPairItem: string;
   secondPairItem: string;
-  amountEachBatch: number;
+  amountEachBatch: string;
   frequency: EStrategyFrequency;
   firstBatchDate: Date;
   firstBatchTime: Date;
-  byAtMarketCondition: string | null;
+  byAtMarketCondition: EBuyCondition;
   endDate: Date | null;
   endTime: Date | null;
-  targetTokenAmount: number | null;
-  targetSOLAmount: number | null;
-  targetBatchesPurchased: number | null;
-  takeProfit: number | null;
-  stopLoss: number | null;
-  depositAmount: number;
+  targetTokenAmount: string | null;
+  targetSOLAmount: string | null;
+  targetBatchesPurchased: string | null;
+  takeProfit: string | null;
+  stopLoss: string | null;
+  depositAmount: string;
 }

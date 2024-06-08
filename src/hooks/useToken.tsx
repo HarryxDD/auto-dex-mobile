@@ -13,6 +13,7 @@ export const TokenProvider = ({ children }: {
   const [tokens, setTokens] = useState<Token[]>([]);
 
   const handleFetchTokenPrice = async () => {
+    console.log("--- Start syncing market data ---");
     await new TokenService().syncMarketData();
     console.log("--- Start fetching white listed tokens ---")
     const response = await new TokenService().fetchWhiteListedTokens();

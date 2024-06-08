@@ -1,13 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable max-classes-per-file */
 import { DurationObjectUnits } from "luxon";
-import { JsonRpcSigner } from "ethers";
+import { BigNumberish, JsonRpcSigner } from "ethers";
 import { Params } from "@/libs/providers/evm-program/contracts/MachineChef";
 import "reflect-metadata";
-import { SingleTokenParams } from "@/types/strategy";
+import { EBuyCondition, SingleTokenParams } from "@/types/strategy";
 import { UtilsProvider } from "@/utils/utils.provider";
 import { convertDurationsTimeToHours } from "@/utils";
-import { platformConfig } from "./platform-config.entity";
+import { Token, platformConfig } from "@/libs/entities/platform-config.entity";
+import { EConditionOperator } from "@/constants/strategy";
+
+import bigDecimal from "js-big-decimal";
+
+import { toBigInt } from "ethers";
+
+
+export const convertBigNumber = (value: string, decimals: number) => {
+  return toBigInt(
+    // eslint-disable-next-line radix
+    `0x${parseInt(
+      bigDecimal.multiply(parseFloat(value), decimals)
+    ).toString(16)}`
+  );
+};
 
 export enum MachineStatus {
   CREATED = "POOL_STATUS::CREATED",
@@ -135,7 +150,59 @@ export class MachineEntity {
     closedAt: Date;
 }
 
+export const parseOpeningCondition = (targetToken: Token, buyCondition: EBuyCondition): {
+  value0: BigNumberish;
+  value1: BigNumberish;
+  operator: BigNumberish;
+} => {
+  if (!buyCondition) {
+    return {
+      value0: "0",
+      value1: "0",
+      operator: "0",
+    };
+  }
+
+  let operator = "0";
+
+  switch (buyCondition.type) {
+    case EConditionOperator.GREATERTHAN:
+      operator = "1";
+      break;
+    case EConditionOperator.GREATERTHANOREQUAL:
+      operator = "2";
+      break;
+    case EConditionOperator.LESSTHAN:
+      operator = "3";
+      break;
+    case EConditionOperator.LESSTHANOREQUAL:
+      operator = "4";
+      break;
+    case EConditionOperator.BETWEEN:
+      operator = "5";
+      break;
+    case EConditionOperator.NOTBETWEEN:
+      operator = "6";
+      break;
+    default:
+      operator = "0";
+      break;
+  }
+
+  // Convert to decimal number
+  const value0 = convertBigNumber(buyCondition.values[0], targetToken.decimals);
+  const value1 = buyCondition.values[1] !== null ? convertBigNumber(buyCondition.values[1], targetToken.decimals) : "0";
+
+  return {
+    value0,
+    value1,
+    operator,
+  };
+};
+
 export const parseToCreateMachineDtoOnChain = (
+    baseToken: Token,
+    targetToken: Token,
     signer: JsonRpcSigner,
     params: SingleTokenParams
 ): Params.CreateMachineParamsStruct => {
@@ -156,7 +223,9 @@ export const parseToCreateMachineDtoOnChain = (
         stopLoss,
         depositAmount,
     } = params;
-    
+
+    const openingCondition = parseOpeningCondition(targetToken, params.byAtMarketCondition);
+
     return {
         id: "",
         owner: signer.address,
@@ -167,5 +236,6 @@ export const parseToCreateMachineDtoOnChain = (
         startAt: (new UtilsProvider().mergeDateAndTime(firstBatchDate, firstBatchTime).getTime() / 1000).toString(),
         batchVolume: amountEachBatch.toString(),
         frequency: convertDurationsTimeToHours(frequency).toString(),
+        openingPositionCondition: openingCondition
     } as Params.CreateMachineParamsStruct;
-};
+}

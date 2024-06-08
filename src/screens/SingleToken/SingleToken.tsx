@@ -14,7 +14,7 @@ import ProgressStepBar from "@/components/ProgressStepBar";
 import { SHARED_STYLES } from "@/theme/shared";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useInput } from "@/hooks/useInput";
-import { EStrategyFrequency } from "@/constants/strategy";
+import { EConditionOperator, EStrategyFrequency } from "@/constants/strategy";
 import { SingleTokenParams } from "@/types/strategy";
 import SelectPair from "./components/SelectPair";
 import SetStrategy from "./components/SetStrategy";
@@ -45,13 +45,13 @@ export function useSingleToken(): SingleTokenContextType {
 
 const getDefaultParams = (): SingleTokenParams => {
   return {
-    firstPairItem: "",
+    firstPairItem: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
     secondPairItem: "",
-    amountEachBatch: 0,
+    amountEachBatch: "0",
     frequency: EStrategyFrequency.DAILY,
     firstBatchDate: new Date(),
     firstBatchTime: new Date(),
-    byAtMarketCondition: "",
+    byAtMarketCondition: { type: EConditionOperator.BETWEEN, values: null },
     endDate: null,
     endTime: null,
     targetTokenAmount: null,
@@ -59,7 +59,7 @@ const getDefaultParams = (): SingleTokenParams => {
     targetBatchesPurchased: null,
     takeProfit: null,
     stopLoss: null,
-    depositAmount: 0,
+    depositAmount: "0",
   };
 };
 

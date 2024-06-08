@@ -16,6 +16,7 @@ import ApplicationNavigator from "./navigators/Application";
 import "./translations";
 import { AppProvider } from "./contexts/app.context";
 import { TokenProvider } from "./hooks/useToken";
+import { EvmWalletProvider } from "./hooks/evm-context/useEvmWallet";
 
 const queryClient = new QueryClient();
 
@@ -52,10 +53,12 @@ function App() {
         <ThemeProvider storage={storage}>
           <AppProvider>
             <WagmiConfig config={wagmiConfig as any}>
-              <TokenProvider>
-                <ApplicationNavigator />
-                <Web3Modal />
-              </TokenProvider>
+              <EvmWalletProvider>
+                <TokenProvider>
+                  <ApplicationNavigator />
+                  <Web3Modal />
+                </TokenProvider>
+              </EvmWalletProvider>
             </WagmiConfig>
           </AppProvider>
         </ThemeProvider>
