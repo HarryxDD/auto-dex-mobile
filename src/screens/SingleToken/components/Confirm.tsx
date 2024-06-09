@@ -20,6 +20,7 @@ import { ImageVariant } from "@/components/atoms";
 import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
 import { useSingleToken } from "@/screens/SingleToken/SingleToken";
 import { getSelectedDate, getSelectedTime } from "@/components/DateTimePickerModal/helper";
+import { parseToCreateMachineDtoOnChain } from "@/libs/entities/machine.entity";
 
 const Confirm = ({
   singleTokenProgress,
@@ -37,7 +38,7 @@ const Confirm = ({
   const isDisableCreateBtn = parseFloat(inputs.depositAmount) === 0;
 
   const { whiteListedTokens } = useToken();
-  const { nativeBalance } = useEvmWallet();
+  const evmWallet = useEvmWallet();
 
   const baseToken = useMemo(() => whiteListedTokens.find((item) => item.address === inputs.firstPairItem), [whiteListedTokens, inputs]);
   const targetToken = useMemo(() => whiteListedTokens.find((item) => item.address === inputs.secondPairItem), [whiteListedTokens, inputs]);
@@ -56,16 +57,25 @@ const Confirm = ({
   };
 
   const handlePressCreatePocket = useCallback(() => {
+    if (!evmWallet.signer) return;
+
     try {
+      const params = parseToCreateMachineDtoOnChain(
+        baseToken,
+        targetToken,
+        evmWallet.signer,
+        inputs,
+      )
+
+      console.log("Params to create machine on-chain", { params });
       setBoolBag({ showSuccessModal: true });
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.warn("Error: ", error);
     }
     finally {
       setBoolBag({ showSuccessModal: false });
     }
-  }, []);
+  }, [inputs, evmWallet]);
 
   const renderDepositAmountSection = () => (
     <UiCol style={styles.sectionWrapper}>
@@ -130,7 +140,7 @@ const Confirm = ({
             </Text>
           </UiRow.C>
           <Text style={[fonts.size_12, { color: colors.grayText }]}>
-            Balance: {nativeBalance}
+            Balance: {evmWallet.nativeBalance}
           </Text>
         </UiRow.LR>
         <UiRow.LR

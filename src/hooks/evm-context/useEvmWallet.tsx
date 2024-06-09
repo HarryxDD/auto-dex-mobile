@@ -1,30 +1,31 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-    FC,
-    useMemo,
-    useState,
-    useEffect,
-    ReactNode,
-    useContext,
-    useCallback,
-    createContext,
-  } from "react";
-  import {
-    JsonRpcSigner,
-    BrowserProvider,
-    BigNumberish as BigNumber,
-  } from "ethers";
-  import {
-    MachineChef__factory,
-    MachineRegistry__factory,
-  } from "@/libs/providers/evm-program";
-  import { Params } from "@/libs/providers/evm-program/contracts/MachineChef";
+  FC,
+  useMemo,
+  useState,
+  useEffect,
+  ReactNode,
+  useContext,
+  useCallback,
+  createContext,
+} from "react";
+import {
+  JsonRpcSigner,
+  BrowserProvider,
+  BigNumberish as BigNumber,
+} from "ethers";
+import {
+  MachineChef__factory,
+  MachineRegistry__factory,
+} from "@/libs/providers/evm-program";
+import { Params } from "@/libs/providers/evm-program/contracts/MachineChef";
   
 import { useWalletClient } from "wagmi";
 import { platformConfig } from "@/libs/entities/platform-config.entity";
 import { MachineEntity } from "@/libs/entities/machine.entity";
 import { createPublicClient, formatEther, http } from "viem";
 import { avalanche } from "viem/chains";
+import { MachineService } from "@/libs/services/machine.service";
 
 
 /** @dev Define the number of confirmations which each transaction should wait for. */
@@ -32,7 +33,7 @@ const CONFIRMATIONS = 5;
 
 /** @dev Initialize context. */
 export const EvmWalletContext = createContext<{
-  signer: unknown;
+  signer: JsonRpcSigner;
   nativeBalance: string;
   closeMachine(MachineId: string): Promise<void>;
   pauseMachine(MachineId: string): Promise<void>;
@@ -52,7 +53,7 @@ export const EvmWalletProvider: FC<{ children: ReactNode }> = (props) => {
   const chain = avalanche;
   const [balance, setBalance] = useState<string>("0");
 
-  console.log("client balance", balance);
+  const machineService = new MachineService();
 
   const signer = useMemo(() => {
     if (client?.data && chain && platformConfig) {
@@ -121,24 +122,29 @@ export const EvmWalletProvider: FC<{ children: ReactNode }> = (props) => {
       depositedAmount: BigNumber,
       createdMachineParams: Params.CreateMachineParamsStruct
     ) => {
+      if (!signer) return;
+
       /** @dev Execute off-chain */
-      // const MachineId = await evmProgramService.createMachineOffChain(
-      //   chainId,
-      //   signer.address
+      const emptyPool = await machineService.createEmptyMachinePoolOffChain(signer.address);
+      console.log({ emptyPool });
+
+      createdMachineParams.id = emptyPool.id;
+      // const chef = MachineChef__factory.connect(
+      //   platformConfig?.MACHINE_PROGRAM_ADDRESS,
+      //   signer
       // );
 
-      const machineId = "";
+      // /** @dev Execute on-chain */
+      // const tx = await chef.createMachineAndDepositEther(
+      //   { ...createdMachineParams },
+      //   { value: depositedAmount }
+      // );
 
-      /** @dev Execute on-chain */
-      const tx = await machineChef?.createMachineAndDepositEther(
-        { ...createdMachineParams, id: machineId },
-        { value: depositedAmount }
-      );
 
-      /** @dev Wait for confirmation. */
-      await (tx as any).wait(CONFIRMATIONS);
+      // /** @dev Wait for confirmation. */
+      // await (tx as any).wait(CONFIRMATIONS);
     },
-    [signer, machineChef]
+    [signer]
   );
 
   /**

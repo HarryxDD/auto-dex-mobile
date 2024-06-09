@@ -9,6 +9,7 @@ import { UtilsProvider } from "@/utils/utils.provider";
 import { convertDurationsTimeToHours } from "@/utils";
 import { Token, platformConfig } from "@/libs/entities/platform-config.entity";
 import { EConditionOperator } from "@/constants/strategy";
+import { Keypair } from "@solana/web3.js";
 
 import bigDecimal from "js-big-decimal";
 
@@ -199,6 +200,14 @@ export const parseOpeningCondition = (targetToken: Token, buyCondition: EBuyCond
     operator,
   };
 };
+export class GetQuoteDto {
+  chainId: string;
+  baseTokenAddress: string;
+  targetTokenAddress: string;
+  ammRouterAddress: string;
+  amountIn: string;
+  useV3: boolean;
+}
 
 export const parseToCreateMachineDtoOnChain = (
     baseToken: Token,
@@ -227,7 +236,7 @@ export const parseToCreateMachineDtoOnChain = (
     const openingCondition = parseOpeningCondition(targetToken, params.byAtMarketCondition);
 
     return {
-        id: "",
+        id: Keypair.generate().publicKey.toString().slice(0, 24),
         owner: signer.address,
         ammRouterAddress: platformConfig.whiteListedRouters.address,
         ammRouterVersion: platformConfig.whiteListedRouters.routerVersion,
