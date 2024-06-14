@@ -9,13 +9,14 @@ export interface SingleTokenParams {
   frequency: EStrategyFrequency;
   firstBatchDate: Date;
   firstBatchTime: Date;
-  byAtMarketCondition: EBuyCondition;
-  endDate: Date | null;
-  endTime: Date | null;
-  targetTokenAmount: string | null;
-  targetSOLAmount: string | null;
-  targetBatchesPurchased: string | null;
-  takeProfit: string | null;
-  stopLoss: string | null;
   depositAmount: string;
+  
+  byAtMarketCondition?: EBuyCondition;
+  endDate?: Date | null;
+  endTime?: Date | null;
+  targetTokenAmount?: string | null;
+  targetSOLAmount?: string | null;
+  targetBatchesPurchased?: string | null;
+  takeProfit?: string | null;
+  stopLoss?: string | null;
 }

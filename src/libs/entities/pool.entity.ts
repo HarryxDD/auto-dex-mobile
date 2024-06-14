@@ -86,6 +86,7 @@ export class TradingStopCondition {
   value: number;
 }
 export class PoolEntity {
+  _id: string;
   id: string;
   chainId: ChainID;
   address: string;

@@ -85,8 +85,6 @@ const SetStrategy = ({
     setInputs({ byAtMarketCondition: { type: condition, values: [inputs.byAtMarketCondition?.values?.[0], inputs.byAtMarketCondition?.values?.[1]] } });
   };
 
-  console.log(inputs);
-
   const renderDCAPairSection = () => (
     <UiCol style={styles.sectionWrapper}>
       <Text style={[fonts.semiBold, fonts.size_16, { color: colors.white }]}>
@@ -435,7 +433,7 @@ const SetStrategy = ({
                           ]}
                           placeholder="Value"
                           placeholderTextColor={colors.grayText}
-                          value={inputs.byAtMarketCondition.values[1]}
+                          value={inputs.byAtMarketCondition?.values?.[1] || "0"}
                           onChangeText={(value) => setInputs({ byAtMarketCondition: { type: conditionOperator, values: [inputs.byAtMarketCondition?.values?.[0] || "", value || ""] } })}
                         />
                       </UiRow.X>

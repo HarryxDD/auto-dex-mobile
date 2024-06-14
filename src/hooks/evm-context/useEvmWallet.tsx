@@ -124,25 +124,23 @@ export const EvmWalletProvider: FC<{ children: ReactNode }> = (props) => {
     ) => {
       if (!signer) return;
 
-      /** @dev Execute off-chain */
+      // Create a empty pool off-chain.
       const emptyPool = await machineService.createEmptyMachinePoolOffChain(signer.address);
-      console.log({ emptyPool });
+      createdMachineParams.id = emptyPool._id;
 
-      createdMachineParams.id = emptyPool.id;
-      // const chef = MachineChef__factory.connect(
-      //   platformConfig?.MACHINE_PROGRAM_ADDRESS,
-      //   signer
-      // );
+      const chef = MachineChef__factory.connect(
+        platformConfig?.MACHINE_PROGRAM_ADDRESS,
+        signer
+      );
 
-      // /** @dev Execute on-chain */
-      // const tx = await chef.createMachineAndDepositEther(
-      //   { ...createdMachineParams },
-      //   { value: depositedAmount }
-      // );
+      const tx = await chef.createMachineAndDepositEther(
+        { ...createdMachineParams },
+        { value: depositedAmount }
+      );
 
-
-      // /** @dev Wait for confirmation. */
-      // await (tx as any).wait(CONFIRMATIONS);
+      console.log("JOB::: wait transaction", tx);
+      await (tx as any).wait(CONFIRMATIONS);
+      await machineService.syncMachine(createdMachineParams.id);
     },
     [signer]
   );

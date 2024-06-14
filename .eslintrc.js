@@ -79,6 +79,8 @@ module.exports = {
 		"@typescript-eslint/no-floating-promises": "off",
 		"eslint-disable": "off",
 		"class-methods-use-this": "off",
+		"prefer-destructuring": "off",
+		'no-underscore-dangle': 'off',
 		'prettier/prettier': [
 			'off',
 			{

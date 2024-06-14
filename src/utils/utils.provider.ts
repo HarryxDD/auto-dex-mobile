@@ -464,10 +464,9 @@ export class UtilsProvider {
     const hours = time.getHours();
     const minutes = time.getMinutes();
     const seconds = time.getSeconds();
-    const milliseconds = time.getMilliseconds();
 
     // Create a new Date object combining both date and time components
-    const combinedDateTime = new Date(year, month, day, hours, minutes, seconds, milliseconds);
+    const combinedDateTime = new Date(year, month, day, hours, minutes, seconds);
     return combinedDateTime;
   }
 }

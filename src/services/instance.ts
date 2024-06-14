@@ -1,7 +1,7 @@
 import ky from 'ky';
 import axios from "axios";
 
-// const prefixUrl = `${process.env.API_URL ? process.env.API_URL : ''}/`;
+const URL = "https://70ed-113-185-106-243.ngrok-free.app";
 
 export const instance = ky.extend({
 	// prefixUrl,
@@ -12,7 +12,7 @@ export const instance = ky.extend({
 });
 
 export const axiosInstance = axios.create({
-	baseURL: `https://f052-116-110-245-125.ngrok-free.app`,
+	baseURL: URL,
 	headers: {
 		Accept: 'application/json',
 	},

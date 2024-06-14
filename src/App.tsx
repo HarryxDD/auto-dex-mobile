@@ -3,7 +3,7 @@ import { WagmiConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MMKV } from "react-native-mmkv";
-import { avalanche } from "viem/chains";
+import { defineChain } from "viem/utils";
 import {
   createWeb3Modal,
   defaultWagmiConfig,
@@ -35,6 +35,33 @@ const metadata = {
     universal: "YOUR_APP_UNIVERSAL_LINK.com",
   },
 };
+
+const avalanche = defineChain({
+  id: 43114,
+  name: 'Avalanche',
+  network: 'avalanche',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Avalanche',
+    symbol: 'AVAX',
+  },
+  rpcUrls: {
+    default: { http: ['https://rpc.ankr.com/avalanche'] },
+    public: { http: ['https://rpc.ankr.com/avalanche'] },
+  },
+  blockExplorers: {
+    etherscan: { name: 'SnowTrace', url: 'https://snowtrace.io' },
+    default: { name: 'SnowTrace', url: 'https://snowtrace.io' },
+  },
+  contracts: {
+    multicall3: {
+      address: '0x91Cf9E3d7CC2B3Cc8CC8E9e712FC32C203CE9069',
+      blockCreated: 46033840,
+    },
+  },
+})
+
+console.log({ projectId, metadata, avalanche });
 
 const chains = [avalanche];
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });

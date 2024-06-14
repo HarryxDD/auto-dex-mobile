@@ -20,7 +20,9 @@ import { ImageVariant } from "@/components/atoms";
 import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
 import { useSingleToken } from "@/screens/SingleToken/SingleToken";
 import { getSelectedDate, getSelectedTime } from "@/components/DateTimePickerModal/helper";
-import { parseToCreateMachineDtoOnChain } from "@/libs/entities/machine.entity";
+import { convertBigNumber, parseToCreateMachineDtoOnChain } from "@/libs/entities/machine.entity";
+import { useNavigation } from "@react-navigation/native";
+import { SCREEN_MY_POCKETS, STACK_MAIN } from "@/navigators/route-names";
 
 const Confirm = ({
   singleTokenProgress,
@@ -39,6 +41,7 @@ const Confirm = ({
 
   const { whiteListedTokens } = useToken();
   const evmWallet = useEvmWallet();
+  const navigation = useNavigation();
 
   const baseToken = useMemo(() => whiteListedTokens.find((item) => item.address === inputs.firstPairItem), [whiteListedTokens, inputs]);
   const targetToken = useMemo(() => whiteListedTokens.find((item) => item.address === inputs.secondPairItem), [whiteListedTokens, inputs]);
@@ -56,9 +59,8 @@ const Confirm = ({
     handleGoBack();
   };
 
-  const handlePressCreatePocket = useCallback(() => {
+  const handlePressCreatePocket = useCallback(async () => {
     if (!evmWallet.signer) return;
-
     try {
       const params = parseToCreateMachineDtoOnChain(
         baseToken,
@@ -67,15 +69,21 @@ const Confirm = ({
         inputs,
       )
 
-      console.log("Params to create machine on-chain", { params });
+      await evmWallet.createMachine(
+        convertBigNumber(inputs.depositAmount, 18),
+        params
+      );
+      
+      console.log("Successfully create machine");
       setBoolBag({ showSuccessModal: true });
+      // @ts-ignore
+      navigation.navigate(STACK_MAIN, { screen: SCREEN_MY_POCKETS });
     } catch (error) {
       console.warn("Error: ", error);
-    }
-    finally {
+    } finally {
       setBoolBag({ showSuccessModal: false });
     }
-  }, [inputs, evmWallet]);
+  }, [inputs, evmWallet, navigation]);
 
   const renderDepositAmountSection = () => (
     <UiCol style={styles.sectionWrapper}>

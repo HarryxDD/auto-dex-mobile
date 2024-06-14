@@ -1,9 +1,9 @@
+/* eslint-disable radix */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable max-classes-per-file */
-import { DurationObjectUnits } from "luxon";
-import { BigNumberish, JsonRpcSigner } from "ethers";
-import { Params } from "@/libs/providers/evm-program/contracts/MachineChef";
 import "reflect-metadata";
+import { BigNumberish, JsonRpcSigner, ethers } from "ethers";
+import { Params } from "@/libs/providers/evm-program/contracts/MachineChef";
 import { EBuyCondition, SingleTokenParams } from "@/types/strategy";
 import { UtilsProvider } from "@/utils/utils.provider";
 import { convertDurationsTimeToHours } from "@/utils";
@@ -11,19 +11,22 @@ import { Token, platformConfig } from "@/libs/entities/platform-config.entity";
 import { EConditionOperator } from "@/constants/strategy";
 import { Keypair } from "@solana/web3.js";
 
-import bigDecimal from "js-big-decimal";
+import BigDecimal from "js-big-decimal"
 
 import { toBigInt } from "ethers";
 
 
 export const convertBigNumber = (value: string, decimals: number) => {
   return toBigInt(
-    // eslint-disable-next-line radix
     `0x${parseInt(
-      bigDecimal.multiply(parseFloat(value), decimals)
+      BigDecimal.multiply(parseFloat(value), 10**decimals)
     ).toString(16)}`
   );
 };
+
+export const convertDecimal = (value: number | string) => {
+  return new BigDecimal(value).divide((new BigDecimal(10 ** 18))).getValue().toString();
+}
 
 export enum MachineStatus {
   CREATED = "POOL_STATUS::CREATED",
@@ -156,7 +159,7 @@ export const parseOpeningCondition = (targetToken: Token, buyCondition: EBuyCond
   value1: BigNumberish;
   operator: BigNumberish;
 } => {
-  if (!buyCondition) {
+  if (!buyCondition || !buyCondition.values || buyCondition.values.length === 0) {
     return {
       value0: "0",
       value1: "0",
@@ -216,35 +219,34 @@ export const parseToCreateMachineDtoOnChain = (
     params: SingleTokenParams
 ): Params.CreateMachineParamsStruct => {
     const {
-        firstPairItem,
-        secondPairItem,
         amountEachBatch,
         frequency,
         firstBatchDate,
         firstBatchTime,
         byAtMarketCondition,
-        endDate,
-        endTime,
-        targetTokenAmount,
-        targetSOLAmount,
-        targetBatchesPurchased,
-        takeProfit,
-        stopLoss,
-        depositAmount,
     } = params;
 
-    const openingCondition = parseOpeningCondition(targetToken, params.byAtMarketCondition);
+    const openingCondition = parseOpeningCondition(targetToken, byAtMarketCondition);
 
     return {
         id: Keypair.generate().publicKey.toString().slice(0, 24),
         owner: signer.address,
         ammRouterAddress: platformConfig.whiteListedRouters.address,
         ammRouterVersion: platformConfig.whiteListedRouters.routerVersion,
-        baseTokenAddress: platformConfig.whitelistTokenEntities?.[firstPairItem].address,
-        targetTokenAddress: platformConfig.whitelistTokenEntities?.[secondPairItem].address,
+        baseTokenAddress: baseToken.address,
+        targetTokenAddress: targetToken.address,
         startAt: (new UtilsProvider().mergeDateAndTime(firstBatchDate, firstBatchTime).getTime() / 1000).toString(),
-        batchVolume: amountEachBatch.toString(),
-        frequency: convertDurationsTimeToHours(frequency).toString(),
-        openingPositionCondition: openingCondition
+        batchVolume: convertBigNumber(amountEachBatch.toString(), 18),
+        frequency: `${convertDurationsTimeToHours(frequency)}`,
+        openingPositionCondition: openingCondition,
+        stopConditions: [],
+        takeProfitCondition: {
+          stopType: "0",
+          value: "0",
+        },
+        stopLossCondition: {
+          stopType: "0",
+          value: "0",
+        },
     } as Params.CreateMachineParamsStruct;
-}
+};

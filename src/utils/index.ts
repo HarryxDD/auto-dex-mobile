@@ -2,11 +2,9 @@ import { EStrategyFrequency } from "@/constants/strategy";
 
 export const convertDurationsTimeToHours = (
     duration: EStrategyFrequency
-): {hours: number}=> {
+): number => {
     const swapDuration = (val: number) => {
-      return {
-        hours: val,
-      };
+      return val * 3600;
     };
   
     if (duration === EStrategyFrequency.ONE_HOUR) {
@@ -25,6 +23,6 @@ export const convertDurationsTimeToHours = (
         return swapDuration(24 * 30);
     } 
 
-    return swapDuration(0);
+    return swapDuration(0)
   };
   
