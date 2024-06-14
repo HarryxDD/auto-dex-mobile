@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { UiCol, UiRow } from "@/components";
 import { PocketItemSection } from "@/components/PocketItemSection";
 import SuccessModal from "@/components/SuccessModal";
 import { useTheme } from "@/theme";
-import { IconBNB } from "@/theme/assets/icons/svg";
+import { IconAvaxc } from "@/theme/assets/icons/svg";
 import { SHARED_STYLES } from "@/theme/shared";
 import NavigationRef from "@/utils/navigation-ref";
-import { SetStateAction } from "react";
+import { SetStateAction, useCallback, useMemo } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -13,9 +14,15 @@ import {
   TextInput,
   TouchableWithoutFeedback,
 } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { useSingleToken } from "@/screens/SingleToken/SingleToken";
 import { useBoolBag } from "@/hooks/useBoolBag";
+import { useToken } from "@/hooks/useToken";
+import { ImageVariant } from "@/components/atoms";
+import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
+import { useSingleToken } from "@/screens/SingleToken/SingleToken";
+import { getSelectedDate, getSelectedTime } from "@/components/DateTimePickerModal/helper";
+import { convertBigNumber, parseToCreateMachineDtoOnChain } from "@/libs/entities/machine.entity";
+import { useNavigation } from "@react-navigation/native";
+import { SCREEN_MY_POCKETS, STACK_MAIN } from "@/navigators/route-names";
 
 const Confirm = ({
   singleTokenProgress,
@@ -30,7 +37,14 @@ const Confirm = ({
     showSuccessModal: false,
   });
   const { showSuccessModal } = boolBag;
-  const isDisableCreateBtn = inputs.depositAmount === 0;
+  const isDisableCreateBtn = parseFloat(inputs.depositAmount) === 0;
+
+  const { whiteListedTokens } = useToken();
+  const evmWallet = useEvmWallet();
+  const navigation = useNavigation();
+
+  const baseToken = useMemo(() => whiteListedTokens.find((item) => item.address === inputs.firstPairItem), [whiteListedTokens, inputs]);
+  const targetToken = useMemo(() => whiteListedTokens.find((item) => item.address === inputs.secondPairItem), [whiteListedTokens, inputs]);
 
   const handleGoBack = () => {
     NavigationRef.goBack();
@@ -45,9 +59,31 @@ const Confirm = ({
     handleGoBack();
   };
 
-  const handlePressCreatePocket = () => {
-    setBoolBag({ showSuccessModal: true });
-  };
+  const handlePressCreatePocket = useCallback(async () => {
+    if (!evmWallet.signer) return;
+    try {
+      const params = parseToCreateMachineDtoOnChain(
+        baseToken,
+        targetToken,
+        evmWallet.signer,
+        inputs,
+      )
+
+      await evmWallet.createMachine(
+        convertBigNumber(inputs.depositAmount, 18),
+        params
+      );
+      
+      console.log("Successfully create machine");
+      setBoolBag({ showSuccessModal: true });
+      // @ts-ignore
+      navigation.navigate(STACK_MAIN, { screen: SCREEN_MY_POCKETS });
+    } catch (error) {
+      console.warn("Error: ", error);
+    } finally {
+      setBoolBag({ showSuccessModal: false });
+    }
+  }, [inputs, evmWallet, navigation]);
 
   const renderDepositAmountSection = () => (
     <UiCol style={styles.sectionWrapper}>
@@ -67,18 +103,18 @@ const Confirm = ({
           { backgroundColor: colors.charlestonGreen },
         ]}
       >
-        <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+        <IconAvaxc width={18} height={18} style={gutters.marginRight_2} />
         <TextInput
-          placeholder="From 0.1 SOL"
+          placeholder="From 0.1"
           value={inputs.depositAmount.toString()}
           onChangeText={(text) => {
-            setInputs({ depositAmount: +text });
+            setInputs({ depositAmount: text });
           }}
           style={styles.textInputStyle}
           placeholderTextColor={colors.grayText}
         />
         <Text style={[fonts.semiBold, fonts.size_14, { color: colors.white }]}>
-          BNB
+          AVAXC
         </Text>
       </UiRow.C>
     </UiCol>
@@ -99,7 +135,7 @@ const Confirm = ({
           ]}
         >
           <UiRow.C>
-            <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+            <ImageVariant source={{ uri: baseToken.image }} width={18} height={18} style={gutters.marginRight_2} />
             <Text
               style={[
                 fonts.semiBold,
@@ -108,17 +144,11 @@ const Confirm = ({
                 { color: colors.white },
               ]}
             >
-              BNB
+              {baseToken.symbol}
             </Text>
-            <Ionicons
-              name="chevron-down-outline"
-              color={colors.grayText}
-              size={18}
-              style={gutters.marginTop_2}
-            />
           </UiRow.C>
           <Text style={[fonts.size_12, { color: colors.grayText }]}>
-            Balance: 319.23
+            Balance: {evmWallet.nativeBalance}
           </Text>
         </UiRow.LR>
         <UiRow.LR
@@ -130,7 +160,7 @@ const Confirm = ({
           ]}
         >
           <UiRow.C>
-            <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+            <ImageVariant source={{ uri: targetToken.image }} width={18} height={18} style={gutters.marginRight_2} />
             <Text
               style={[
                 fonts.semiBold,
@@ -139,18 +169,9 @@ const Confirm = ({
                 { color: colors.white },
               ]}
             >
-              BNB
+              {targetToken.symbol}
             </Text>
-            <Ionicons
-              name="chevron-down-outline"
-              color={colors.grayText}
-              size={18}
-              style={gutters.marginTop_2}
-            />
           </UiRow.C>
-          <Text style={[fonts.size_12, { color: colors.grayText }]}>
-            Balance: 319.23
-          </Text>
         </UiRow.LR>
       </UiCol.LRC>
       <UiRow.LR>
@@ -158,7 +179,7 @@ const Confirm = ({
           Provider
         </Text>
         <UiRow.C>
-          <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+          <IconAvaxc width={18} height={18} style={gutters.marginRight_2} />
           <Text
             style={[
               fonts.semiBold,
@@ -167,7 +188,7 @@ const Confirm = ({
               { color: colors.white },
             ]}
           >
-            BNB
+            Avalanche
           </Text>
         </UiRow.C>
       </UiRow.LR>
@@ -185,8 +206,8 @@ const Confirm = ({
           styles.contentContainer,
         ]}
       >
-        <PocketItemSection title="Strategy" value="50 SOL" />
-        <PocketItemSection title="First batch time" value="16/02/2023 20:00" />
+        <PocketItemSection title="Strategy" value={`${inputs.amountEachBatch} ${baseToken.symbol} ${inputs.frequency}`} />
+        <PocketItemSection title="First batch time" value={`${getSelectedDate(inputs.firstBatchTime)} ${getSelectedTime(inputs.firstBatchTime)}`} />
       </UiCol>
     </UiCol>
   );
@@ -291,8 +312,8 @@ const Confirm = ({
           {renderDepositAmountSection()}
           {renderDCAPairSection()}
           {renderSummarySection()}
-          {renderEndConditionsSection()}
-          {renderTPSLSection()}
+          {/* {renderEndConditionsSection()} */}
+          {/* {renderTPSLSection()} */}
           {renderScreenButtons()}
         </UiCol.LRT>
       </ScrollView>

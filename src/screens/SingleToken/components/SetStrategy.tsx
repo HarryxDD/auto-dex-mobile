@@ -6,9 +6,9 @@ import {
   STRATEGY_FREQUENCIES,
 } from "@/constants/strategy";
 import { useTheme } from "@/theme";
-import { IconBNB, QuestionMark, TrashCan } from "@/theme/assets/icons/svg";
+import { IconAvaxc, TrashCan } from "@/theme/assets/icons/svg";
 import { SHARED_STYLES } from "@/theme/shared";
-import { SetStateAction, useRef, useState } from "react";
+import { SetStateAction, useMemo, useRef, useState } from "react";
 import {
   Keyboard,
   ScrollView,
@@ -27,6 +27,9 @@ import { StrategyConditionModal } from "@/components/StrategyConditionModal";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useBoolBag } from "@/hooks/useBoolBag";
 import { useSingleToken } from "@/screens/SingleToken/SingleToken";
+import { useToken } from "@/hooks/useToken";
+import { ImageVariant } from "@/components/atoms";
+import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
 
 const SetStrategy = ({
   singleTokenProgress,
@@ -38,9 +41,9 @@ const SetStrategy = ({
   const { fonts, colors, components, gutters } = useTheme();
   const [isShowAdvanceSetup, setIsShowAdvanceSetup] = useState<boolean>(false);
   const strategyConditionModalRef = useRef<BottomSheetModal>(null);
-  const [conditionOperator, setConditionOperator] =
-    useState<EConditionOperator>(EConditionOperator.BETWEEN);
   const { inputs, setInputs } = useSingleToken();
+  const [conditionOperator, setConditionOperator] =
+    useState<EConditionOperator>(inputs.byAtMarketCondition?.type || EConditionOperator.BETWEEN);
   const { boolBag, setBoolBag } = useBoolBag({
     showDatePicker: false,
     showTimePicker: false,
@@ -49,6 +52,10 @@ const SetStrategy = ({
   const [selectedFrequency, setSelectedFrequency] = useState(
     EStrategyFrequency.DAILY
   );
+  const { whiteListedTokens } = useToken();
+  const { nativeBalance } = useEvmWallet();
+
+  const targetToken = useMemo(() => whiteListedTokens.find((item) => item.address === inputs.secondPairItem), [inputs, whiteListedTokens]);
 
   const handleMoveToNextStep = () => {
     setSingleTokenProgress(singleTokenProgress + 1);
@@ -75,6 +82,7 @@ const SetStrategy = ({
 
   const handleSelectCondition = (condition: EConditionOperator) => {
     setConditionOperator(condition);
+    setInputs({ byAtMarketCondition: { type: condition, values: [inputs.byAtMarketCondition?.values?.[0], inputs.byAtMarketCondition?.values?.[1]] } });
   };
 
   const renderDCAPairSection = () => (
@@ -92,7 +100,7 @@ const SetStrategy = ({
           ]}
         >
           <UiRow.C>
-            <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+            <ImageVariant source={{ uri: whiteListedTokens.find((item) => item.address === inputs.firstPairItem).image }} width={18} height={18} />
             <Text
               style={[
                 fonts.semiBold,
@@ -101,7 +109,7 @@ const SetStrategy = ({
                 { color: colors.white },
               ]}
             >
-              BNB
+              {whiteListedTokens.find((item) => item.address === inputs.firstPairItem).name}
             </Text>
             <Ionicons
               name="chevron-down-outline"
@@ -111,7 +119,7 @@ const SetStrategy = ({
             />
           </UiRow.C>
           <Text style={[fonts.size_12, { color: colors.grayText }]}>
-            Balance: 319.23
+            Balance: {nativeBalance}
           </Text>
         </UiRow.LR>
         <UiRow.LR
@@ -123,7 +131,7 @@ const SetStrategy = ({
           ]}
         >
           <UiRow.C>
-            <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+          <ImageVariant source={{ uri: whiteListedTokens.find((item) => item.address === inputs.secondPairItem).image }} width={18} height={18} />
             <Text
               style={[
                 fonts.semiBold,
@@ -132,7 +140,7 @@ const SetStrategy = ({
                 { color: colors.white },
               ]}
             >
-              BNB
+              {whiteListedTokens.find((item) => item.address === inputs.secondPairItem).name}
             </Text>
             <Ionicons
               name="chevron-down-outline"
@@ -141,9 +149,6 @@ const SetStrategy = ({
               style={gutters.marginTop_2}
             />
           </UiRow.C>
-          <Text style={[fonts.size_12, { color: colors.grayText }]}>
-            Balance: 319.23
-          </Text>
         </UiRow.LR>
       </UiCol.LRC>
       <UiRow.LR>
@@ -151,7 +156,7 @@ const SetStrategy = ({
           Provider
         </Text>
         <UiRow.C>
-          <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+          <IconAvaxc width={18} height={18} style={gutters.marginRight_2} />
           <Text
             style={[
               fonts.semiBold,
@@ -160,7 +165,7 @@ const SetStrategy = ({
               { color: colors.white },
             ]}
           >
-            BNB
+            AVAXC
           </Text>
         </UiRow.C>
       </UiRow.LR>
@@ -185,18 +190,18 @@ const SetStrategy = ({
           { backgroundColor: colors.charlestonGreen },
         ]}
       >
-        <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+        <IconAvaxc width={18} height={18} style={gutters.marginRight_2} />
         <TextInput
-          placeholder="From 0.1 SOL"
+          placeholder="From 0.1"
           value={inputs.amountEachBatch.toString()}
           onChangeText={(text) => {
-            setInputs({ amountEachBatch: +text });
+            setInputs({ amountEachBatch: text });
           }}
           style={styles.textInputStyle}
           placeholderTextColor={colors.grayText}
         />
         <Text style={[fonts.semiBold, fonts.size_14, { color: colors.white }]}>
-          BNB
+          AVAXC
         </Text>
       </UiRow.C>
     </UiCol>
@@ -363,7 +368,7 @@ const SetStrategy = ({
                     { color: colors.ceil },
                   ]}
                 >
-                  Each batch (1.21 SOL) can buy
+                  Each batch ({inputs.amountEachBatch} AVAXC) can buy
                 </Text>
                 <TouchableWithoutFeedback
                   onPress={handleShowStrategyConditionModal}
@@ -400,6 +405,9 @@ const SetStrategy = ({
                       style={[{ color: colors.white }, gutters.marginRight_10]}
                       placeholder="Value"
                       placeholderTextColor={colors.grayText}
+
+                      value={inputs.byAtMarketCondition.values?.[0]}
+                      onChangeText={(value) => setInputs({ byAtMarketCondition: { type: conditionOperator, values: [value || "", inputs.byAtMarketCondition.values[1] || ""] } })}
                     />
                   </UiRow.X>
                   {conditionOperator === EConditionOperator.BETWEEN && (
@@ -425,13 +433,16 @@ const SetStrategy = ({
                           ]}
                           placeholder="Value"
                           placeholderTextColor={colors.grayText}
+                          value={inputs.byAtMarketCondition?.values?.[1] || "0"}
+                          onChangeText={(value) => setInputs({ byAtMarketCondition: { type: conditionOperator, values: [inputs.byAtMarketCondition?.values?.[0] || "", value || ""] } })}
                         />
                       </UiRow.X>
                     </>
                   )}
                 </UiRow.LR>
                 <UiRow.L style={gutters.marginTop_14}>
-                  <IconBNB
+                  <ImageVariant
+                    source={{ uri: targetToken.image }}
                     width={18}
                     height={18}
                     style={gutters.marginRight_2}
@@ -444,7 +455,7 @@ const SetStrategy = ({
                       { color: colors.white },
                     ]}
                   >
-                    BNB
+                    {targetToken.symbol}
                   </Text>
                 </UiRow.L>
               </UiCol>
@@ -514,12 +525,12 @@ const SetStrategy = ({
                   { backgroundColor: colors.charlestonGreen },
                 ]}
               >
-                <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+                <ImageVariant source={{ uri: targetToken?.image }} width={18} height={18} style={gutters.marginRight_2} />
                 <TextInput
-                  placeholder="From 0.1 SOL"
+                  placeholder="From 0.001"
                   value={inputs.targetTokenAmount?.toString()}
                   onChangeText={(text) => {
-                    setInputs({ targetTokenAmount: +text });
+                    setInputs({ targetTokenAmount: text });
                   }}
                   style={styles.textInputStyle}
                   placeholderTextColor={colors.grayText}
@@ -531,11 +542,11 @@ const SetStrategy = ({
                     { color: colors.white },
                   ]}
                 >
-                  BNB
+                  {targetToken.symbol}
                 </Text>
               </UiRow.C>
             </CollapsibleView>
-            <CollapsibleView title="Add target SOL amount" maxHeight={90}>
+            <CollapsibleView title="Add target AVAXC amount" maxHeight={90}>
               <UiRow.C
                 style={[
                   components.inputContainer,
@@ -543,12 +554,12 @@ const SetStrategy = ({
                   { backgroundColor: colors.charlestonGreen },
                 ]}
               >
-                <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+                <IconAvaxc width={18} height={18} style={gutters.marginRight_2} />
                 <TextInput
-                  placeholder="From 0.1 SOL"
+                  placeholder="From 0.1"
                   value={inputs.targetSOLAmount?.toString()}
                   onChangeText={(text) => {
-                    setInputs({ targetSOLAmount: +text });
+                    setInputs({ targetSOLAmount: text });
                   }}
                   style={styles.textInputStyle}
                   placeholderTextColor={colors.grayText}
@@ -560,7 +571,7 @@ const SetStrategy = ({
                     { color: colors.white },
                   ]}
                 >
-                  BNB
+                  AVAXC
                 </Text>
               </UiRow.C>
             </CollapsibleView>
@@ -575,31 +586,21 @@ const SetStrategy = ({
                   { backgroundColor: colors.charlestonGreen },
                 ]}
               >
-                <IconBNB width={18} height={18} style={gutters.marginRight_2} />
                 <TextInput
-                  placeholder="From 0.1 SOL"
+                  placeholder="Amount of purchased batches"
                   value={inputs.targetBatchesPurchased?.toString()}
-                  onChangeText={(text) => {
-                    setInputs({ targetBatchesPurchased: +text });
+                  onChangeText={(val) => {
+                    setInputs({ targetBatchesPurchased: val });
                   }}
                   style={styles.textInputStyle}
                   placeholderTextColor={colors.grayText}
                 />
-                <Text
-                  style={[
-                    fonts.semiBold,
-                    fonts.size_14,
-                    { color: colors.white },
-                  ]}
-                >
-                  BNB
-                </Text>
               </UiRow.C>
             </CollapsibleView>
           </UiCol>
 
           {/* Take Profit */}
-          <UiCol style={styles.sectionWrapper}>
+          {/* <UiCol style={styles.sectionWrapper}>
             <Text
               style={[fonts.semiBold, fonts.size_16, { color: colors.white }]}
             >
@@ -625,7 +626,7 @@ const SetStrategy = ({
                 { backgroundColor: colors.charlestonGreen },
               ]}
             >
-              <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+              <IconAvaxc width={18} height={18} style={gutters.marginRight_2} />
               <TextInput
                 placeholder="Input price take profit"
                 value={inputs.takeProfit?.toString()}
@@ -638,13 +639,13 @@ const SetStrategy = ({
               <Text
                 style={[fonts.semiBold, fonts.size_14, { color: colors.white }]}
               >
-                BNB
+                AVAXC
               </Text>
             </UiRow.C>
-          </UiCol>
+          </UiCol> */}
 
           {/* Stop Loss */}
-          <UiCol style={styles.sectionWrapper}>
+          {/* <UiCol style={styles.sectionWrapper}>
             <Text
               style={[fonts.semiBold, fonts.size_16, { color: colors.white }]}
             >
@@ -670,7 +671,7 @@ const SetStrategy = ({
                 { backgroundColor: colors.charlestonGreen },
               ]}
             >
-              <IconBNB width={18} height={18} style={gutters.marginRight_2} />
+              <IconAvaxc width={18} height={18} style={gutters.marginRight_2} />
               <TextInput
                 placeholder="Input price stop loss"
                 value={inputs.stopLoss?.toString()}
@@ -683,10 +684,10 @@ const SetStrategy = ({
               <Text
                 style={[fonts.semiBold, fonts.size_14, { color: colors.white }]}
               >
-                BNB
+                AVAXC
               </Text>
             </UiRow.C>
-          </UiCol>
+          </UiCol> */}
 
           <UiRow.C.X
             style={[

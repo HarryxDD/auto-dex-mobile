@@ -20,9 +20,15 @@ export enum EConditionOperator {
   BETWEEN = "Between",
   LESSTHAN = "Less than",
   GREATERTHAN = "Greater than",
+  LESSTHANOREQUAL = "Less than or equal",
+  GREATERTHANOREQUAL = "Greater than or equal",
+  NOTBETWEEN = "Not Between",
 }
 
-export const STRATEGY_FREQUENCIES = [
+export const STRATEGY_FREQUENCIES: {
+  name: EStrategyFrequency;
+  value: null;
+}[] = [
   { name: EStrategyFrequency.DAILY, value: null },
   { name: EStrategyFrequency.WEEKLY, value: null },
   { name: EStrategyFrequency.BIWEEKLY, value: null },
@@ -37,6 +43,9 @@ export const STRATEGY_CONDITIONS = [
   EConditionOperator.BETWEEN,
   EConditionOperator.LESSTHAN,
   EConditionOperator.GREATERTHAN,
+  EConditionOperator.LESSTHANOREQUAL,
+  EConditionOperator.GREATERTHANOREQUAL,
+  EConditionOperator.NOTBETWEEN,
 ];
 
 export const STRATEGY_CONDITION_VALUES: Record<
@@ -46,4 +55,7 @@ export const STRATEGY_CONDITION_VALUES: Record<
   [EConditionOperator.BETWEEN]: { value: "=" },
   [EConditionOperator.LESSTHAN]: { value: "<" },
   [EConditionOperator.GREATERTHAN]: { value: ">" },
-};
+  [EConditionOperator.LESSTHANOREQUAL]: { value: "<=" },
+  [EConditionOperator.GREATERTHANOREQUAL]: { value: ">=" },
+  [EConditionOperator.NOTBETWEEN]: { value: "!=" },
+} as any;

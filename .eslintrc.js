@@ -72,6 +72,15 @@ module.exports = {
 		'react/destructuring-assignment': 'off',
 		'@typescript-eslint/no-misused-promises': 'off',
 		'import/no-cycle' : 'off',
+		"no-console": "off",
+		"lines-between-class-members": "off",
+		"@typescript-eslint/lines-between-class-members": "off",
+		"eslint-disable-next-line": "off",
+		"@typescript-eslint/no-floating-promises": "off",
+		"eslint-disable": "off",
+		"class-methods-use-this": "off",
+		"prefer-destructuring": "off",
+		'no-underscore-dangle': 'off',
 		'prettier/prettier': [
 			'off',
 			{

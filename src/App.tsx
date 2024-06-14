@@ -3,7 +3,7 @@ import { WagmiConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MMKV } from "react-native-mmkv";
-import { mainnet, polygon, arbitrum } from "viem/chains";
+import { defineChain } from "viem/utils";
 import {
   createWeb3Modal,
   defaultWagmiConfig,
@@ -15,6 +15,8 @@ import { ThemeProvider } from "@/theme";
 import ApplicationNavigator from "./navigators/Application";
 import "./translations";
 import { AppProvider } from "./contexts/app.context";
+import { TokenProvider } from "./hooks/useToken";
+import { EvmWalletProvider } from "./hooks/evm-context/useEvmWallet";
 
 const queryClient = new QueryClient();
 
@@ -34,7 +36,34 @@ const metadata = {
   },
 };
 
-const chains = [mainnet, polygon, arbitrum];
+const avalanche = defineChain({
+  id: 43114,
+  name: 'Avalanche',
+  network: 'avalanche',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Avalanche',
+    symbol: 'AVAX',
+  },
+  rpcUrls: {
+    default: { http: ['https://rpc.ankr.com/avalanche'] },
+    public: { http: ['https://rpc.ankr.com/avalanche'] },
+  },
+  blockExplorers: {
+    etherscan: { name: 'SnowTrace', url: 'https://snowtrace.io' },
+    default: { name: 'SnowTrace', url: 'https://snowtrace.io' },
+  },
+  contracts: {
+    multicall3: {
+      address: '0x91Cf9E3d7CC2B3Cc8CC8E9e712FC32C203CE9069',
+      blockCreated: 46033840,
+    },
+  },
+})
+
+console.log({ projectId, metadata, avalanche });
+
+const chains = [avalanche];
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 
 createWeb3Modal({
@@ -50,9 +79,13 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider storage={storage}>
           <AppProvider>
-            <WagmiConfig config={wagmiConfig}>
-              <ApplicationNavigator />
-              <Web3Modal />
+            <WagmiConfig config={wagmiConfig as any}>
+              <EvmWalletProvider>
+                <TokenProvider>
+                  <ApplicationNavigator />
+                  <Web3Modal />
+                </TokenProvider>
+              </EvmWalletProvider>
             </WagmiConfig>
           </AppProvider>
         </ThemeProvider>

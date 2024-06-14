@@ -1,6 +1,9 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
-	presets: ['module:@react-native/babel-preset'],
+	presets: [
+		'module:@react-native/babel-preset',
+		// 'module:metro-react-native-babel-preset',
+	],
 	plugins: [
 		[
 			'module-resolver',
@@ -12,7 +15,11 @@ module.exports = {
 				},
 			},
 		],
+		["@babel/plugin-transform-react-jsx", {
+      "runtime": "automatic"
+    }],
 		'inline-dotenv',
-		'react-native-reanimated/plugin', // needs to be last
+		'@babel/plugin-proposal-export-namespace-from',
+		'react-native-reanimated/plugin'
 	],
 };

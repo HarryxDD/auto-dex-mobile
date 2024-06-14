@@ -1,10 +1,8 @@
 import { UiCol, UiRow } from "@/components";
 import { useApp } from "@/contexts/app.context";
-import { SELECT_TOKEN_DATA } from "@/dummy-data";
 import { useTheme } from "@/theme";
-import { useInput } from "@/hooks/useInput";
 import { SHARED_STYLES } from "@/theme/shared";
-import { SetStateAction } from "react";
+import { SetStateAction, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -13,6 +11,8 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useToken } from "@/hooks/useToken";
+import { useSingleToken } from "@/screens/SingleToken/SingleToken";
 
 const SelectPair = ({
   singleTokenProgress,
@@ -21,15 +21,19 @@ const SelectPair = ({
   singleTokenProgress: number;
   setSingleTokenProgress: React.Dispatch<SetStateAction<number>>;
 }) => {
+  const { whiteListedTokens } = useToken();
+
   const { fonts, colors, components, gutters } = useTheme();
-  const [inputs, setInputs] = useInput({ searchValue: "" });
+  const [searchValue, setSearchValue] = useState("");
+  const { setInputs } = useSingleToken();
   const { filterTokenModalRef } = useApp();
 
   const handleSelectToken = () => {
     filterTokenModalRef.current?.present();
   };
 
-  const handleMoveToNextStep = () => {
+  const handleSelectPair = (address: string) => {
+    setInputs({ secondPairItem: address });
     setSingleTokenProgress(singleTokenProgress + 1);
   };
 
@@ -39,9 +43,9 @@ const SelectPair = ({
         <Ionicons name="search-outline" color={colors.grayText} size={18} />
         <TextInput
           placeholder="Search"
-          value={inputs.searchValue}
+          value={searchValue}
           onChangeText={(text) => {
-            setInputs({ searchValue: text });
+            setSearchValue(text);
           }}
           style={styles.searchbarInput}
           placeholderTextColor={colors.grayText}
@@ -50,7 +54,7 @@ const SelectPair = ({
       <TouchableWithoutFeedback onPress={handleSelectToken}>
         <UiRow.C style={components.inputContainer}>
           <Text style={[styles.filterSectionText, { color: colors.grayText }]}>
-            SOL
+            AVAXC
           </Text>
           <Ionicons
             name="chevron-down-outline"
@@ -67,10 +71,10 @@ const SelectPair = ({
     <UiCol.LRT style={SHARED_STYLES.screenPadding}>
       {renderSearchSection()}
       <ScrollView>
-        {SELECT_TOKEN_DATA.map((token) => (
+        {whiteListedTokens.map((token) => (
           <TouchableWithoutFeedback
-            key={token.abbr}
-            onPress={handleMoveToNextStep}
+            key={token.symbol}
+            onPress={() => handleSelectPair(token.address)}
           >
             <UiRow.LR style={gutters.marginBottom_24}>
               <UiCol>
@@ -81,14 +85,14 @@ const SelectPair = ({
                     { color: colors.white },
                   ]}
                 >
-                  {token.abbr}
+                  {token.name}
                 </Text>
                 <Text style={[fonts.size_12, { color: colors.grayText }]}>
-                  {token.name}
+                  {token.symbol}
                 </Text>
               </UiCol>
               <Text style={[fonts.semiBold, { color: colors.white }]}>
-                {token.value}
+                {token.estimatedValue}
               </Text>
             </UiRow.LR>
           </TouchableWithoutFeedback>

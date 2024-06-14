@@ -21,35 +21,6 @@ export const RootStack = () => {
   const renderScreens = () => {
     const screens = [];
 
-    // if (isNotLoggedIn) {
-    //   screens.push(
-    //     <Stack.Screen
-    //       key={STACK_MAIN}
-    //       name={STACK_MAIN}
-    //       component={MainNavigator}
-    //       options={{ headerShown: false }}
-    //     />
-    //   );
-    //   screens.push(
-    //     <Stack.Screen
-    //       key={STACK_AUTH}
-    //       name={STACK_AUTH}
-    //       component={AuthNavigator}
-    //       options={{ headerShown: false }}
-    //     />
-    //   );
-    // }
-    // if (!isNotLoggedIn) {
-    // screens.push(
-    //   <Stack.Screen
-    //     key={STACK_MAIN}
-    //     name={STACK_MAIN}
-    //     component={MainNavigator}
-    //     options={{ headerShown: false }}
-    //   />
-    // );
-    // }
-
     if (!address) {
       screens.push(
         <Stack.Screen
