@@ -5,6 +5,18 @@ export enum EStrategyType {
   BASKET_DCA = "Basket dca",
 }
 
+export interface DurationObjectUnits {
+  years?: number | undefined;
+  quarters?: number | undefined;
+  months?: number | undefined;
+  weeks?: number | undefined;
+  days?: number | undefined;
+  hours?: number | undefined;
+  minutes?: number | undefined;
+  seconds?: number | undefined;
+  milliseconds?: number | undefined;
+}
+
 export enum EStrategyFrequency {
   DAILY = "Daily",
   WEEKLY = "Weekly",

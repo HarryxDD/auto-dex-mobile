@@ -53,7 +53,6 @@ function MyPockets() {
   const [currentTab, setCurrentTab] = useState(EPocketTab.RUNNING);
   const [inputs, setInputs] = useInput({ searchValue: "" });
   const { filterTokenModalRef } = useApp();
-  // const pockets = MYPOCKETS[currentTab] || [];
   const evmWallet = useEvmWallet();
   const tokens = useToken();
   const [pools, setPools] = useState<PoolEntity[]>([]);

@@ -59,4 +59,9 @@ export class MachineService {
       },
     });
   }
+
+  async getMachine(machineId: string) {
+    const response = await axiosInstance.get<PoolEntity>(`/api/pool/${machineId}`);
+    return response.data;
+  }
 }
