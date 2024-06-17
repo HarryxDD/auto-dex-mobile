@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ScrollView, StyleSheet, Text } from "react-native";
 import { useTheme } from "@/theme";
 import { SafeScreen } from "@/components/template";
@@ -6,12 +7,86 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { MainParamList } from "@/types/navigation";
 import { PocketItemSection } from "@/components/PocketItemSection";
 import { SHARED_STYLES } from "@/theme/shared";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { MachineService } from "@/libs/services/machine.service";
+import { PoolEntity } from "@/libs/entities/pool.entity";
+import { useToken } from "@/hooks/useToken";
+import { truncateAddress } from "@/utils/helpers/string";
+import { convertHoursToDurationsTime, extractAveragePrice } from "@/utils";
+import { convertDecimal } from "@/libs/entities/machine.entity";
+import BigDecimal from "js-big-decimal"
+
+import moment from "moment";
 
 function PocketDetail() {
   const { colors, fonts, gutters } = useTheme();
   const { params } =
     useRoute<RouteProp<MainParamList, "SCREEN_POCKET_DETAIL">>();
   const { pocketId } = params || {};
+  const [pool, setPool] = useState<PoolEntity>();
+  const { whiteListedTokens } = useToken();
+
+  const baseToken = useMemo(() => {
+    return whiteListedTokens.find((token) => token.address === pool?.baseTokenAddress);
+  }, [pool]);
+
+  const targetToken = useMemo(() => {
+    return whiteListedTokens.find((token) => token.address === pool?.targetTokenAddress);
+  }, [pool]);
+
+  useEffect(() =>  {
+    if (!pocketId) return;
+    new MachineService().getMachine(String(pocketId))
+      .then((res) => {
+        if (res) {
+          setPool(res);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      }); 
+  }, [pocketId]);
+
+  const handleRenderFrequency = useCallback(() => {
+    let convertedHours = pool?.frequency?.hours;
+    if (pool?.frequency?.seconds) {
+      convertedHours = (pool?.frequency?.seconds || 0) / 3600;
+    }
+
+    const res = convertHoursToDurationsTime(convertedHours);
+    if (res.hours) {
+      if (res.hours === 1) {
+        return "hourly";
+      } 
+        return `every ${res.hours} hours`;
+      
+    } if (res.days) {
+      if (res.days === 1) {
+        return "daily";
+      } 
+        return `every ${res.days} days`;
+      
+    } if (res.weeks) {
+      if (res.weeks === 1) {
+        return "weekly";
+      } 
+        return `every ${res.weeks} weeks`;
+      
+    } if (res.months) {
+      if (res.months === 1) {
+        return "monthly";
+      } 
+        return `every ${res.months} months`;
+      
+    } if (res.years) {
+      if (res.years === 1) {
+        return "yearly";
+      } 
+        return `every ${res.years} years`;
+    }
+
+    return "daily";
+  }, [pool, pocketId]);
 
   const renderProgressSection = () => (
     <UiCol>
@@ -28,24 +103,40 @@ function PocketDetail() {
       <UiCol
         style={[{ backgroundColor: colors.secondaryBlack }, styles.container]}
       >
-        <PocketItemSection title="Total invested" value="78 SOL" />
-        <PocketItemSection title="Batch bought" value="10 BATCHES" />
+        <PocketItemSection
+          title="Total invested"
+          value={
+            `${convertDecimal(pool?.currentSpentBaseToken?.toString())} ${baseToken?.symbol}`
+          } />
+        <PocketItemSection title="Batch bought" value={`${pool?.currentBatchAmount} BATCHES`} />
         <PocketItemSection title="Token hold">
           <UiCol.R>
             <Text style={[fonts.semiBold, { color: colors.white }]}>
-              0.001 SOL = 0.000062 BTC
+              1 {baseToken?.symbol} = {extractAveragePrice(baseToken, baseToken)} {targetToken?.symbol}
             </Text>
             <Text style={[fonts.semiBold, { color: colors.white }]}>
-              0.001 SOL = 0.0675 BNB
+              1 {targetToken?.symbol} = {extractAveragePrice(targetToken, baseToken)} {baseToken?.symbol}
+            </Text>
+          </UiCol.R>
+        </PocketItemSection>
+        <PocketItemSection title="Tokens hold">
+          <UiCol.R>
+            <Text style={[fonts.semiBold, { color: colors.white }]}>
+              {`${convertDecimal(
+                new BigDecimal(pool?.depositedAmount?.toString() || "0").subtract(
+                  new BigDecimal(pool?.currentSpentBaseToken?.toString() || "0")
+                ).getValue().toString(
+                )
+              )} ${baseToken?.symbol}`}
             </Text>
             <Text style={[fonts.semiBold, { color: colors.white }]}>
-              0.001 SOL = 0.74 USDC
+              {`${convertDecimal(pool?.currentReceivedTargetToken?.toString())} ${targetToken?.symbol}`}
             </Text>
           </UiCol.R>
         </PocketItemSection>
         <PocketItemSection title="APL (ROI)">
           <Text style={[fonts.semiBold, { color: colors.ufoGreen }]}>
-            + 0.00 SOL (0.00%)
+            + {`${convertDecimal(pool?.currentROIValue)}`} {baseToken?.symbol} ({`${pool?.currentROI?.toFixed(2) || 0}`}%)
           </Text>
         </PocketItemSection>
       </UiCol>
@@ -67,8 +158,8 @@ function PocketDetail() {
       <UiCol
         style={[{ backgroundColor: colors.secondaryBlack }, styles.container]}
       >
-        <PocketItemSection title="Next batch time" value="16/02/2023 16:00" />
-        <PocketItemSection title="Outstanding deposit" value="3.4 USDC" />
+        <PocketItemSection title="Next batch time" value={moment(pool?.nextExecutionAt || new Date()).format("DD/MM/YYYY HH:mm")} />
+        <PocketItemSection title="Outstanding deposit" value={`${convertDecimal(pool?.remainingBaseTokenBalance || 0)} ${baseToken?.symbol}`} />
       </UiCol>
     </UiCol>
   );
@@ -88,8 +179,14 @@ function PocketDetail() {
       <UiCol
         style={[{ backgroundColor: colors.secondaryBlack }, styles.container]}
       >
-        <PocketItemSection title="Total deposited" value="78 SOL" />
-        <PocketItemSection title="Start date" value="16/02/2023 16:00" />
+        <PocketItemSection
+          title="Total deposited"
+          value={`${convertDecimal(pool?.depositedAmount)} ${baseToken?.symbol}`}
+        />
+        <PocketItemSection
+          title="Start date"
+          value={`${moment(pool?.startTime).format("DD/MM/YYYY HH:mm")}`}
+        />
       </UiCol>
     </UiCol>
   );
@@ -175,7 +272,6 @@ function PocketDetail() {
     <SafeScreen>
       <ScrollView>
         <UiCol style={SHARED_STYLES.screenPadding}>
-          <Text style={{ color: colors.white }}>Pocket Detail {pocketId}</Text>
           <UiRow.LR
             style={[
               { backgroundColor: colors.charlestonGreen },
@@ -183,23 +279,23 @@ function PocketDetail() {
             ]}
           >
             <UiCol>
-              <Text style={[fonts.bold, { color: colors.white }]}>SOL/BTC</Text>
+              <Text style={[fonts.bold, { color: colors.white }]}>{targetToken?.symbol}/{baseToken?.symbol}</Text>
               <Text style={[{ color: colors.grayText }, fonts.size_12]}>
-                Blockasset
+                Uniswap
               </Text>
             </UiCol>
-            <Text style={[{ color: colors.white }]}>#146...423</Text>
+            <Text style={[{ color: colors.white }]}>#{truncateAddress(pool?._id || pool?.id || "")}</Text>
           </UiRow.LR>
           <PocketItemSection
             title="Strategy"
-            value="10 SOL monthly"
+            value={`${convertDecimal(pool?.batchVolume?.toString())} ${targetToken?.symbol} ${handleRenderFrequency()}`}
             containerStyle={gutters.marginBottom_16}
           />
           {renderProgressSection()}
           {renderNextBatchSection()}
           {renderPoolInfoSection()}
-          {renderEndConditionSection()}
-          {renderTPSLSection()}
+          {/* {renderEndConditionSection()}
+          {renderTPSLSection()} */}
           {renderTransactionsSection()}
         </UiCol>
       </ScrollView>
