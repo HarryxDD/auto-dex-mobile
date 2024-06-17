@@ -135,8 +135,8 @@ function PocketDetail() {
           </UiCol.R>
         </PocketItemSection>
         <PocketItemSection title="APL (ROI)">
-          <Text style={[fonts.semiBold, { color: colors.ufoGreen }]}>
-            + {`${convertDecimal(pool?.currentROIValue)}`} {baseToken?.symbol} ({`${pool?.currentROI?.toFixed(2) || 0}`}%)
+          <Text style={[fonts.semiBold, { color: (pool?.currentROI || 0) < 0 ? colors.red400 : colors.ufoGreen }]}>
+            {`${pool?.currentROIValue || 0}`} {baseToken?.symbol} ({`${pool?.currentROI?.toFixed(2) || 0}`}%)
           </Text>
         </PocketItemSection>
       </UiCol>
