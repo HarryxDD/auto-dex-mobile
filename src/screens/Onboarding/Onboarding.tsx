@@ -1,5 +1,6 @@
 import { UiCol, UiRow } from "@/components";
 import { ImageVariant } from "@/components/atoms";
+import CubeGridLoader from "@/components/CubeGridLoader";
 import { useTheme } from "@/theme";
 import OnboardingImg from "@/theme/assets/images/onboarding.png";
 import { SHARED_STYLES } from "@/theme/shared";
@@ -16,6 +17,7 @@ const OnboardingScreen = () => {
 
   return (
     <UiCol.X style={SHARED_STYLES.screenPadding}>
+      <CubeGridLoader visible />
       <UiCol.X>
         <ImageVariant source={OnboardingImg} style={styles.onboardImg} />
         <Text
