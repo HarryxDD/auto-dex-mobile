@@ -85,6 +85,7 @@ module.exports = {
     "@typescript-eslint/return-await": "off",
     "default-case": "off",
     "@typescript-eslint/require-await": "off",
+    "consistent-return": "off",
     "prettier/prettier": [
       "off",
       {

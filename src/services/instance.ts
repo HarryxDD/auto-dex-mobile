@@ -1,7 +1,7 @@
 import ky from 'ky';
 import axios from "axios";
 
-const URL = "https://25a7-116-110-245-125.ngrok-free.app";
+const URL = "http://10.0.2.2:3000";
 
 export const instance = ky.extend({
 	// prefixUrl,

@@ -44,7 +44,7 @@ export const EvmWalletContext = createContext<{
   createMachine(
     depositedAmount: BigNumber,
     createdMachineParams: Params.CreateMachineParamsStruct
-  ): Promise<void>;
+  ): Promise<string>;
 }>(null as any);
 
 /** @dev Expose wallet provider for usage. */
@@ -141,6 +141,8 @@ export const EvmWalletProvider: FC<{ children: ReactNode }> = (props) => {
       console.log("JOB::: wait transaction", tx);
       await (tx as any).wait(CONFIRMATIONS);
       await machineService.syncMachine(createdMachineParams.id);
+
+      return emptyPool._id;
     },
     [signer]
   );
