@@ -1,12 +1,27 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { UiCol, UiRow } from "@/components";
+import { ImageVariant } from "@/components/atoms";
+import CubeGridLoader from "@/components/CubeGridLoader";
+import {
+  getSelectedDate,
+  getSelectedTime,
+} from "@/components/DateTimePickerModal/helper";
 import { PocketItemSection } from "@/components/PocketItemSection";
 import SuccessModal from "@/components/SuccessModal";
+import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
+import { useBoolBag } from "@/hooks/useBoolBag";
+import { useToken } from "@/hooks/useToken";
+import {
+  convertBigNumber,
+  parseToCreateMachineDtoOnChain,
+} from "@/libs/entities/machine.entity";
+import { useSingleToken } from "@/screens/SingleToken/SingleToken";
 import { useTheme } from "@/theme";
 import { IconAvaxc } from "@/theme/assets/icons/svg";
 import { SHARED_STYLES } from "@/theme/shared";
 import NavigationRef from "@/utils/navigation-ref";
-import { SetStateAction, useCallback, useMemo } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { SetStateAction, useCallback, useMemo, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -14,15 +29,6 @@ import {
   TextInput,
   TouchableWithoutFeedback,
 } from "react-native";
-import { useBoolBag } from "@/hooks/useBoolBag";
-import { useToken } from "@/hooks/useToken";
-import { ImageVariant } from "@/components/atoms";
-import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
-import { useSingleToken } from "@/screens/SingleToken/SingleToken";
-import { getSelectedDate, getSelectedTime } from "@/components/DateTimePickerModal/helper";
-import { convertBigNumber, parseToCreateMachineDtoOnChain } from "@/libs/entities/machine.entity";
-import { useNavigation } from "@react-navigation/native";
-import { SCREEN_MY_POCKETS, STACK_MAIN } from "@/navigators/route-names";
 
 const Confirm = ({
   singleTokenProgress,
@@ -42,9 +48,19 @@ const Confirm = ({
   const { whiteListedTokens } = useToken();
   const evmWallet = useEvmWallet();
   const navigation = useNavigation();
+  const [currentMachineId, setCurrentMachineId] = useState("");
+  const [createPoolLoading, setCreatePoolLoading] = useState(false);
 
-  const baseToken = useMemo(() => whiteListedTokens.find((item) => item.address === inputs.firstPairItem), [whiteListedTokens, inputs]);
-  const targetToken = useMemo(() => whiteListedTokens.find((item) => item.address === inputs.secondPairItem), [whiteListedTokens, inputs]);
+  const baseToken = useMemo(
+    () =>
+      whiteListedTokens.find((item) => item.address === inputs.firstPairItem),
+    [whiteListedTokens, inputs]
+  );
+  const targetToken = useMemo(
+    () =>
+      whiteListedTokens.find((item) => item.address === inputs.secondPairItem),
+    [whiteListedTokens, inputs]
+  );
 
   const handleGoBack = () => {
     NavigationRef.goBack();
@@ -62,26 +78,26 @@ const Confirm = ({
   const handlePressCreatePocket = useCallback(async () => {
     if (!evmWallet.signer) return;
     try {
+      setCreatePoolLoading(true);
       const params = parseToCreateMachineDtoOnChain(
         baseToken,
         targetToken,
         evmWallet.signer,
-        inputs,
-      )
+        inputs
+      );
 
-      await evmWallet.createMachine(
+      const machineId = await evmWallet.createMachine(
         convertBigNumber(inputs.depositAmount, 18),
         params
       );
-      
+
       console.log("Successfully create machine");
+      setCurrentMachineId(machineId);
       setBoolBag({ showSuccessModal: true });
-      // @ts-ignore
-      navigation.navigate(STACK_MAIN, { screen: SCREEN_MY_POCKETS });
     } catch (error) {
       console.warn("Error: ", error);
     } finally {
-      setBoolBag({ showSuccessModal: false });
+      setCreatePoolLoading(false);
     }
   }, [inputs, evmWallet, navigation]);
 
@@ -135,7 +151,12 @@ const Confirm = ({
           ]}
         >
           <UiRow.C>
-            <ImageVariant source={{ uri: baseToken.image }} width={18} height={18} style={gutters.marginRight_2} />
+            <ImageVariant
+              source={{ uri: baseToken.image }}
+              width={18}
+              height={18}
+              style={gutters.marginRight_2}
+            />
             <Text
               style={[
                 fonts.semiBold,
@@ -160,7 +181,12 @@ const Confirm = ({
           ]}
         >
           <UiRow.C>
-            <ImageVariant source={{ uri: targetToken.image }} width={18} height={18} style={gutters.marginRight_2} />
+            <ImageVariant
+              source={{ uri: targetToken.image }}
+              width={18}
+              height={18}
+              style={gutters.marginRight_2}
+            />
             <Text
               style={[
                 fonts.semiBold,
@@ -206,8 +232,16 @@ const Confirm = ({
           styles.contentContainer,
         ]}
       >
-        <PocketItemSection title="Strategy" value={`${inputs.amountEachBatch} ${baseToken.symbol} ${inputs.frequency}`} />
-        <PocketItemSection title="First batch time" value={`${getSelectedDate(inputs.firstBatchTime)} ${getSelectedTime(inputs.firstBatchTime)}`} />
+        <PocketItemSection
+          title="Strategy"
+          value={`${inputs.amountEachBatch} ${baseToken.symbol} ${inputs.frequency}`}
+        />
+        <PocketItemSection
+          title="First batch time"
+          value={`${getSelectedDate(inputs.firstBatchTime)} ${getSelectedTime(
+            inputs.firstBatchTime
+          )}`}
+        />
       </UiCol>
     </UiCol>
   );
@@ -279,6 +313,7 @@ const Confirm = ({
 
   return (
     <>
+      <CubeGridLoader visible={createPoolLoading} />
       <SuccessModal
         visible={showSuccessModal}
         onClose={handlePressDoneSuccessModal}
@@ -292,8 +327,9 @@ const Confirm = ({
               { color: colors.white },
             ]}
           >
-            Pocket <Text style={{ color: colors.ufoGreen }}>#14623</Text> has
-            been created.
+            Pocket{" "}
+            <Text style={{ color: colors.ufoGreen }}>{currentMachineId}</Text>{" "}
+            has been created.
           </Text>
           <Text
             style={[
