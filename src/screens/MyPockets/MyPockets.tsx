@@ -17,7 +17,10 @@ import {} from "@gorhom/bottom-sheet";
 import { useApp } from "@/contexts/app.context";
 import { EPocketTab } from "@/constants/mypocket";
 import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
-import { convertBigNumber, parseToCreateMachineDtoOnChain } from "@/libs/entities/machine.entity";
+import {
+  convertBigNumber,
+  parseToCreateMachineDtoOnChain,
+} from "@/libs/entities/machine.entity";
 import { useToken } from "@/hooks/useToken";
 import { EStrategyFrequency } from "@/constants/strategy";
 import { UtilsProvider } from "@/utils/utils.provider";
@@ -56,7 +59,7 @@ function MyPockets() {
   const evmWallet = useEvmWallet();
   const tokens = useToken();
   const [pools, setPools] = useState<PoolEntity[]>([]);
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   const handleSelectToken = () => {
     filterTokenModalRef.current?.present();
@@ -67,7 +70,7 @@ function MyPockets() {
     new MachineService()
       .getMachineList(evmWallet.signer.address, [PoolStatus.ACTIVE])
       .then((data) => {
-        setPools(data)
+        setPools(data);
       })
       .catch((error) => {
         console.log(error);
@@ -97,20 +100,31 @@ function MyPockets() {
     const baseToken = tokens.whiteListedTokens?.[0];
     const targetToken = tokens.whiteListedTokens?.[1];
 
-    const params = parseToCreateMachineDtoOnChain(baseToken, targetToken, evmWallet.signer, {
-      depositAmount: "0.001",
-      amountEachBatch: "0.0001",
-      firstBatchDate: new Date(Date.now()),
-      firstBatchTime: new Date(new Date(Date.now()).getTime() + 2000 * 60),
-      frequency: EStrategyFrequency.ONE_HOUR,
-      firstPairItem: baseToken.address,
-      secondPairItem: targetToken.address,
-    });
+    const params = parseToCreateMachineDtoOnChain(
+      baseToken,
+      targetToken,
+      evmWallet.signer,
+      {
+        depositAmount: "0.001",
+        amountEachBatch: "0.0001",
+        firstBatchDate: new Date(Date.now()),
+        firstBatchTime: new Date(new Date(Date.now()).getTime() + 2000 * 60),
+        frequency: EStrategyFrequency.ONE_HOUR,
+        firstPairItem: baseToken.address,
+        secondPairItem: targetToken.address,
+      }
+    );
 
-    console.log(new UtilsProvider().mergeDateAndTime(new Date(Date.now()), new Date(new Date(Date.now()).getTime() + 2000 * 60)).getTime() / 1000);
+    console.log(
+      new UtilsProvider()
+        .mergeDateAndTime(
+          new Date(Date.now()),
+          new Date(new Date(Date.now()).getTime() + 2000 * 60)
+        )
+        .getTime() / 1000
+    );
     evmWallet.createMachine(convertBigNumber("0.001", 18), params);
   }, [evmWallet]);
-
 
   const renderScreenHeader = () => (
     <UiRow.LR style={styles.topSection}>
@@ -167,8 +181,14 @@ function MyPockets() {
         <TouchableWithoutFeedback
           disabled={false}
           onPress={handlePressCreatePocket}
+        >
+          <Text
+            style={[
+              { color: colors.white, marginBottom: 20 },
+              fonts.bold,
+              components.primaryBtn,
+            ]}
           >
-          <Text style={[{ color: colors.white, marginBottom: 20 }, fonts.bold, components.primaryBtn]}>
             Create pocket
           </Text>
         </TouchableWithoutFeedback>

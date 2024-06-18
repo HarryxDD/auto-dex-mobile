@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MMKV } from "react-native-mmkv";
 import { defineChain } from "viem/utils";
+import messaging from "@react-native-firebase/messaging";
 import {
   createWeb3Modal,
   defaultWagmiConfig,
@@ -11,12 +12,14 @@ import {
 } from "@web3modal/wagmi-react-native";
 
 import { ThemeProvider } from "@/theme";
-
-import ApplicationNavigator from "./navigators/Application";
+import { useEffect } from "react";
+import { isIos } from "@/constants/app";
+import { PermissionsAndroid } from "react-native";
+import ApplicationNavigator from "@/navigators/Application";
 import "./translations";
-import { AppProvider } from "./contexts/app.context";
-import { TokenProvider } from "./hooks/useToken";
-import { EvmWalletProvider } from "./hooks/evm-context/useEvmWallet";
+import { AppProvider } from "@/contexts/app.context";
+import { TokenProvider } from "@/hooks/useToken";
+import { EvmWalletProvider } from "@/hooks/evm-context/useEvmWallet";
 
 const queryClient = new QueryClient();
 
@@ -38,28 +41,28 @@ const metadata = {
 
 const avalanche = defineChain({
   id: 43114,
-  name: 'Avalanche',
-  network: 'avalanche',
+  name: "Avalanche",
+  network: "avalanche",
   nativeCurrency: {
     decimals: 18,
-    name: 'Avalanche',
-    symbol: 'AVAX',
+    name: "Avalanche",
+    symbol: "AVAX",
   },
   rpcUrls: {
-    default: { http: ['https://rpc.ankr.com/avalanche'] },
-    public: { http: ['https://rpc.ankr.com/avalanche'] },
+    default: { http: ["https://rpc.ankr.com/avalanche"] },
+    public: { http: ["https://rpc.ankr.com/avalanche"] },
   },
   blockExplorers: {
-    etherscan: { name: 'SnowTrace', url: 'https://snowtrace.io' },
-    default: { name: 'SnowTrace', url: 'https://snowtrace.io' },
+    etherscan: { name: "SnowTrace", url: "https://snowtrace.io" },
+    default: { name: "SnowTrace", url: "https://snowtrace.io" },
   },
   contracts: {
     multicall3: {
-      address: '0x91Cf9E3d7CC2B3Cc8CC8E9e712FC32C203CE9069',
+      address: "0x91Cf9E3d7CC2B3Cc8CC8E9e712FC32C203CE9069",
       blockCreated: 46033840,
     },
   },
-})
+});
 
 console.log({ projectId, metadata, avalanche });
 
@@ -74,6 +77,25 @@ createWeb3Modal({
 });
 
 function App() {
+  useEffect(() => {
+    const requestUserPermission = async () => {
+      if (isIos) {
+        await messaging().requestPermission();
+      } else {
+        // For API level 33+ - Android 13
+        await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+        );
+      }
+      // messaging()
+      //   .getToken()
+      //   .then(token => {
+      //     console.log('fcmToken :>>', token);
+      //   });
+    };
+    requestUserPermission();
+  }, []);
+
   return (
     <GestureHandlerRootView>
       <QueryClientProvider client={queryClient}>

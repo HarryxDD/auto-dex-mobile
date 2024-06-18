@@ -20,3 +20,18 @@ export const SCREEN_TWAP = "SCREEN_TWAP";
 export const SCREEN_BASKET_DCA = "SCREEN_BASKET_DCA";
 
 export const SCREEN_ONBOARDING = "SCREEN_ONBOARDING";
+
+export const deepLinkConfig = {
+  screens: {
+    // [STACK_AUTH]: {
+    //   screens: {
+        
+    //   },
+    // },
+    // [STACK_MAIN]: {
+    //   screens: {
+        
+    //   },
+    // },
+  },
+};
