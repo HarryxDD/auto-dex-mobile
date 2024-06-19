@@ -154,6 +154,41 @@ export class MachineEntity {
     closedAt: Date;
 }
 
+export enum ActivityType {
+  CREATED = 'ACTIVITY_TYPE::CREATED',
+  PAUSED = 'ACTIVITY_TYPE::PAUSED',
+  CONTINUE = 'ACTIVITY_TYPE::CONTINUE',
+  CLOSED = 'ACTIVITY_TYPE::CLOSED',
+  DEPOSITED = 'ACTIVITY_TYPE::DEPOSITED',
+  WITHDRAWN = 'ACTIVITY_TYPE::WITHDRAWN',
+  SWAPPED = 'ACTIVITY_TYPE::SWAPPED',
+  UPDATED = 'ACTIVITY_TYPE::UPDATED',
+  RESTARTED = 'ACTIVITY_TYPE::RESTARTED',
+  CLOSED_POSITION = 'ACTIVITY_TYPE::CLOSED_POSITION',
+  STOP_LOSS = 'ACTIVITY_TYPE::STOP_LOSS',
+  TAKE_PROFIT = 'ACTIVITY_TYPE::TAKE_PROFIT',
+  SKIPPED = 'ACTIVITY_TYPE::SKIPPED',
+  /** Other events */
+  VAULT_CREATED = 'ACTIVITY_TYPE::VAULT_CREATED',
+  MACHINE_CONFIG_UPDATED = 'ACTIVITY_TYPE::MACHINE_CONFIG_UPDATED',
+}
+
+
+export type MachineActivity = {
+  "_id": string,
+  "eventHash": string,
+  "actor": string,
+  "baseTokenAmount": number,
+  "chainId": string,
+  "createdAt": Date,
+  "memo": string,
+  "poolId": string,
+  "status": string,
+  "targetTokenAmount": number,
+  "transactionId": string,
+  "type": ActivityType,
+};
+
 export const parseOpeningCondition = (targetToken: Token, buyCondition: EBuyCondition): {
   value0: BigNumberish;
   value1: BigNumberish;

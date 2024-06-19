@@ -63,7 +63,7 @@ export const PocketItem = (props: Props) => {
           value={convertDecimal(pool.currentSpentBaseToken.toString())}
         />
         <PocketItemSection title="APL (ROI)">
-          <Text style={[{ color: colors.ufoGreen }, fonts.semiBold]}>
+          <Text style={[{ color: (pool?.currentROI || 0) < 0 ? colors.red400 : colors.ufoGreen }, fonts.semiBold]}>
             {`${pool?.currentROI?.toFixed(2) || 0}`}%
           </Text>
         </PocketItemSection>

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ScrollView, StyleSheet, Text } from "react-native";
+import { Linking, SafeAreaView, ScrollView, StyleSheet, Text } from "react-native";
 import { useTheme } from "@/theme";
 import { SafeScreen } from "@/components/template";
 import { UiCol, UiRow } from "@/components";
@@ -13,10 +13,13 @@ import { PoolEntity } from "@/libs/entities/pool.entity";
 import { useToken } from "@/hooks/useToken";
 import { truncateAddress } from "@/utils/helpers/string";
 import { convertHoursToDurationsTime, extractAveragePrice } from "@/utils";
-import { convertDecimal } from "@/libs/entities/machine.entity";
+import { MachineActivity, convertDecimal } from "@/libs/entities/machine.entity";
 import BigDecimal from "js-big-decimal"
 
 import moment from "moment";
+
+import { UtilsProvider } from "@/utils/utils.provider";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 function PocketDetail() {
   const { colors, fonts, gutters } = useTheme();
@@ -24,6 +27,7 @@ function PocketDetail() {
     useRoute<RouteProp<MainParamList, "SCREEN_POCKET_DETAIL">>();
   const { pocketId } = params || {};
   const [pool, setPool] = useState<PoolEntity>();
+  const [poolActivies, setPoolActivies] = useState<MachineActivity[]>([]);
   const { whiteListedTokens } = useToken();
 
   const baseToken = useMemo(() => {
@@ -45,6 +49,17 @@ function PocketDetail() {
       .catch((err) => {
         console.log(err);
       }); 
+  }, [pocketId]);
+
+  useEffect(() => {
+    if (!pocketId) return;
+    new MachineService().getMachineActivities(String(pocketId))
+      .then((res) => {
+        setPoolActivies(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, [pocketId]);
 
   const handleRenderFrequency = useCallback(() => {
@@ -135,8 +150,8 @@ function PocketDetail() {
           </UiCol.R>
         </PocketItemSection>
         <PocketItemSection title="APL (ROI)">
-          <Text style={[fonts.semiBold, { color: colors.ufoGreen }]}>
-            + {`${convertDecimal(pool?.currentROIValue)}`} {baseToken?.symbol} ({`${pool?.currentROI?.toFixed(2) || 0}`}%)
+          <Text style={[fonts.semiBold, { color: (pool?.currentROI || 0) < 0 ? colors.red400 : colors.ufoGreen }]}>
+            {`${pool?.currentROIValue || 0}`} {baseToken?.symbol} ({`${pool?.currentROI?.toFixed(2) || 0}`}%)
           </Text>
         </PocketItemSection>
       </UiCol>
@@ -233,40 +248,42 @@ function PocketDetail() {
     </UiCol>
   );
 
-  const renderTransactionsSection = () => (
-    <UiCol>
-      <Text
-        style={[
-          fonts.bold,
-          fonts.size_16,
-          gutters.marginBottom_10,
-          { color: colors.white },
-        ]}
-      >
-        Bought transaction
-      </Text>
-      <UiCol
-        style={[{ backgroundColor: colors.secondaryBlack }, styles.container]}
-      >
-        <PocketItemSection
-          title="dd/mm/yyyy hh:ss"
-          value="4 SOL <> X,XXX.00 TOKEN"
-        />
-        <PocketItemSection
-          title="dd/mm/yyyy hh:ss"
-          value="4 SOL <> X,XXX.00 TOKEN"
-        />
-        <PocketItemSection
-          title="dd/mm/yyyy hh:ss"
-          value="4 SOL <> X,XXX.00 TOKEN"
-        />
-        <PocketItemSection
-          title="dd/mm/yyyy hh:ss"
-          value="4 SOL <> X,XXX.00 TOKEN"
-        />
+  const renderTransactionsSection = useCallback(() => {
+    if (!poolActivies.length) return null;
+    return (
+      <UiCol>
+        <Text
+          style={[
+            fonts.bold,
+            fonts.size_16,
+            gutters.marginBottom_10,
+            { color: colors.white },
+          ]}
+        >
+          Bought transaction
+        </Text>
+        <UiCol
+          style={[{ backgroundColor: colors.secondaryBlack }, styles.container]}
+        >
+          {poolActivies.map((activity, index) => {
+            return (
+              <SafeAreaView key={`activity-${index}-${Math.random().toString()}`}>
+                <TouchableOpacity onPress={async () => {
+                  const url = `https://snowtrace.io/tx/${activity.transactionId}?chainId=43114`;
+                  await Linking.openURL(url);
+                }}>
+                  <PocketItemSection
+                    title={moment(activity.createdAt).format("DD/MM/YYYY HH:mm")}
+                    value={`${activity.baseTokenAmount.toString()} ${baseToken?.symbol} <> ${new UtilsProvider().getDisplayedDecimals(activity.targetTokenAmount)} ${targetToken?.symbol}`}
+                  />
+                </TouchableOpacity>
+              </SafeAreaView>
+            );
+          })}
+        </UiCol>
       </UiCol>
-    </UiCol>
-  );
+    )
+  }, [poolActivies, baseToken, targetToken]);
 
   return (
     <SafeScreen>

@@ -1,5 +1,5 @@
 import { axiosInstance } from "@/services/instance";
-import { GetQuoteDto } from "@/libs/entities/machine.entity";
+import { GetQuoteDto, MachineActivity } from "@/libs/entities/machine.entity";
 import { ChainID, PoolEntity, PoolStatus } from "@/libs/entities/pool.entity";
 import qs from "qs";
 
@@ -74,6 +74,13 @@ export class MachineService {
   async getMachine(machineId: string) {
     const response = await axiosInstance.get<PoolEntity>(
       `/api/pool/${machineId}`
+    );
+    return response.data;
+  }
+
+  async getMachineActivities(machineId: string) {
+    const response = await axiosInstance.get<MachineActivity[]>(
+      `/api/pool/${machineId}/activities`
     );
     return response.data;
   }
