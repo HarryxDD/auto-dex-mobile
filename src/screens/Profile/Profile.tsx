@@ -70,9 +70,9 @@ function Profile() {
           { color: colors.gray200 },
         ]}
       >
-        Total Pockets Balance
+        Total Machines Balance
       </Text>
-      <UiRow style={styles.pocketBalanceWrapper}>
+      <UiRow style={styles.machineBalanceWrapper}>
         <IconBNB width={35} height={35} />
         <UiCol style={gutters.marginLeft_10}>
           <Text
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-  pocketBalanceWrapper: {
+  machineBalanceWrapper: {
     borderBottomWidth: 1,
     borderColor: "#969696",
     paddingBottom: 16,

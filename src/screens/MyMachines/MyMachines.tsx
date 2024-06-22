@@ -15,7 +15,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useInput } from "@/hooks/useInput";
 import {} from "@gorhom/bottom-sheet";
 import { useApp } from "@/contexts/app.context";
-import { EPocketTab } from "@/constants/mypocket";
+import { EMachineTab } from "@/constants/mymachine";
 import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
 import {
   convertBigNumber,
@@ -26,7 +26,7 @@ import { EStrategyFrequency } from "@/constants/strategy";
 import { UtilsProvider } from "@/utils/utils.provider";
 import { MachineService } from "@/libs/services/machine.service";
 import { PoolEntity, PoolStatus } from "@/libs/entities/pool.entity";
-import { PocketItem } from "@/components/PocketItem";
+import { MachineItem } from "@/components/MachineItem";
 import { useNavigation } from "@react-navigation/native";
 
 const styles = StyleSheet.create({
@@ -50,10 +50,10 @@ const styles = StyleSheet.create({
   },
 });
 
-function MyPockets() {
+function MyMachines() {
   const { fonts, colors, components, gutters } = useTheme();
-  const screenTabs = [EPocketTab.RUNNING, EPocketTab.HISTORY];
-  const [currentTab, setCurrentTab] = useState(EPocketTab.RUNNING);
+  const screenTabs = [EMachineTab.RUNNING, EMachineTab.HISTORY];
+  const [currentTab, setCurrentTab] = useState(EMachineTab.RUNNING);
   const [inputs, setInputs] = useInput({ searchValue: "" });
   const { filterTokenModalRef } = useApp();
   const evmWallet = useEvmWallet();
@@ -93,7 +93,7 @@ function MyPockets() {
     fetchPools();
   }, [evmWallet, navigation]);
 
-  const handlePressCreatePocket = useCallback(() => {
+  const handlePressCreateMachine = useCallback(() => {
     if (!evmWallet.signer) return;
     if (!tokens.whiteListedTokens.length) return;
 
@@ -129,7 +129,7 @@ function MyPockets() {
   const renderScreenHeader = () => (
     <UiRow.LR style={styles.topSection}>
       <Text style={[fonts.size_20, fonts.bold, { color: colors.white }]}>
-        My Pockets
+        My Machines
       </Text>
       <TouchableWithoutFeedback onPress={syncWalletPools}>
         <UiRow.C style={[components.secondaryBtn]}>
@@ -180,7 +180,7 @@ function MyPockets() {
         {renderScreenHeader()}
         <TouchableWithoutFeedback
           disabled={false}
-          onPress={handlePressCreatePocket}
+          onPress={handlePressCreateMachine}
         >
           <Text
             style={[
@@ -189,7 +189,7 @@ function MyPockets() {
               components.primaryBtn,
             ]}
           >
-            Create pocket
+            Create machine
           </Text>
         </TouchableWithoutFeedback>
         <UiMultiSwitch
@@ -209,7 +209,7 @@ function MyPockets() {
         {renderSearchSection()}
         <FlatList
           data={pools}
-          renderItem={({ item }) => <PocketItem key={item._id} pool={item} />}
+          renderItem={({ item }) => <MachineItem key={item._id} pool={item} />}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item) => `${item._id}`}
           contentContainerStyle={SHARED_STYLES.growX}
@@ -219,4 +219,4 @@ function MyPockets() {
   );
 }
 
-export default MyPockets;
+export default MyMachines;

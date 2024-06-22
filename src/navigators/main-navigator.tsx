@@ -1,7 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import {
   BOTTOM_TABS,
-  SCREEN_POCKET_DETAIL,
+  SCREEN_MACHINE_DETAIL,
   SCREEN_PNL_ANALYSIS,
   SCREEN_SINGLE_TOKEN,
   SCREEN_LIMIT_ORDER,
@@ -10,7 +10,7 @@ import {
 } from "@/navigators/route-names";
 import { MainParamList } from "@/types/navigation";
 import BottomTabsNavigator from "@/navigators/bottom-tabs-navigator";
-import PocketDetail from "@/screens/PocketDetail/PocketDetail";
+import MachineDetail from "@/screens/MachineDetail/MachineDetail";
 import PNLAnalysis from "@/screens/PNLAnalysis/PNLAnalysis";
 import SingleTokenScreen from "@/screens/SingleToken/SingleToken";
 import LimitOrderScreen from "@/screens/LimitOrder/LimitOrder";
@@ -31,12 +31,12 @@ export const MainNavigator = () => {
         }}
       />
       <MainStack.Screen
-        name={SCREEN_POCKET_DETAIL}
-        component={PocketDetail}
+        name={SCREEN_MACHINE_DETAIL}
+        component={MachineDetail}
         options={{
           headerShown: true,
           headerLeft: () => <AppHeaderBackButton />,
-          headerTitle: "Pocket details",
+          headerTitle: "Machine details",
         }}
       />
       <MainStack.Screen

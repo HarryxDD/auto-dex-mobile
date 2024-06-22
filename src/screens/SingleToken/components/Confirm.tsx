@@ -6,7 +6,7 @@ import {
   getSelectedDate,
   getSelectedTime,
 } from "@/components/DateTimePickerModal/helper";
-import { PocketItemSection } from "@/components/PocketItemSection";
+import { MachineItemSection } from "@/components/MachineItemSection";
 import SuccessModal from "@/components/SuccessModal";
 import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
 import { useBoolBag } from "@/hooks/useBoolBag";
@@ -75,7 +75,7 @@ const Confirm = ({
     handleGoBack();
   };
 
-  const handlePressCreatePocket = useCallback(async () => {
+  const handlePressCreateMachine = useCallback(async () => {
     if (!evmWallet.signer) return;
     try {
       setCreatePoolLoading(true);
@@ -232,11 +232,11 @@ const Confirm = ({
           styles.contentContainer,
         ]}
       >
-        <PocketItemSection
+        <MachineItemSection
           title="Strategy"
           value={`${inputs.amountEachBatch} ${baseToken.symbol} ${inputs.frequency}`}
         />
-        <PocketItemSection
+        <MachineItemSection
           title="First batch time"
           value={`${getSelectedDate(inputs.firstBatchTime)} ${getSelectedTime(
             inputs.firstBatchTime
@@ -257,10 +257,10 @@ const Confirm = ({
           styles.contentContainer,
         ]}
       >
-        <PocketItemSection title="Time" value="16/02/2023 20:00" />
-        <PocketItemSection title="or" value="300 SOL" />
-        <PocketItemSection title="or" value="1,000,000,000 BLOCK" />
-        <PocketItemSection title="or" value="10 BATCHES" />
+        <MachineItemSection title="Time" value="16/02/2023 20:00" />
+        <MachineItemSection title="or" value="300 SOL" />
+        <MachineItemSection title="or" value="1,000,000,000 BLOCK" />
+        <MachineItemSection title="or" value="10 BATCHES" />
       </UiCol>
     </UiCol>
   );
@@ -276,8 +276,8 @@ const Confirm = ({
           styles.contentContainer,
         ]}
       >
-        <PocketItemSection title="Take profit" value="50 SOL" />
-        <PocketItemSection title="Stop loss" value="10% of total invested" />
+        <MachineItemSection title="Take profit" value="50 SOL" />
+        <MachineItemSection title="Stop loss" value="10% of total invested" />
       </UiCol>
     </UiCol>
   );
@@ -293,7 +293,7 @@ const Confirm = ({
       </TouchableWithoutFeedback>
       <TouchableWithoutFeedback
         disabled={isDisableCreateBtn}
-        onPress={handlePressCreatePocket}
+        onPress={handlePressCreateMachine}
       >
         <UiRow.C.X
           style={[
@@ -304,7 +304,7 @@ const Confirm = ({
           ]}
         >
           <Text style={[{ color: colors.white }, fonts.bold]}>
-            Create pocket
+            Create machine
           </Text>
         </UiRow.C.X>
       </TouchableWithoutFeedback>
@@ -327,7 +327,7 @@ const Confirm = ({
               { color: colors.white },
             ]}
           >
-            Pocket{" "}
+            Machine{" "}
             <Text style={{ color: colors.ufoGreen }}>{currentMachineId}</Text>{" "}
             has been created.
           </Text>
@@ -339,7 +339,7 @@ const Confirm = ({
               { color: colors.white },
             ]}
           >
-            The pocket’s status should be updated within 5 minutes.
+            The machine’s status should be updated within 5 minutes.
           </Text>
         </UiCol.LRC>
       </SuccessModal>

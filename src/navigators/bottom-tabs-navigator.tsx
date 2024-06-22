@@ -2,17 +2,17 @@ import { BottomTabsParamList } from "@/types/navigation";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   SCREEN_HISTORY,
-  SCREEN_MY_POCKETS,
+  SCREEN_MY_MACHINES,
   SCREEN_PROFILE,
   SCREEN_STRATEGY,
 } from "@/navigators/route-names";
-import { History, MyPockets, Profile, Strategy } from "@/screens";
+import { History, MyMachines, Profile, Strategy } from "@/screens";
 import BottomTabsContent from "@/components/BottomTabsContent";
 import {
   IconHistoryFill,
   IconHistoryOutline,
-  IconMyPocketFill,
-  IconMyPocketOutline,
+  IconMyMachineFill,
+  IconMyMachineOutline,
   IconProfileFill,
   IconProfileOutline,
   IconStrategyFill,
@@ -26,16 +26,16 @@ function BottomTabsNavigator() {
   return (
     <Tab.Navigator tabBar={(props) => <BottomTabsContent {...props} />}>
       <Tab.Screen
-        name={SCREEN_MY_POCKETS}
-        component={MyPockets}
+        name={SCREEN_MY_MACHINES}
+        component={MyMachines}
         options={{
           ...bottomTabsScreenOptions,
-          title: "My Pockets",
+          title: "My Machines",
           tabBarIcon: ({ focused, size }) =>
             !focused ? (
-              <IconMyPocketOutline width={size} />
+              <IconMyMachineOutline width={size} />
             ) : (
-              <IconMyPocketFill width={size} />
+              <IconMyMachineFill width={size} />
             ),
         }}
       />
