@@ -3,7 +3,7 @@ import { useTheme } from "@/theme";
 import { SafeScreen } from "@/components/template";
 import { UiCol, UiRow } from "@/components";
 import { SHARED_STYLES } from "@/theme/shared";
-import { CircularDot, IconBNB, ProfileCard } from "@/theme/assets/icons/svg";
+import { CircularDot, IconAvaxc, ProfileCard } from "@/theme/assets/icons/svg";
 import { LineChart } from "react-native-gifted-charts";
 import { PROFILE_LINE_CHART } from "@/dummy-data";
 
@@ -25,7 +25,7 @@ function PNLAnalysis() {
         Total Machines Balance
       </Text>
       <UiRow style={styles.machineBalanceWrapper}>
-        <IconBNB width={35} height={35} />
+        <IconAvaxc width={35} height={35} />
         <UiCol style={gutters.marginLeft_10}>
           <Text
             style={[
@@ -35,7 +35,7 @@ function PNLAnalysis() {
               { color: colors.white },
             ]}
           >
-            ~ 45.19 SOL
+            ~ 45.19 AVAXC
           </Text>
           <Text style={[fonts.size_10, { color: colors.white }]}>
             (~ $8,803.24)

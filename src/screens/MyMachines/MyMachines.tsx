@@ -1,4 +1,16 @@
-/* eslint-disable no-useless-return */
+import { UiCol, UiMultiSwitch, UiRow } from "@/components";
+import { MachineItem } from "@/components/MachineItem";
+import { SafeScreen } from "@/components/template";
+import { EMachineTab } from "@/constants/mymachine";
+import { useApp } from "@/contexts/app.context";
+import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
+import { useInput } from "@/hooks/useInput";
+import { PoolEntity, PoolStatus } from "@/libs/entities/pool.entity";
+import { MachineService } from "@/libs/services/machine.service";
+import { useTheme } from "@/theme";
+import { SHARED_STYLES } from "@/theme/shared";
+import { useNavigation } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -6,28 +18,7 @@ import {
   TextInput,
   TouchableWithoutFeedback,
 } from "react-native";
-import { useTheme } from "@/theme";
-import { SafeScreen } from "@/components/template";
-import { UiCol, UiMultiSwitch, UiRow } from "@/components";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { SHARED_STYLES } from "@/theme/shared";
-import { useCallback, useEffect, useState } from "react";
-import { useInput } from "@/hooks/useInput";
-import {} from "@gorhom/bottom-sheet";
-import { useApp } from "@/contexts/app.context";
-import { EMachineTab } from "@/constants/mymachine";
-import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
-import {
-  convertBigNumber,
-  parseToCreateMachineDtoOnChain,
-} from "@/libs/entities/machine.entity";
-import { useToken } from "@/hooks/useToken";
-import { EStrategyFrequency } from "@/constants/strategy";
-import { UtilsProvider } from "@/utils/utils.provider";
-import { MachineService } from "@/libs/services/machine.service";
-import { PoolEntity, PoolStatus } from "@/libs/entities/pool.entity";
-import { MachineItem } from "@/components/MachineItem";
-import { useNavigation } from "@react-navigation/native";
 
 const styles = StyleSheet.create({
   topSection: {
@@ -57,7 +48,6 @@ function MyMachines() {
   const [inputs, setInputs] = useInput({ searchValue: "" });
   const { filterTokenModalRef } = useApp();
   const evmWallet = useEvmWallet();
-  const tokens = useToken();
   const [pools, setPools] = useState<PoolEntity[]>([]);
   const navigation = useNavigation();
 
@@ -92,39 +82,6 @@ function MyMachines() {
   useEffect(() => {
     fetchPools();
   }, [evmWallet, navigation]);
-
-  const handlePressCreateMachine = useCallback(() => {
-    if (!evmWallet.signer) return;
-    if (!tokens.whiteListedTokens.length) return;
-
-    const baseToken = tokens.whiteListedTokens?.[0];
-    const targetToken = tokens.whiteListedTokens?.[1];
-
-    const params = parseToCreateMachineDtoOnChain(
-      baseToken,
-      targetToken,
-      evmWallet.signer,
-      {
-        depositAmount: "0.001",
-        amountEachBatch: "0.0001",
-        firstBatchDate: new Date(Date.now()),
-        firstBatchTime: new Date(new Date(Date.now()).getTime() + 2000 * 60),
-        frequency: EStrategyFrequency.ONE_HOUR,
-        firstPairItem: baseToken.address,
-        secondPairItem: targetToken.address,
-      }
-    );
-
-    console.log(
-      new UtilsProvider()
-        .mergeDateAndTime(
-          new Date(Date.now()),
-          new Date(new Date(Date.now()).getTime() + 2000 * 60)
-        )
-        .getTime() / 1000
-    );
-    evmWallet.createMachine(convertBigNumber("0.001", 18), params);
-  }, [evmWallet]);
 
   const renderScreenHeader = () => (
     <UiRow.LR style={styles.topSection}>
@@ -178,20 +135,6 @@ function MyMachines() {
     <SafeScreen>
       <UiCol.X style={[SHARED_STYLES.screenPadding]}>
         {renderScreenHeader()}
-        <TouchableWithoutFeedback
-          disabled={false}
-          onPress={handlePressCreateMachine}
-        >
-          <Text
-            style={[
-              { color: colors.white, marginBottom: 20 },
-              fonts.bold,
-              components.primaryBtn,
-            ]}
-          >
-            Create machine
-          </Text>
-        </TouchableWithoutFeedback>
         <UiMultiSwitch
           items={screenTabs}
           value={currentTab}
