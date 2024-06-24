@@ -1,7 +1,7 @@
-import { EPocketTab, EPocketType } from "@/constants/mypocket";
+import { EMachineTab, EMachineType } from "@/constants/mymachine";
 
-export const MYPOCKETS = {
-  [EPocketTab.HISTORY]: [
+export const MYMACHINES = {
+  [EMachineTab.HISTORY]: [
     {
       id: 1,
       chain: {
@@ -15,7 +15,7 @@ export const MYPOCKETS = {
       totalInvested: "120 USDC",
       APL: "+ 0.00 USDC (0.00%)",
       avgPrice: "1 USDC = 1000.491 BLOCK",
-      status: EPocketType.CLOSED,
+      status: EMachineType.CLOSED,
     },
     {
       id: 2,
@@ -30,10 +30,10 @@ export const MYPOCKETS = {
       totalInvested: "120 SOL",
       APL: "+ 0.00 SOL (0.00%)",
       avgPrice: "1 SOL = 1000.491 BLOCK",
-      status: EPocketType.ENDED,
+      status: EMachineType.ENDED,
     },
   ],
-  [EPocketTab.RUNNING]: [
+  [EMachineTab.RUNNING]: [
     {
       id: 3,
       chain: {
@@ -47,7 +47,7 @@ export const MYPOCKETS = {
       totalInvested: "120 USDC",
       APL: "+ 0.00 USDC (0.00%)",
       avgPrice: "1 USDC = 1000.491 BLOCK",
-      status: EPocketType.ON_GOING,
+      status: EMachineType.ON_GOING,
     },
   ],
 };

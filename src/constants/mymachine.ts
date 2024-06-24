@@ -1,9 +1,9 @@
-export enum EPocketTab {
+export enum EMachineTab {
   RUNNING = 'Running',
   HISTORY = 'History'
 }
 
-export enum EPocketType {
+export enum EMachineType {
   CLOSED = 'Closed',
   ON_GOING = 'On going',
   ENDED = 'Ended',

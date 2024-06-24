@@ -7,7 +7,7 @@ import PlaceholderAvatar from "@/theme/assets/images/avatar.png";
 import { ImageVariant } from "@/components/atoms";
 import { truncateAddress } from "@/utils/helpers/string";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { IconBNB, ProfileCard } from "@/theme/assets/icons/svg";
+import { IconAvaxc, ProfileCard } from "@/theme/assets/icons/svg";
 import Tooltip from "react-native-walkthrough-tooltip";
 import { useState } from "react";
 import Clipboard from "@react-native-clipboard/clipboard";
@@ -70,10 +70,10 @@ function Profile() {
           { color: colors.gray200 },
         ]}
       >
-        Total Pockets Balance
+        Total Machines Balance
       </Text>
-      <UiRow style={styles.pocketBalanceWrapper}>
-        <IconBNB width={35} height={35} />
+      <UiRow style={styles.machineBalanceWrapper}>
+        <IconAvaxc width={35} height={35} />
         <UiCol style={gutters.marginLeft_10}>
           <Text
             style={[
@@ -83,7 +83,7 @@ function Profile() {
               { color: colors.white },
             ]}
           >
-            ~ 45.19 SOL
+            ~ 45.19 AVACX
           </Text>
           <Text style={[fonts.size_10, { color: colors.white }]}>
             (~ $8,803.24)
@@ -136,7 +136,7 @@ function Profile() {
   const renderDetailContent = () => (
     <UiCol>
       <Text style={[fonts.size_16, fonts.semiBold, { color: colors.white }]}>
-        Assets (12)
+        Assets (0)
       </Text>
     </UiCol>
   );
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-  pocketBalanceWrapper: {
+  machineBalanceWrapper: {
     borderBottomWidth: 1,
     borderColor: "#969696",
     paddingBottom: 16,

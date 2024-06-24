@@ -5,7 +5,7 @@ import { SafeScreen } from "@/components/template";
 import { UiCol, UiRow } from "@/components";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { MainParamList } from "@/types/navigation";
-import { PocketItemSection } from "@/components/PocketItemSection";
+import { MachineItemSection } from "@/components/MachineItemSection";
 import { SHARED_STYLES } from "@/theme/shared";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { MachineService } from "@/libs/services/machine.service";
@@ -21,11 +21,11 @@ import moment from "moment";
 import { UtilsProvider } from "@/utils/utils.provider";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-function PocketDetail() {
+function MachineDetail() {
   const { colors, fonts, gutters } = useTheme();
   const { params } =
-    useRoute<RouteProp<MainParamList, "SCREEN_POCKET_DETAIL">>();
-  const { pocketId } = params || {};
+    useRoute<RouteProp<MainParamList, "SCREEN_MACHINE_DETAIL">>();
+  const { machineId } = params || {};
   const [pool, setPool] = useState<PoolEntity>();
   const [poolActivies, setPoolActivies] = useState<MachineActivity[]>([]);
   const { whiteListedTokens } = useToken();
@@ -39,8 +39,8 @@ function PocketDetail() {
   }, [pool]);
 
   useEffect(() =>  {
-    if (!pocketId) return;
-    new MachineService().getMachine(String(pocketId))
+    if (!machineId) return;
+    new MachineService().getMachine(String(machineId))
       .then((res) => {
         if (res) {
           setPool(res);
@@ -49,18 +49,18 @@ function PocketDetail() {
       .catch((err) => {
         console.log(err);
       }); 
-  }, [pocketId]);
+  }, [machineId]);
 
   useEffect(() => {
-    if (!pocketId) return;
-    new MachineService().getMachineActivities(String(pocketId))
+    if (!machineId) return;
+    new MachineService().getMachineActivities(String(machineId))
       .then((res) => {
         setPoolActivies(res);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [pocketId]);
+  }, [machineId]);
 
   const handleRenderFrequency = useCallback(() => {
     let convertedHours = pool?.frequency?.hours;
@@ -101,7 +101,7 @@ function PocketDetail() {
     }
 
     return "daily";
-  }, [pool, pocketId]);
+  }, [pool, machineId]);
 
   const renderProgressSection = () => (
     <UiCol>
@@ -118,13 +118,13 @@ function PocketDetail() {
       <UiCol
         style={[{ backgroundColor: colors.secondaryBlack }, styles.container]}
       >
-        <PocketItemSection
+        <MachineItemSection
           title="Total invested"
           value={
             `${convertDecimal(pool?.currentSpentBaseToken?.toString())} ${baseToken?.symbol}`
           } />
-        <PocketItemSection title="Batch bought" value={`${pool?.currentBatchAmount} BATCHES`} />
-        <PocketItemSection title="Token hold">
+        <MachineItemSection title="Batch bought" value={`${pool?.currentBatchAmount} BATCHES`} />
+        <MachineItemSection title="Token hold">
           <UiCol.R>
             <Text style={[fonts.semiBold, { color: colors.white }]}>
               1 {baseToken?.symbol} = {extractAveragePrice(baseToken, baseToken)} {targetToken?.symbol}
@@ -133,8 +133,8 @@ function PocketDetail() {
               1 {targetToken?.symbol} = {extractAveragePrice(targetToken, baseToken)} {baseToken?.symbol}
             </Text>
           </UiCol.R>
-        </PocketItemSection>
-        <PocketItemSection title="Tokens hold">
+        </MachineItemSection>
+        <MachineItemSection title="Tokens hold">
           <UiCol.R>
             <Text style={[fonts.semiBold, { color: colors.white }]}>
               {`${convertDecimal(
@@ -148,12 +148,12 @@ function PocketDetail() {
               {`${convertDecimal(pool?.currentReceivedTargetToken?.toString())} ${targetToken?.symbol}`}
             </Text>
           </UiCol.R>
-        </PocketItemSection>
-        <PocketItemSection title="APL (ROI)">
+        </MachineItemSection>
+        <MachineItemSection title="APL (ROI)">
           <Text style={[fonts.semiBold, { color: (pool?.currentROI || 0) < 0 ? colors.red400 : colors.ufoGreen }]}>
             {`${pool?.currentROIValue || 0}`} {baseToken?.symbol} ({`${pool?.currentROI?.toFixed(2) || 0}`}%)
           </Text>
-        </PocketItemSection>
+        </MachineItemSection>
       </UiCol>
     </UiCol>
   );
@@ -173,8 +173,8 @@ function PocketDetail() {
       <UiCol
         style={[{ backgroundColor: colors.secondaryBlack }, styles.container]}
       >
-        <PocketItemSection title="Next batch time" value={moment(pool?.nextExecutionAt || new Date()).format("DD/MM/YYYY HH:mm")} />
-        <PocketItemSection title="Outstanding deposit" value={`${convertDecimal(pool?.remainingBaseTokenBalance || 0)} ${baseToken?.symbol}`} />
+        <MachineItemSection title="Next batch time" value={moment(pool?.nextExecutionAt || new Date()).format("DD/MM/YYYY HH:mm")} />
+        <MachineItemSection title="Outstanding deposit" value={`${convertDecimal(pool?.remainingBaseTokenBalance || 0)} ${baseToken?.symbol}`} />
       </UiCol>
     </UiCol>
   );
@@ -194,11 +194,11 @@ function PocketDetail() {
       <UiCol
         style={[{ backgroundColor: colors.secondaryBlack }, styles.container]}
       >
-        <PocketItemSection
+        <MachineItemSection
           title="Total deposited"
           value={`${convertDecimal(pool?.depositedAmount)} ${baseToken?.symbol}`}
         />
-        <PocketItemSection
+        <MachineItemSection
           title="Start date"
           value={`${moment(pool?.startTime).format("DD/MM/YYYY HH:mm")}`}
         />
@@ -221,8 +221,8 @@ function PocketDetail() {
       <UiCol
         style={[{ backgroundColor: colors.secondaryBlack }, styles.container]}
       >
-        <PocketItemSection title="Time" value="16/08/2023 16:00" />
-        <PocketItemSection title="or" value="300 SOL" />
+        <MachineItemSection title="Time" value="16/08/2023 16:00" />
+        <MachineItemSection title="or" value="300 SOL" />
       </UiCol>
     </UiCol>
   );
@@ -242,8 +242,8 @@ function PocketDetail() {
       <UiCol
         style={[{ backgroundColor: colors.secondaryBlack }, styles.container]}
       >
-        <PocketItemSection title="Take profit" value="50 SOL" />
-        <PocketItemSection title="Stop loss" value="10% of total invested" />
+        <MachineItemSection title="Take profit" value="50 SOL" />
+        <MachineItemSection title="Stop loss" value="10% of total invested" />
       </UiCol>
     </UiCol>
   );
@@ -272,7 +272,7 @@ function PocketDetail() {
                   const url = `https://snowtrace.io/tx/${activity.transactionId}?chainId=43114`;
                   await Linking.openURL(url);
                 }}>
-                  <PocketItemSection
+                  <MachineItemSection
                     title={moment(activity.createdAt).format("DD/MM/YYYY HH:mm")}
                     value={`${activity.baseTokenAmount.toString()} ${baseToken?.symbol} <> ${new UtilsProvider().getDisplayedDecimals(activity.targetTokenAmount)} ${targetToken?.symbol}`}
                   />
@@ -303,7 +303,7 @@ function PocketDetail() {
             </UiCol>
             <Text style={[{ color: colors.white }]}>#{truncateAddress(pool?._id || pool?.id || "")}</Text>
           </UiRow.LR>
-          <PocketItemSection
+          <MachineItemSection
             title="Strategy"
             value={`${convertDecimal(pool?.batchVolume?.toString())} ${targetToken?.symbol} ${handleRenderFrequency()}`}
             containerStyle={gutters.marginBottom_16}
@@ -335,4 +335,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PocketDetail;
+export default MachineDetail;

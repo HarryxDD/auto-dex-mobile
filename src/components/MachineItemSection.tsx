@@ -2,7 +2,7 @@ import { StyleProp, Text, ViewStyle } from "react-native";
 import { UiRow } from "@/components/elements/ui-grid/UiRow";
 import { useTheme } from "@/theme";
 
-export const PocketItemSection = ({
+export const MachineItemSection = ({
   title,
   value,
   children,

@@ -3,8 +3,8 @@ import { UiRow } from "@/components/elements/ui-grid/UiRow";
 import { StyleSheet, Text, TouchableWithoutFeedback } from "react-native";
 import { useTheme } from "@/theme";
 import { useNavigation } from "@react-navigation/native";
-import { SCREEN_POCKET_DETAIL, STACK_MAIN } from "@/navigators/route-names";
-import { PocketItemSection } from "@/components/PocketItemSection";
+import { SCREEN_MACHINE_DETAIL, STACK_MAIN } from "@/navigators/route-names";
+import { MachineItemSection } from "@/components/MachineItemSection";
 import { PoolEntity } from "@/libs/entities/pool.entity";
 import { convertDecimal } from "@/libs/entities/machine.entity";
 
@@ -12,21 +12,21 @@ interface Props {
   pool: PoolEntity;
 }
 
-export const PocketItem = (props: Props) => {
+export const MachineItem = (props: Props) => {
   const { pool } = props;
   const { fonts, colors } = useTheme();
   const { navigate } = useNavigation();
 
-  const handlePressPocket = () => {
+  const handlePressMachine = () => {
     // @ts-ignore
     navigate(STACK_MAIN, {
-      screen: SCREEN_POCKET_DETAIL,
-      params: { pocketId: pool._id },
+      screen: SCREEN_MACHINE_DETAIL,
+      params: { machineId: pool._id },
     });
   };
 
   return (
-    <TouchableWithoutFeedback onPress={handlePressPocket}>
+    <TouchableWithoutFeedback onPress={handlePressMachine}>
       <UiCol
         style={[{ backgroundColor: colors.secondaryBlack }, styles.container]}
       >
@@ -48,29 +48,29 @@ export const PocketItem = (props: Props) => {
             {pool._id}
           </Text>
         </UiRow.LR>
-        <PocketItemSection title="Strategy">
+        <MachineItemSection title="Strategy">
           <UiCol.R>
             <Text style={[fonts.semiBold, { color: colors.white }]}>
-              {/* {pocket.strategy} */}
+              {/* {machine.strategy} */}
             </Text>
             <Text style={[{ color: colors.grayText }, fonts.size_10]}>
-              {/* {pocket.strategyDesc} */}
+              {/* {machine.strategyDesc} */}
             </Text>
           </UiCol.R>
-        </PocketItemSection>
-        <PocketItemSection
+        </MachineItemSection>
+        <MachineItemSection
           title="Total invested"
           value={convertDecimal(pool.currentSpentBaseToken.toString())}
         />
-        <PocketItemSection title="APL (ROI)">
+        <MachineItemSection title="APL (ROI)">
           <Text style={[{ color: (pool?.currentROI || 0) < 0 ? colors.red400 : colors.ufoGreen }, fonts.semiBold]}>
             {`${pool?.currentROI?.toFixed(2) || 0}`}%
           </Text>
-        </PocketItemSection>
-        <PocketItemSection title="Average price" value={convertDecimal(pool?.avgPrice?.toString())} />
-        <PocketItemSection title="Status">
+        </MachineItemSection>
+        <MachineItemSection title="Average price" value={convertDecimal(pool?.avgPrice?.toString())} />
+        <MachineItemSection title="Status">
           <Text style={[{ color: colors.white }]}>{pool?.status}</Text>
-        </PocketItemSection>
+        </MachineItemSection>
       </UiCol>
     </TouchableWithoutFeedback>
   );

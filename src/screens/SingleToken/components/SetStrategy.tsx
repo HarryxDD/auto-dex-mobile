@@ -462,13 +462,13 @@ const SetStrategy = ({
             </CollapsibleView>
           </UiCol>
 
-          {/* Close pocket when reach */}
+          {/* Close machine when reach */}
           <UiCol style={styles.sectionWrapper}>
             <UiRow.L>
               <Text
                 style={[fonts.semiBold, fonts.size_16, { color: colors.white }]}
               >
-                Close pocket when reach
+                Close machine when reach
               </Text>
             </UiRow.L>
             <CollapsibleView title="Add end time" maxHeight={85}>
