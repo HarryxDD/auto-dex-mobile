@@ -49,7 +49,8 @@ function MyMachines() {
   const [inputs, setInputs] = useInput({ searchValue: "" });
   const { filterTokenModalRef } = useApp();
   const evmWallet = useEvmWallet();
-  const [pools, setPools] = useState<PoolEntity[]>([]);
+  const [activePools, setActivePools] = useState<PoolEntity[]>([]);
+  const [historyPools, setHistoryPools] = useState<PoolEntity[]>([]);
   const [loadingSyncWalletPools, setLoadingSyncWalletPools] = useState(false);
   const navigation = useNavigation();
 
@@ -62,7 +63,20 @@ function MyMachines() {
     new MachineService()
       .getMachineList(evmWallet.signer.address, [PoolStatus.ACTIVE])
       .then((data) => {
-        setPools(data);
+        setActivePools(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    new MachineService()
+      .getMachineList(evmWallet.signer.address, [
+        PoolStatus.PAUSED,
+        PoolStatus.CLOSED,
+        PoolStatus.ENDED,
+      ])
+      .then((data) => {
+        setHistoryPools(data);
       })
       .catch((error) => {
         console.log(error);
@@ -124,7 +138,7 @@ function MyMachines() {
       <TouchableWithoutFeedback onPress={handleSelectToken}>
         <UiRow.C style={components.inputContainer}>
           <Text style={[styles.filterSectionText, { color: colors.grayText }]}>
-            SOL
+            AVAXC
           </Text>
           <Ionicons
             name="chevron-down-outline"
@@ -158,7 +172,7 @@ function MyMachines() {
         />
         {renderSearchSection()}
         <FlatList
-          data={pools}
+          data={currentTab === EMachineTab.RUNNING ? activePools : historyPools}
           renderItem={({ item }) => <MachineItem key={item._id} pool={item} />}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item) => `${item._id}`}

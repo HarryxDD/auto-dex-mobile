@@ -24,22 +24,22 @@ export const MachineStatuses = {
     textColor: "#26C673",
   },
   [EMachineStatus.ACTIVE]: {
-    title: "Created",
+    title: "Active",
     backgroundColor: "#4ADE8012",
     textColor: "#26C673",
   },
   [EMachineStatus.PAUSED]: {
-    title: "Created",
+    title: "Paused",
     backgroundColor: "#FFC20012",
     textColor: "#F0B90B",
   },
   [EMachineStatus.CLOSED]: {
-    title: "Created",
+    title: "Closed",
     backgroundColor: "#F7555512",
     textColor: "#F44949",
   },
   [EMachineStatus.ENDED]: {
-    title: "Created",
+    title: "Ended",
     backgroundColor: "#F7555512",
     textColor: "#F44949",
   },

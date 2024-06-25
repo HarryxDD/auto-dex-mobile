@@ -5,6 +5,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useTheme } from "@/theme";
 import { SafeScreen } from "@/components/template";
@@ -12,10 +13,10 @@ import { UiCol, UiRow } from "@/components";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { MainParamList } from "@/types/navigation";
 import { MachineItemSection } from "@/components/MachineItemSection";
-import { SHARED_STYLES } from "@/theme/shared";
+import { SHARED_STYLES, UI_CONSTANT } from "@/theme/shared";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { MachineService } from "@/libs/services/machine.service";
-import { PoolEntity } from "@/libs/entities/pool.entity";
+import { PoolEntity, PoolStatus } from "@/libs/entities/pool.entity";
 import { useToken } from "@/hooks/useToken";
 import { truncateAddress } from "@/utils/helpers/string";
 import { convertHoursToDurationsTime, extractAveragePrice } from "@/utils";
@@ -30,15 +31,21 @@ import moment from "moment";
 import { UtilsProvider } from "@/utils/utils.provider";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import UiDivider from "@/components/UiDivider";
+import { MachineStatuses } from "@/constants/mymachine";
+import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 function MachineDetail() {
-  const { colors, fonts, gutters } = useTheme();
+  const { colors, fonts, gutters, components } = useTheme();
   const { params } =
     useRoute<RouteProp<MainParamList, "SCREEN_MACHINE_DETAIL">>();
   const { machineId } = params || {};
   const [pool, setPool] = useState<PoolEntity>();
   const [poolActivies, setPoolActivies] = useState<MachineActivity[]>([]);
   const { whiteListedTokens } = useToken();
+
+  // Extracted from useEvmWallet.tsx
+  const contract = useEvmWallet();
 
   const baseToken = useMemo(() => {
     return whiteListedTokens.find(
@@ -51,6 +58,26 @@ function MachineDetail() {
       (token) => token.address === pool?.targetTokenAddress
     );
   }, [pool]);
+
+  const syncMachine = () => {
+    if (!machineId) return;
+    new MachineService()
+      .syncMachine(String(machineId))
+      .then(() => {
+        console.log("synced");
+        new MachineService()
+          .getMachineActivities(String(machineId))
+          .then((res) => {
+            setPoolActivies(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   useEffect(() => {
     if (!machineId) return;
@@ -119,8 +146,60 @@ function MachineDetail() {
     return "daily";
   }, [pool, machineId]);
 
+  const handlePauseMachine = async () => {
+    if (!contract.signer) return;
+    contract.pauseMachine(String(pool._id)).then((res) => console.log(res));
+  };
+
+  const handleResumeMachine = async () => {
+    if (!contract.signer) return;
+    contract.resumeMachine(String(pool._id)).then((res) => console.log(res));
+  };
+
+  const renderActionButton = () => {
+    const mapData = () => {
+      switch (pool?.status) {
+        case PoolStatus.ACTIVE:
+          return {
+            title: "Pause Machine",
+            onPress: handlePauseMachine,
+          };
+        case PoolStatus.PAUSED:
+          return {
+            title: "Resume Machine",
+            onPress: handleResumeMachine,
+          };
+        case PoolStatus.CLOSED:
+          return {
+            title: "Withdraw Machine",
+            onPress: () => console.log("withdraw"),
+          };
+        case PoolStatus.ENDED:
+          return {
+            title: "Withdraw Machine",
+            onPress: () => console.log("withdraw"),
+          };
+        default:
+          return {
+            title: "Withdraw Machine",
+            onPress: () => console.log("withdraw"),
+          };
+      }
+    };
+
+    return (
+      <TouchableWithoutFeedback disabled={false} onPress={mapData().onPress}>
+        <UiRow.C.X style={[components.primaryBtn, gutters.paddingVertical_10]}>
+          <Text style={[{ color: colors.white }, fonts.bold]}>
+            {mapData().title}
+          </Text>
+        </UiRow.C.X>
+      </TouchableWithoutFeedback>
+    );
+  };
+
   const renderProgressSection = () => (
-    <UiCol>
+    <UiCol style={{ marginTop: 10 }}>
       <Text
         style={[
           fonts.bold,
@@ -191,8 +270,10 @@ function MachineDetail() {
               },
             ]}
           >
-            {`${pool?.currentROIValue || 0}`} {baseToken?.symbol} (
-            {`${pool?.currentROI?.toFixed(2) || 0}`}%)
+            {`${new UtilsProvider().getDisplayedDecimals(
+              pool?.currentROIValue || 0
+            )}`}{" "}
+            {baseToken?.symbol} ({`${pool?.currentROI?.toFixed(2) || 0}`}%)
           </Text>
         </MachineItemSection>
       </UiCol>
@@ -257,6 +338,25 @@ function MachineDetail() {
           title="Start date"
           value={`${moment(pool?.startTime).format("DD/MM/YYYY HH:mm")}`}
         />
+        <UiDivider />
+        {pool?.status && (
+          <MachineItemSection title="Status">
+            <Text
+              style={[
+                gutters.paddingHorizontal_14,
+                gutters.paddingVertical_8,
+                {
+                  color: MachineStatuses[pool?.status]?.textColor,
+                  backgroundColor:
+                    MachineStatuses[pool?.status]?.backgroundColor,
+                  borderRadius: UI_CONSTANT.borderRadius,
+                },
+              ]}
+            >
+              {MachineStatuses[pool?.status].title}
+            </Text>
+          </MachineItemSection>
+        )}
       </UiCol>
     </UiCol>
   );
@@ -306,7 +406,7 @@ function MachineDetail() {
   const renderTransactionsSection = useCallback(() => {
     if (!poolActivies.length) return null;
     return (
-      <UiCol>
+      <UiCol style={{ marginTop: 10 }}>
         <Text
           style={[
             fonts.bold,
@@ -380,9 +480,26 @@ function MachineDetail() {
             } ${handleRenderFrequency()}`}
             containerStyle={gutters.marginBottom_16}
           />
+          <UiRow.LR>
+            <TouchableWithoutFeedback onPress={syncMachine}>
+              <UiRow.C style={[components.secondaryBtn]}>
+                <Text
+                  style={[
+                    { color: colors.main },
+                    gutters.marginRight_8,
+                    fonts.bold,
+                  ]}
+                >
+                  Sync
+                </Text>
+                <Ionicons name="sync-outline" color={colors.main} size={18} />
+              </UiRow.C>
+            </TouchableWithoutFeedback>
+          </UiRow.LR>
           {renderProgressSection()}
           {renderNextBatchSection()}
           {renderPoolInfoSection()}
+          {renderActionButton()}
           {/* {renderEndConditionSection()}
           {renderTPSLSection()} */}
           {renderTransactionsSection()}
