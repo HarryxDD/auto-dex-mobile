@@ -1,10 +1,25 @@
-import { useEffect, useRef } from "react";
-import { Animated, Modal, StyleSheet, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
+import { UiCol } from "@/components/elements/ui-grid/UiCol";
 
-const CubeGridLoader = ({ visible }: { visible: boolean }) => {
+const CubeGridLoader = ({
+  visible,
+  onTurnOff,
+}: {
+  visible: boolean;
+  onTurnOff?: () => void;
+}) => {
   const animationValues = useRef(
     [...Array(9)].map(() => new Animated.Value(0))
   ).current;
+  const [showCloseButton, setShowCloseButton] = useState(false);
 
   useEffect(() => {
     const animations = animationValues.map((value) =>
@@ -12,38 +27,62 @@ const CubeGridLoader = ({ visible }: { visible: boolean }) => {
         Animated.sequence([
           Animated.timing(value, {
             toValue: 1,
-            duration: 400,
+            duration: 800,
             useNativeDriver: true,
           }),
           Animated.timing(value, {
             toValue: 0,
-            duration: 400,
+            duration: 800,
             useNativeDriver: true,
           }),
         ])
       )
     );
 
-    const orderedAnimations = [
-      animations[6], // bottom-left
-      animations[7],
-      animations[8], // bottom-right
-      animations[3],
-      animations[4],
-      animations[5],
-      animations[0], // top-left
-      animations[1],
-      animations[2], // top-right
-    ];
+    const startAnimations = () => {
+      animations.forEach((animation, index) => {
+        setTimeout(() => {
+          animation.start();
+        }, index * 100); // stagger the start time of each animation
+      });
+    };
 
-    Animated.stagger(100, orderedAnimations).start();
-  }, [animationValues]);
+    if (visible) {
+      startAnimations();
+    } else {
+      animations.forEach((animation) => animation.stop());
+    }
+
+    return () => {
+      animations.forEach((animation) => animation.stop());
+    };
+  }, [visible, animationValues]);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    if (visible && onTurnOff) {
+      timer = setTimeout(() => {
+        setShowCloseButton(true);
+      }, 20000); // 20 seconds
+    } else {
+      setShowCloseButton(false);
+      if (timer) {
+        clearTimeout(timer);
+      }
+    }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [visible]);
 
   const renderCubes = () => {
     return animationValues.map((animValue, index) => {
       const scale = animValue.interpolate({
         inputRange: [0, 1],
-        outputRange: [1, 1.3],
+        outputRange: [1, 0.2],
       });
       return (
         <Animated.View
@@ -69,6 +108,14 @@ const CubeGridLoader = ({ visible }: { visible: boolean }) => {
             </View>
           ))}
         </View>
+        {showCloseButton && (
+          <TouchableWithoutFeedback onPress={onTurnOff}>
+            <UiCol.C>
+              <Text style={styles.buttonContainer}>Something went wrong?</Text>
+              <Text style={styles.goBackBtn}>Go back here!</Text>
+            </UiCol.C>
+          </TouchableWithoutFeedback>
+        )}
       </View>
     </Modal>
   );
@@ -87,6 +134,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexWrap: "wrap",
     flexDirection: "row",
+    transform: [{ scaleY: -1 }],
   },
   gridItem: {
     width: "33.33%",
@@ -95,10 +143,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cube: {
-    width: 10,
-    height: 10,
+    width: 14,
+    height: 14,
     backgroundColor: "#fff",
-    borderRadius: 5,
+  },
+  buttonContainer: {
+    marginTop: 40,
+    color: "white",
+  },
+  goBackBtn: {
+    color: "white",
+    borderBottomWidth: 1,
+    borderBottomColor: "white",
   },
 });
 

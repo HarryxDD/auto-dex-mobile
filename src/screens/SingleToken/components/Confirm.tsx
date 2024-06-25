@@ -124,10 +124,19 @@ const Confirm = ({
           placeholder="From 0.1"
           value={inputs.depositAmount.toString()}
           onChangeText={(text) => {
-            setInputs({ depositAmount: text });
+            const numericValue = text.replace(/[^0-9.]/g, "");
+            const dotIndex = numericValue.indexOf(".");
+            if (dotIndex !== -1) {
+              const parts = numericValue.split(".");
+              const formattedValue = parts[0] + "." + parts.slice(1).join("");
+              setInputs({ depositAmount: formattedValue });
+            } else {
+              setInputs({ depositAmount: numericValue });
+            }
           }}
           style={styles.textInputStyle}
           placeholderTextColor={colors.grayText}
+          keyboardType="numeric"
         />
         <Text style={[fonts.semiBold, fonts.size_14, { color: colors.white }]}>
           AVAXC
@@ -313,7 +322,10 @@ const Confirm = ({
 
   return (
     <>
-      <CubeGridLoader visible={createPoolLoading} />
+      <CubeGridLoader
+        visible={createPoolLoading}
+        onTurnOff={() => setCreatePoolLoading(false)}
+      />
       <SuccessModal
         visible={showSuccessModal}
         onClose={handlePressDoneSuccessModal}

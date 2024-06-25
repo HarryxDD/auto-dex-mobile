@@ -18,7 +18,7 @@ import {
   IconStrategyFill,
   IconStrategyOutline,
 } from "@/theme/assets/icons/svg";
-import { bottomTabsScreenOptions } from "./config";
+import { AppHeaderSettingButton, bottomTabsScreenOptions } from "./config";
 
 const Tab = createBottomTabNavigator<BottomTabsParamList>();
 
@@ -72,6 +72,7 @@ function BottomTabsNavigator() {
         component={Profile}
         options={{
           title: "Profile",
+          headerRight: () => <AppHeaderSettingButton />,
           tabBarIcon: ({ focused, size }) =>
             !focused ? (
               <IconProfileOutline width={size} />

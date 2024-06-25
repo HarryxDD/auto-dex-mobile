@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Linking, SafeAreaView, ScrollView, StyleSheet, Text } from "react-native";
+import {
+  Linking,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+} from "react-native";
 import { useTheme } from "@/theme";
 import { SafeScreen } from "@/components/template";
 import { UiCol, UiRow } from "@/components";
@@ -13,13 +19,17 @@ import { PoolEntity } from "@/libs/entities/pool.entity";
 import { useToken } from "@/hooks/useToken";
 import { truncateAddress } from "@/utils/helpers/string";
 import { convertHoursToDurationsTime, extractAveragePrice } from "@/utils";
-import { MachineActivity, convertDecimal } from "@/libs/entities/machine.entity";
-import BigDecimal from "js-big-decimal"
+import {
+  MachineActivity,
+  convertDecimal,
+} from "@/libs/entities/machine.entity";
+import BigDecimal from "js-big-decimal";
 
 import moment from "moment";
 
 import { UtilsProvider } from "@/utils/utils.provider";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import UiDivider from "@/components/UiDivider";
 
 function MachineDetail() {
   const { colors, fonts, gutters } = useTheme();
@@ -31,16 +41,21 @@ function MachineDetail() {
   const { whiteListedTokens } = useToken();
 
   const baseToken = useMemo(() => {
-    return whiteListedTokens.find((token) => token.address === pool?.baseTokenAddress);
+    return whiteListedTokens.find(
+      (token) => token.address === pool?.baseTokenAddress
+    );
   }, [pool]);
 
   const targetToken = useMemo(() => {
-    return whiteListedTokens.find((token) => token.address === pool?.targetTokenAddress);
+    return whiteListedTokens.find(
+      (token) => token.address === pool?.targetTokenAddress
+    );
   }, [pool]);
 
-  useEffect(() =>  {
+  useEffect(() => {
     if (!machineId) return;
-    new MachineService().getMachine(String(machineId))
+    new MachineService()
+      .getMachine(String(machineId))
       .then((res) => {
         if (res) {
           setPool(res);
@@ -48,12 +63,13 @@ function MachineDetail() {
       })
       .catch((err) => {
         console.log(err);
-      }); 
+      });
   }, [machineId]);
 
   useEffect(() => {
     if (!machineId) return;
-    new MachineService().getMachineActivities(String(machineId))
+    new MachineService()
+      .getMachineActivities(String(machineId))
       .then((res) => {
         setPoolActivies(res);
       })
@@ -72,32 +88,32 @@ function MachineDetail() {
     if (res.hours) {
       if (res.hours === 1) {
         return "hourly";
-      } 
-        return `every ${res.hours} hours`;
-      
-    } if (res.days) {
+      }
+      return `every ${res.hours} hours`;
+    }
+    if (res.days) {
       if (res.days === 1) {
         return "daily";
-      } 
-        return `every ${res.days} days`;
-      
-    } if (res.weeks) {
+      }
+      return `every ${res.days} days`;
+    }
+    if (res.weeks) {
       if (res.weeks === 1) {
         return "weekly";
-      } 
-        return `every ${res.weeks} weeks`;
-      
-    } if (res.months) {
+      }
+      return `every ${res.weeks} weeks`;
+    }
+    if (res.months) {
       if (res.months === 1) {
         return "monthly";
-      } 
-        return `every ${res.months} months`;
-      
-    } if (res.years) {
+      }
+      return `every ${res.months} months`;
+    }
+    if (res.years) {
       if (res.years === 1) {
         return "yearly";
-      } 
-        return `every ${res.years} years`;
+      }
+      return `every ${res.years} years`;
     }
 
     return "daily";
@@ -120,38 +136,63 @@ function MachineDetail() {
       >
         <MachineItemSection
           title="Total invested"
-          value={
-            `${convertDecimal(pool?.currentSpentBaseToken?.toString())} ${baseToken?.symbol}`
-          } />
-        <MachineItemSection title="Batch bought" value={`${pool?.currentBatchAmount} BATCHES`} />
+          value={`${convertDecimal(pool?.currentSpentBaseToken?.toString())} ${
+            baseToken?.symbol
+          }`}
+        />
+        <UiDivider />
+        <MachineItemSection
+          title="Batch bought"
+          value={`${pool?.currentBatchAmount} BATCHES`}
+        />
+        <UiDivider />
         <MachineItemSection title="Token hold">
           <UiCol.R>
             <Text style={[fonts.semiBold, { color: colors.white }]}>
-              1 {baseToken?.symbol} = {extractAveragePrice(baseToken, baseToken)} {targetToken?.symbol}
+              1 {baseToken?.symbol} ={" "}
+              {extractAveragePrice(baseToken, baseToken)} {targetToken?.symbol}
             </Text>
             <Text style={[fonts.semiBold, { color: colors.white }]}>
-              1 {targetToken?.symbol} = {extractAveragePrice(targetToken, baseToken)} {baseToken?.symbol}
+              1 {targetToken?.symbol} ={" "}
+              {extractAveragePrice(targetToken, baseToken)} {baseToken?.symbol}
             </Text>
           </UiCol.R>
         </MachineItemSection>
+        <UiDivider />
         <MachineItemSection title="Tokens hold">
           <UiCol.R>
             <Text style={[fonts.semiBold, { color: colors.white }]}>
               {`${convertDecimal(
-                new BigDecimal(pool?.depositedAmount?.toString() || "0").subtract(
-                  new BigDecimal(pool?.currentSpentBaseToken?.toString() || "0")
-                ).getValue().toString(
-                )
+                new BigDecimal(pool?.depositedAmount?.toString() || "0")
+                  .subtract(
+                    new BigDecimal(
+                      pool?.currentSpentBaseToken?.toString() || "0"
+                    )
+                  )
+                  .getValue()
+                  .toString()
               )} ${baseToken?.symbol}`}
             </Text>
             <Text style={[fonts.semiBold, { color: colors.white }]}>
-              {`${convertDecimal(pool?.currentReceivedTargetToken?.toString())} ${targetToken?.symbol}`}
+              {`${convertDecimal(
+                pool?.currentReceivedTargetToken?.toString()
+              )} ${targetToken?.symbol}`}
             </Text>
           </UiCol.R>
         </MachineItemSection>
+        <UiDivider />
         <MachineItemSection title="APL (ROI)">
-          <Text style={[fonts.semiBold, { color: (pool?.currentROI || 0) < 0 ? colors.red400 : colors.ufoGreen }]}>
-            {`${pool?.currentROIValue || 0}`} {baseToken?.symbol} ({`${pool?.currentROI?.toFixed(2) || 0}`}%)
+          <Text
+            style={[
+              fonts.semiBold,
+              {
+                color:
+                  (pool?.currentROI || 0) < 0 ? colors.red400 : colors.ufoGreen,
+              },
+            ]}
+          >
+            {`${pool?.currentROIValue || 0}`} {baseToken?.symbol} (
+            {`${pool?.currentROI?.toFixed(2) || 0}`}%)
           </Text>
         </MachineItemSection>
       </UiCol>
@@ -173,8 +214,19 @@ function MachineDetail() {
       <UiCol
         style={[{ backgroundColor: colors.secondaryBlack }, styles.container]}
       >
-        <MachineItemSection title="Next batch time" value={moment(pool?.nextExecutionAt || new Date()).format("DD/MM/YYYY HH:mm")} />
-        <MachineItemSection title="Outstanding deposit" value={`${convertDecimal(pool?.remainingBaseTokenBalance || 0)} ${baseToken?.symbol}`} />
+        <MachineItemSection
+          title="Next batch time"
+          value={moment(pool?.nextExecutionAt || new Date()).format(
+            "DD/MM/YYYY HH:mm"
+          )}
+        />
+        <UiDivider />
+        <MachineItemSection
+          title="Outstanding deposit"
+          value={`${convertDecimal(pool?.remainingBaseTokenBalance || 0)} ${
+            baseToken?.symbol
+          }`}
+        />
       </UiCol>
     </UiCol>
   );
@@ -196,8 +248,11 @@ function MachineDetail() {
       >
         <MachineItemSection
           title="Total deposited"
-          value={`${convertDecimal(pool?.depositedAmount)} ${baseToken?.symbol}`}
+          value={`${convertDecimal(pool?.depositedAmount)} ${
+            baseToken?.symbol
+          }`}
         />
+        <UiDivider />
         <MachineItemSection
           title="Start date"
           value={`${moment(pool?.startTime).format("DD/MM/YYYY HH:mm")}`}
@@ -267,14 +322,25 @@ function MachineDetail() {
         >
           {poolActivies.map((activity, index) => {
             return (
-              <SafeAreaView key={`activity-${index}-${Math.random().toString()}`}>
-                <TouchableOpacity onPress={async () => {
-                  const url = `https://snowtrace.io/tx/${activity.transactionId}?chainId=43114`;
-                  await Linking.openURL(url);
-                }}>
+              <SafeAreaView
+                key={`activity-${index}-${Math.random().toString()}`}
+              >
+                {index !== 0 && <UiDivider />}
+                <TouchableOpacity
+                  onPress={async () => {
+                    const url = `https://snowtrace.io/tx/${activity.transactionId}?chainId=43114`;
+                    await Linking.openURL(url);
+                  }}
+                >
                   <MachineItemSection
-                    title={moment(activity.createdAt).format("DD/MM/YYYY HH:mm")}
-                    value={`${activity.baseTokenAmount.toString()} ${baseToken?.symbol} <> ${new UtilsProvider().getDisplayedDecimals(activity.targetTokenAmount)} ${targetToken?.symbol}`}
+                    title={moment(activity.createdAt).format(
+                      "DD/MM/YYYY HH:mm"
+                    )}
+                    value={`${activity.baseTokenAmount.toString()} ${
+                      baseToken?.symbol
+                    } <> ${new UtilsProvider().getDisplayedDecimals(
+                      activity.targetTokenAmount
+                    )} ${targetToken?.symbol}`}
                   />
                 </TouchableOpacity>
               </SafeAreaView>
@@ -282,7 +348,7 @@ function MachineDetail() {
           })}
         </UiCol>
       </UiCol>
-    )
+    );
   }, [poolActivies, baseToken, targetToken]);
 
   return (
@@ -296,16 +362,22 @@ function MachineDetail() {
             ]}
           >
             <UiCol>
-              <Text style={[fonts.bold, { color: colors.white }]}>{targetToken?.symbol}/{baseToken?.symbol}</Text>
+              <Text style={[fonts.bold, { color: colors.white }]}>
+                {targetToken?.symbol}/{baseToken?.symbol}
+              </Text>
               <Text style={[{ color: colors.grayText }, fonts.size_12]}>
                 Uniswap
               </Text>
             </UiCol>
-            <Text style={[{ color: colors.white }]}>#{truncateAddress(pool?._id || pool?.id || "")}</Text>
+            <Text style={[{ color: colors.white }]}>
+              #{truncateAddress(pool?._id || pool?.id || "")}
+            </Text>
           </UiRow.LR>
           <MachineItemSection
             title="Strategy"
-            value={`${convertDecimal(pool?.batchVolume?.toString())} ${targetToken?.symbol} ${handleRenderFrequency()}`}
+            value={`${convertDecimal(pool?.batchVolume?.toString())} ${
+              targetToken?.symbol
+            } ${handleRenderFrequency()}`}
             containerStyle={gutters.marginBottom_16}
           />
           {renderProgressSection()}

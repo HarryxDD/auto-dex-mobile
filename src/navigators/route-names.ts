@@ -13,6 +13,7 @@ export const SCREEN_PROFILE = "SCREEN_PROFILE";
 
 export const SCREEN_MACHINE_DETAIL = "SCREEN_MACHINE_DETAIL";
 export const SCREEN_PNL_ANALYSIS = "SCREEN_PNL_ANALYSIS";
+export const SCREEN_SETTINGS = "SCREEN_SETTINGS";
 
 export const SCREEN_SINGLE_TOKEN = "SCREEN_SINGLE_TOKEN";
 export const SCREEN_LIMIT_ORDER = "SCREEN_LIMIT_ORDER";
@@ -25,12 +26,10 @@ export const deepLinkConfig = {
   screens: {
     // [STACK_AUTH]: {
     //   screens: {
-        
     //   },
     // },
     // [STACK_MAIN]: {
     //   screens: {
-        
     //   },
     // },
   },

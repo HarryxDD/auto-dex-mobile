@@ -43,7 +43,9 @@ const SetStrategy = ({
   const strategyConditionModalRef = useRef<BottomSheetModal>(null);
   const { inputs, setInputs } = useSingleToken();
   const [conditionOperator, setConditionOperator] =
-    useState<EConditionOperator>(inputs.byAtMarketCondition?.type || EConditionOperator.BETWEEN);
+    useState<EConditionOperator>(
+      inputs.byAtMarketCondition?.type || EConditionOperator.BETWEEN
+    );
   const { boolBag, setBoolBag } = useBoolBag({
     showDatePicker: false,
     showTimePicker: false,
@@ -55,7 +57,11 @@ const SetStrategy = ({
   const { whiteListedTokens } = useToken();
   const { nativeBalance } = useEvmWallet();
 
-  const targetToken = useMemo(() => whiteListedTokens.find((item) => item.address === inputs.secondPairItem), [inputs, whiteListedTokens]);
+  const targetToken = useMemo(
+    () =>
+      whiteListedTokens.find((item) => item.address === inputs.secondPairItem),
+    [inputs, whiteListedTokens]
+  );
 
   const handleMoveToNextStep = () => {
     setSingleTokenProgress(singleTokenProgress + 1);
@@ -82,7 +88,23 @@ const SetStrategy = ({
 
   const handleSelectCondition = (condition: EConditionOperator) => {
     setConditionOperator(condition);
-    setInputs({ byAtMarketCondition: { type: condition, values: [inputs.byAtMarketCondition?.values?.[0], inputs.byAtMarketCondition?.values?.[1]] } });
+    setInputs({
+      byAtMarketCondition: {
+        type: condition,
+        values: [
+          inputs.byAtMarketCondition?.values?.[0],
+          inputs.byAtMarketCondition?.values?.[1],
+        ],
+      },
+    });
+  };
+
+  const handleRemoveAdvancedSetup = () => {
+    setInputs({
+      targetTokenAmount: null,
+      targetSOLAmount: null,
+      targetBatchesPurchased: null,
+    });
   };
 
   const renderDCAPairSection = () => (
@@ -100,7 +122,15 @@ const SetStrategy = ({
           ]}
         >
           <UiRow.C>
-            <ImageVariant source={{ uri: whiteListedTokens.find((item) => item.address === inputs.firstPairItem).image }} width={18} height={18} />
+            <ImageVariant
+              source={{
+                uri: whiteListedTokens.find(
+                  (item) => item.address === inputs.firstPairItem
+                ).image,
+              }}
+              width={18}
+              height={18}
+            />
             <Text
               style={[
                 fonts.semiBold,
@@ -109,7 +139,11 @@ const SetStrategy = ({
                 { color: colors.white },
               ]}
             >
-              {whiteListedTokens.find((item) => item.address === inputs.firstPairItem).name}
+              {
+                whiteListedTokens.find(
+                  (item) => item.address === inputs.firstPairItem
+                ).name
+              }
             </Text>
             <Ionicons
               name="chevron-down-outline"
@@ -131,7 +165,15 @@ const SetStrategy = ({
           ]}
         >
           <UiRow.C>
-          <ImageVariant source={{ uri: whiteListedTokens.find((item) => item.address === inputs.secondPairItem).image }} width={18} height={18} />
+            <ImageVariant
+              source={{
+                uri: whiteListedTokens.find(
+                  (item) => item.address === inputs.secondPairItem
+                ).image,
+              }}
+              width={18}
+              height={18}
+            />
             <Text
               style={[
                 fonts.semiBold,
@@ -140,7 +182,11 @@ const SetStrategy = ({
                 { color: colors.white },
               ]}
             >
-              {whiteListedTokens.find((item) => item.address === inputs.secondPairItem).name}
+              {
+                whiteListedTokens.find(
+                  (item) => item.address === inputs.secondPairItem
+                ).name
+              }
             </Text>
             <Ionicons
               name="chevron-down-outline"
@@ -195,10 +241,19 @@ const SetStrategy = ({
           placeholder="From 0.1"
           value={inputs.amountEachBatch.toString()}
           onChangeText={(text) => {
-            setInputs({ amountEachBatch: text });
+            const numericValue = text.replace(/[^0-9.]/g, "");
+            const dotIndex = numericValue.indexOf(".");
+            if (dotIndex !== -1) {
+              const parts = numericValue.split(".");
+              const formattedValue = parts[0] + "." + parts.slice(1).join("");
+              setInputs({ amountEachBatch: formattedValue });
+            } else {
+              setInputs({ amountEachBatch: numericValue });
+            }
           }}
           style={styles.textInputStyle}
           placeholderTextColor={colors.grayText}
+          keyboardType="numeric"
         />
         <Text style={[fonts.semiBold, fonts.size_14, { color: colors.white }]}>
           AVAXC
@@ -212,12 +267,6 @@ const SetStrategy = ({
       <UiRow.L>
         <Text style={[fonts.semiBold, fonts.size_16, { color: colors.white }]}>
           Frequency
-        </Text>
-        <Text
-          style={[fonts.semiBold, fonts.size_18, { color: colors.grayText }]}
-        >
-          {" "}
-          ⓘ
         </Text>
       </UiRow.L>
       <UiRow style={[SHARED_STYLES.flexWrap, gutters.marginTop_8]}>
@@ -405,9 +454,19 @@ const SetStrategy = ({
                       style={[{ color: colors.white }, gutters.marginRight_10]}
                       placeholder="Value"
                       placeholderTextColor={colors.grayText}
-
                       value={inputs.byAtMarketCondition.values?.[0]}
-                      onChangeText={(value) => setInputs({ byAtMarketCondition: { type: conditionOperator, values: [value || "", inputs.byAtMarketCondition.values[1] || ""] } })}
+                      onChangeText={(value) =>
+                        setInputs({
+                          byAtMarketCondition: {
+                            type: conditionOperator,
+                            values: [
+                              value || "",
+                              inputs.byAtMarketCondition.values[1] || "",
+                            ],
+                          },
+                        })
+                      }
+                      keyboardType="numeric"
                     />
                   </UiRow.X>
                   {conditionOperator === EConditionOperator.BETWEEN && (
@@ -434,7 +493,18 @@ const SetStrategy = ({
                           placeholder="Value"
                           placeholderTextColor={colors.grayText}
                           value={inputs.byAtMarketCondition?.values?.[1] || "0"}
-                          onChangeText={(value) => setInputs({ byAtMarketCondition: { type: conditionOperator, values: [inputs.byAtMarketCondition?.values?.[0] || "", value || ""] } })}
+                          onChangeText={(value) =>
+                            setInputs({
+                              byAtMarketCondition: {
+                                type: conditionOperator,
+                                values: [
+                                  inputs.byAtMarketCondition?.values?.[0] || "",
+                                  value || "",
+                                ],
+                              },
+                            })
+                          }
+                          keyboardType="numeric"
                         />
                       </UiRow.X>
                     </>
@@ -517,7 +587,15 @@ const SetStrategy = ({
                 </TouchableWithoutFeedback>
               </UiRow>
             </CollapsibleView>
-            <CollapsibleView title="Add target token amount" maxHeight={90}>
+            <CollapsibleView
+              title="Add target token amount"
+              maxHeight={90}
+              onClear={
+                inputs.targetTokenAmount
+                  ? () => setInputs({ targetTokenAmount: "" })
+                  : null
+              }
+            >
               <UiRow.C
                 style={[
                   components.inputContainer,
@@ -525,15 +603,30 @@ const SetStrategy = ({
                   { backgroundColor: colors.charlestonGreen },
                 ]}
               >
-                <ImageVariant source={{ uri: targetToken?.image }} width={18} height={18} style={gutters.marginRight_2} />
+                <ImageVariant
+                  source={{ uri: targetToken?.image }}
+                  width={18}
+                  height={18}
+                  style={gutters.marginRight_2}
+                />
                 <TextInput
                   placeholder="From 0.001"
                   value={inputs.targetTokenAmount?.toString()}
                   onChangeText={(text) => {
-                    setInputs({ targetTokenAmount: text });
+                    const numericValue = text.replace(/[^0-9.]/g, "");
+                    const dotIndex = numericValue.indexOf(".");
+                    if (dotIndex !== -1) {
+                      const parts = numericValue.split(".");
+                      const formattedValue =
+                        parts[0] + "." + parts.slice(1).join("");
+                      setInputs({ targetTokenAmount: formattedValue });
+                    } else {
+                      setInputs({ targetTokenAmount: numericValue });
+                    }
                   }}
                   style={styles.textInputStyle}
                   placeholderTextColor={colors.grayText}
+                  keyboardType="numeric"
                 />
                 <Text
                   style={[
@@ -546,7 +639,15 @@ const SetStrategy = ({
                 </Text>
               </UiRow.C>
             </CollapsibleView>
-            <CollapsibleView title="Add target AVAXC amount" maxHeight={90}>
+            <CollapsibleView
+              title="Add target AVAXC amount"
+              maxHeight={90}
+              onClear={
+                inputs.targetSOLAmount
+                  ? () => setInputs({ targetSOLAmount: "" })
+                  : null
+              }
+            >
               <UiRow.C
                 style={[
                   components.inputContainer,
@@ -554,15 +655,29 @@ const SetStrategy = ({
                   { backgroundColor: colors.charlestonGreen },
                 ]}
               >
-                <IconAvaxc width={18} height={18} style={gutters.marginRight_2} />
+                <IconAvaxc
+                  width={18}
+                  height={18}
+                  style={gutters.marginRight_2}
+                />
                 <TextInput
                   placeholder="From 0.1"
                   value={inputs.targetSOLAmount?.toString()}
                   onChangeText={(text) => {
-                    setInputs({ targetSOLAmount: text });
+                    const numericValue = text.replace(/[^0-9.]/g, "");
+                    const dotIndex = numericValue.indexOf(".");
+                    if (dotIndex !== -1) {
+                      const parts = numericValue.split(".");
+                      const formattedValue =
+                        parts[0] + "." + parts.slice(1).join("");
+                      setInputs({ targetSOLAmount: formattedValue });
+                    } else {
+                      setInputs({ targetSOLAmount: numericValue });
+                    }
                   }}
                   style={styles.textInputStyle}
                   placeholderTextColor={colors.grayText}
+                  keyboardType="numeric"
                 />
                 <Text
                   style={[
@@ -578,6 +693,11 @@ const SetStrategy = ({
             <CollapsibleView
               title="Add target batches purchased"
               maxHeight={90}
+              onClear={
+                inputs.targetBatchesPurchased
+                  ? () => setInputs({ targetBatchesPurchased: null })
+                  : null
+              }
             >
               <UiRow.C
                 style={[
@@ -590,10 +710,12 @@ const SetStrategy = ({
                   placeholder="Amount of purchased batches"
                   value={inputs.targetBatchesPurchased?.toString()}
                   onChangeText={(val) => {
-                    setInputs({ targetBatchesPurchased: val });
+                    const numericValue = val.replace(/[^0-9]/g, "");
+                    setInputs({ targetBatchesPurchased: numericValue });
                   }}
                   style={styles.textInputStyle}
                   placeholderTextColor={colors.grayText}
+                  keyboardType="numeric"
                 />
               </UiRow.C>
             </CollapsibleView>
@@ -689,27 +811,29 @@ const SetStrategy = ({
             </UiRow.C>
           </UiCol> */}
 
-          <UiRow.C.X
-            style={[
-              components.secondaryBtn,
-              gutters.paddingVertical_10,
-              {
-                borderColor: colors.red400,
-                backgroundColor: `${colors.red400}17`,
-              },
-            ]}
-          >
-            <Text
+          <TouchableWithoutFeedback onPress={handleRemoveAdvancedSetup}>
+            <UiRow.C.X
               style={[
-                { color: colors.red400 },
-                gutters.marginRight_4,
-                fonts.bold,
+                components.secondaryBtn,
+                gutters.paddingVertical_10,
+                {
+                  borderColor: colors.red400,
+                  backgroundColor: `${colors.red400}17`,
+                },
               ]}
             >
-              Remove Advance Setup
-            </Text>
-            <TrashCan />
-          </UiRow.C.X>
+              <Text
+                style={[
+                  { color: colors.red400 },
+                  gutters.marginRight_4,
+                  fonts.bold,
+                ]}
+              >
+                Remove Advance Setup
+              </Text>
+              <TrashCan />
+            </UiRow.C.X>
+          </TouchableWithoutFeedback>
         </UiCol>
       )}
     </UiCol.LRT>

@@ -5,6 +5,7 @@ import NavigationRef from "@/utils/navigation-ref";
 import { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
 import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { SCREEN_SETTINGS } from "./route-names";
 
 // const BottomTabsHeaderLeft = () => {
 //   return (
@@ -67,6 +68,25 @@ export const AppHeaderBackButton = () => {
         name="arrow-back-outline"
         color={colors.grayText}
         style={gutters.marginLeft_14}
+        size={28}
+      />
+    </TouchableWithoutFeedback>
+  );
+};
+
+export const AppHeaderSettingButton = () => {
+  const { colors, gutters } = useTheme();
+
+  const handleGoBack = () => {
+    NavigationRef.navigate(SCREEN_SETTINGS);
+  };
+
+  return (
+    <TouchableWithoutFeedback onPress={handleGoBack}>
+      <Ionicons
+        name="settings-outline"
+        color={colors.grayText}
+        style={gutters.marginRight_24}
         size={28}
       />
     </TouchableWithoutFeedback>

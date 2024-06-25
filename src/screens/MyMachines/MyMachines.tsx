@@ -1,4 +1,5 @@
 import { UiCol, UiMultiSwitch, UiRow } from "@/components";
+import CubeGridLoader from "@/components/CubeGridLoader";
 import { MachineItem } from "@/components/MachineItem";
 import { SafeScreen } from "@/components/template";
 import { EMachineTab } from "@/constants/mymachine";
@@ -49,6 +50,7 @@ function MyMachines() {
   const { filterTokenModalRef } = useApp();
   const evmWallet = useEvmWallet();
   const [pools, setPools] = useState<PoolEntity[]>([]);
+  const [loadingSyncWalletPools, setLoadingSyncWalletPools] = useState(false);
   const navigation = useNavigation();
 
   const handleSelectToken = () => {
@@ -69,6 +71,7 @@ function MyMachines() {
 
   const syncWalletPools = useCallback(() => {
     if (!evmWallet.signer) return;
+    setLoadingSyncWalletPools(true);
     new MachineService()
       .syncWalletMachines(evmWallet.signer.address)
       .then(() => {
@@ -76,6 +79,9 @@ function MyMachines() {
       })
       .catch((error) => {
         console.log(error);
+      })
+      .finally(() => {
+        setLoadingSyncWalletPools(false);
       });
   }, [evmWallet]);
 
@@ -133,6 +139,7 @@ function MyMachines() {
 
   return (
     <SafeScreen>
+      <CubeGridLoader visible={loadingSyncWalletPools} />
       <UiCol.X style={[SHARED_STYLES.screenPadding]}>
         {renderScreenHeader()}
         <UiMultiSwitch

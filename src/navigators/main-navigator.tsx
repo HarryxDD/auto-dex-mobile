@@ -7,6 +7,7 @@ import {
   SCREEN_LIMIT_ORDER,
   SCREEN_TWAP,
   SCREEN_BASKET_DCA,
+  SCREEN_SETTINGS,
 } from "@/navigators/route-names";
 import { MainParamList } from "@/types/navigation";
 import BottomTabsNavigator from "@/navigators/bottom-tabs-navigator";
@@ -16,6 +17,7 @@ import SingleTokenScreen from "@/screens/SingleToken/SingleToken";
 import LimitOrderScreen from "@/screens/LimitOrder/LimitOrder";
 import TWAPScreen from "@/screens/TWAP/TWAP";
 import BasketDCAScreen from "@/screens/BasketDCA/BasketDCA";
+import SettingsScreen from "@/screens/Settings/Settings";
 import { AppHeaderBackButton } from "./config";
 
 const MainStack = createStackNavigator<MainParamList>();
@@ -46,6 +48,15 @@ export const MainNavigator = () => {
           headerShown: true,
           headerLeft: () => <AppHeaderBackButton />,
           headerTitle: "PNL Analysis",
+        }}
+      />
+      <MainStack.Screen
+        name={SCREEN_SETTINGS}
+        component={SettingsScreen}
+        options={{
+          headerShown: true,
+          headerLeft: () => <AppHeaderBackButton />,
+          headerTitle: "Settings",
         }}
       />
       <MainStack.Screen

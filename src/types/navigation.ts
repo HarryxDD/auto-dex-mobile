@@ -13,6 +13,7 @@ import {
   SCREEN_TWAP,
   SCREEN_LIMIT_ORDER,
   SCREEN_BASKET_DCA,
+  SCREEN_SETTINGS,
 } from "@/navigators/route-names";
 import type { StackScreenProps } from "@react-navigation/stack";
 
@@ -28,6 +29,7 @@ export type MainParamList = {
   [BOTTOM_TABS]: undefined;
   [SCREEN_MACHINE_DETAIL]: { machineId: string | number };
   [SCREEN_PNL_ANALYSIS]: undefined;
+  [SCREEN_SETTINGS]: undefined;
   [SCREEN_SINGLE_TOKEN]: undefined;
   [SCREEN_LIMIT_ORDER]: undefined;
   [SCREEN_TWAP]: undefined;
