@@ -9,22 +9,61 @@ import { truncateAddress } from "@/utils/helpers/string";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { IconAvaxc, ProfileCard } from "@/theme/assets/icons/svg";
 import Tooltip from "react-native-walkthrough-tooltip";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { EProfileTab } from "@/constants/profile";
 import { PieChart } from "react-native-gifted-charts";
 import { PROFILE_PIE_CHART } from "@/dummy-data";
 import { SCREEN_PNL_ANALYSIS, STACK_MAIN } from "@/navigators/route-names";
 import { useNavigation } from "@react-navigation/native";
-import { useAccount } from "wagmi";
+import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
+import { MachineService } from "@/libs/services/machine.service";
+import { UserToken } from "@/libs/entities/pool.entity";
+import { platformConfig } from "@/libs/entities/platform-config.entity";
+import { useToken } from "@/hooks/useToken";
+import { UtilsProvider } from "@/utils/utils.provider";
+import BigDecimal from "js-big-decimal";
 
 function Profile() {
-  const { colors, fonts, gutters } = useTheme();
-  const [showTip, setTip] = useState(false);
   const screenTabs = [EProfileTab.DETAILS, EProfileTab.STATISTICS];
+  
+  const [showTip, setTip] = useState(false);
+  const { colors, fonts, gutters } = useTheme();
   const [currentTab, setCurrentTab] = useState(EProfileTab.DETAILS);
+
+  const { signer } = useEvmWallet();
   const { navigate } = useNavigation();
-  const { address: walletAddress } = useAccount();
+  const { whiteListedTokens } = useToken();
+  const walletAddress = signer?.address || "";
+
+  const [userTokens, setUserTokens] = useState<UserToken[]>([]);
+  const [usdPnl, setUsdPnl] = useState(0);
+
+
+  const nativeToken = useMemo(() => {
+    return whiteListedTokens.find(
+      (token) => token.address === platformConfig.BASE_TOKEN_ADDRESS
+    );
+  }, [whiteListedTokens]);
+
+
+  const totalBalance = useMemo(() => {
+    if (!nativeToken || !userTokens || !userTokens.length) {
+      return {
+        usdValue: 0,
+        value: 0,
+      };
+    }
+
+    const totalUsdValue = userTokens.reduce((acc, token) => {
+      return acc.add(new BigDecimal(token.usdValue));
+    }, new BigDecimal(0));
+
+    return {
+      usdValue: totalUsdValue.getValue(),
+      value: totalUsdValue.divide(new BigDecimal(nativeToken.estimatedValue)).getValue()
+    };
+  }, [nativeToken, userTokens]);
 
   const handleCopyAddress = () => {
     Clipboard?.setString(walletAddress || "");
@@ -36,6 +75,21 @@ function Profile() {
       screen: SCREEN_PNL_ANALYSIS,
     });
   };
+
+  useEffect(() => {
+    new MachineService()
+      .getPortfolioUserTokens(walletAddress)
+      .then((tokens) => {
+        setUserTokens(tokens);
+      }).catch((err) => console.log(err));
+
+    new MachineService()
+      .getPortfolioPnl(walletAddress)
+      .then((pnl) => {
+        console.log(pnl);
+        setUsdPnl(pnl?.[0]?.totalROIValueInUSD || 0);
+      }).catch((err) => console.log(err));
+  }, [signer]);
 
   const renderInfoSection = () => (
     <>
@@ -83,10 +137,10 @@ function Profile() {
               { color: colors.white },
             ]}
           >
-            ~ 45.19 AVACX
+            ~ {new UtilsProvider().getDisplayedDecimals(Number(totalBalance.value))} AVACX
           </Text>
           <Text style={[fonts.size_10, { color: colors.white }]}>
-            (~ $8,803.24)
+            (~ ${new UtilsProvider().getDisplayedDecimals(Number(totalBalance.usdValue))})
           </Text>
         </UiCol>
       </UiRow>
@@ -120,7 +174,7 @@ function Profile() {
                 { color: colors.ufoGreen },
               ]}
             >
-              10.76$/6.23%
+              {new UtilsProvider().getDisplayedDecimals(usdPnl)}$
             </Text>
             <Ionicons
               name="chevron-forward"

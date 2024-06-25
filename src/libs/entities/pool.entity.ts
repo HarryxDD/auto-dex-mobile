@@ -165,3 +165,32 @@ export function calculateProgressPercent(machine: PoolEntity) {
         (endTimeInMillis - startTimeInMillis);
   }
 }
+
+
+/**
+ * "_id": "6666df80c343d1730ab1b79d",
+        "ownerAddress": "0xE06916775b346612eD8AC5F8c205e5F955B3c509",
+        "tokenAddress": "0x152b9d0FdC40C096757F570A51E494bd4b943E50",
+        "__v": 0,
+        "total": 96,
+        "tokenName": "Wrapped Bitcoin",
+        "tokenSymbol": "BTC",
+        "tokenImage": "https://assets.coingecko.com/coins/images/1/standard/bitcoin.png?1696501400",
+        "chainId": "avaxc",
+        "decimalValue": 9.6e-17,
+        "usdValue": 5.844288e-12
+ */
+
+export interface UserToken {
+  _id: string;
+  ownerAddress: string;
+  tokenAddress: string;
+  __v: number;
+  total: number;
+  tokenName: string;
+  tokenSymbol: string;
+  tokenImage: string;
+  chainId: string;
+  decimalValue: number;
+  usdValue: number;
+};
