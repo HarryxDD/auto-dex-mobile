@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  Text,
   Linking,
+  Animated,
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
+  Easing,
 } from "react-native";
 import { useTheme } from "@/theme";
 import { SafeScreen } from "@/components/template";
@@ -14,7 +16,7 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { MainParamList } from "@/types/navigation";
 import { MachineItemSection } from "@/components/MachineItemSection";
 import { SHARED_STYLES, UI_CONSTANT } from "@/theme/shared";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MachineService } from "@/libs/services/machine.service";
 import { PoolEntity, PoolStatus } from "@/libs/entities/pool.entity";
 import { useToken } from "@/hooks/useToken";
@@ -34,6 +36,7 @@ import UiDivider from "@/components/UiDivider";
 import { MachineStatuses } from "@/constants/mymachine";
 import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { SyncButton } from "@/components/SyncButton";
 
 function MachineDetail() {
   const { colors, fonts, gutters, components } = useTheme();
@@ -59,24 +62,18 @@ function MachineDetail() {
     );
   }, [pool]);
 
-  const syncMachine = () => {
+  const syncMachine = async () => {
     if (!machineId) return;
-    new MachineService()
-      .syncMachine(String(machineId))
-      .then(() => {
-        console.log("synced");
-        new MachineService()
-          .getMachineActivities(String(machineId))
-          .then((res) => {
-            setPoolActivies(res);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    try {
+      await new MachineService().syncMachine(String(machineId));
+      const res = await new MachineService().getMachineActivities(
+        String(machineId)
+      );
+      console.log("Sync success");
+      setPoolActivies(res);
+    } catch {
+      console.log("Sync failed");
+    }
   };
 
   useEffect(() => {
@@ -156,45 +153,80 @@ function MachineDetail() {
     contract.resumeMachine(String(pool._id)).then((res) => console.log(res));
   };
 
+  const handleCloseMachine = async () => {
+    if (!contract.signer) return;
+    contract.closeMachine(String(pool._id)).then((res) => console.log(res));
+  };
+
+  const handleWithdrawMachine = async () => {
+    if (!contract.signer) return;
+    contract.withdrawMachine(String(pool._id)).then((res) => console.log(res));
+  };
+
   const renderActionButton = () => {
+    /**
+     * @dev Map data to render action button.
+     * @returns {Array} Array of action button.
+     */
     const mapData = () => {
+      const pauseData = {
+        title: "Pause Machine",
+        theme: components.primaryBtn,
+        onPress: handlePauseMachine,
+      };
+
+      const resumeData = {
+        title: "Resume Machine",
+        theme: components.primaryBtn,
+        onPress: handleResumeMachine,
+      };
+
+      const closeData = {
+        title: "Close Machine",
+        theme: components.secondaryBtn,
+        onPress: handleCloseMachine,
+      };
+
+      const withdrawData = {
+        title: "Withdraw Machine",
+        theme: components.secondaryBtn,
+        onPress: handleWithdrawMachine,
+      };
+
       switch (pool?.status) {
         case PoolStatus.ACTIVE:
-          return {
-            title: "Pause Machine",
-            onPress: handlePauseMachine,
-          };
+          return [pauseData, closeData];
         case PoolStatus.PAUSED:
-          return {
-            title: "Resume Machine",
-            onPress: handleResumeMachine,
-          };
+          return [resumeData];
         case PoolStatus.CLOSED:
-          return {
-            title: "Withdraw Machine",
-            onPress: () => console.log("withdraw"),
-          };
+          return [withdrawData];
         case PoolStatus.ENDED:
-          return {
-            title: "Withdraw Machine",
-            onPress: () => console.log("withdraw"),
-          };
         default:
-          return {
-            title: "Withdraw Machine",
-            onPress: () => console.log("withdraw"),
-          };
+          return null;
       }
     };
 
+    const data = mapData();
+    if (!data) return null;
+
     return (
-      <TouchableWithoutFeedback disabled={false} onPress={mapData().onPress}>
-        <UiRow.C.X style={[components.primaryBtn, gutters.paddingVertical_10]}>
-          <Text style={[{ color: colors.white }, fonts.bold]}>
-            {mapData().title}
-          </Text>
-        </UiRow.C.X>
-      </TouchableWithoutFeedback>
+      <>
+        {data.map((item) => (
+          <TouchableWithoutFeedback
+            disabled={false}
+            onPress={item.onPress}
+            key={Math.random().toString()}
+          >
+            <UiRow.C.X
+              style={[item.theme, gutters.paddingVertical_10, { marginBottom: 10 }]}
+            >
+              <Text style={[{ color: colors.white }, fonts.bold]}>
+                {item.title}
+              </Text>
+            </UiRow.C.X>
+          </TouchableWithoutFeedback>
+        ))}
+      </>
     );
   };
 
@@ -481,7 +513,7 @@ function MachineDetail() {
             containerStyle={gutters.marginBottom_16}
           />
           <UiRow.LR>
-            <TouchableWithoutFeedback onPress={syncMachine}>
+            {/* <TouchableWithoutFeedback onPress={syncMachine}>
               <UiRow.C style={[components.secondaryBtn]}>
                 <Text
                   style={[
@@ -492,9 +524,11 @@ function MachineDetail() {
                 >
                   Sync
                 </Text>
-                <Ionicons name="sync-outline" color={colors.main} size={18} />
-              </UiRow.C>
-            </TouchableWithoutFeedback>
+                <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                  <Ionicons name="sync-outline" color={colors.main} size={18} />
+                </Animated.View>
+              </UiRow.C> */}
+            <SyncButton syncFn={syncMachine} />
           </UiRow.LR>
           {renderProgressSection()}
           {renderNextBatchSection()}

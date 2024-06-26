@@ -184,6 +184,7 @@ export const EvmWalletProvider: FC<{ children: ReactNode }> = (props) => {
 
       /** @dev Wait for confirmation. */
       await (tx as any).wait(CONFIRMATIONS);
+      await machineService.syncMachine(MachineId);
     },
     [signer, machineChef, platformConfig, client, chain]
   );
@@ -249,6 +250,8 @@ export const EvmWalletProvider: FC<{ children: ReactNode }> = (props) => {
         /** @dev Wait for confirmation. */
         await (tx as any).wait(CONFIRMATIONS);
       }
+
+      await machineService.syncMachine(MachineId);
     },
     [signer, machineChef, machineRegistry, closeMachine]
   );

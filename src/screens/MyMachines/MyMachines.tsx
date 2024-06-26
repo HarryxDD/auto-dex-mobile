@@ -1,6 +1,7 @@
 import { UiCol, UiMultiSwitch, UiRow } from "@/components";
 import CubeGridLoader from "@/components/CubeGridLoader";
 import { MachineItem } from "@/components/MachineItem";
+import { SyncButton } from "@/components/SyncButton";
 import { SafeScreen } from "@/components/template";
 import { EMachineTab } from "@/constants/mymachine";
 import { useApp } from "@/contexts/app.context";
@@ -83,20 +84,23 @@ function MyMachines() {
       });
   }, [evmWallet, navigation]);
 
-  const syncWalletPools = useCallback(() => {
-    if (!evmWallet.signer) return;
-    setLoadingSyncWalletPools(true);
-    new MachineService()
-      .syncWalletMachines(evmWallet.signer.address)
-      .then(() => {
-        fetchPools();
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setLoadingSyncWalletPools(false);
-      });
+  const syncWalletPools = useCallback(async () => {
+    return new Promise((resolve) => {
+      if (!evmWallet.signer) resolve(false);
+      setLoadingSyncWalletPools(true);
+      new MachineService()
+        .syncWalletMachines(evmWallet.signer.address)
+        .then(() => {
+          fetchPools();
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          setLoadingSyncWalletPools(false);
+          resolve(true);
+        });
+    });
   }, [evmWallet]);
 
   useEffect(() => {
@@ -108,16 +112,7 @@ function MyMachines() {
       <Text style={[fonts.size_20, fonts.bold, { color: colors.white }]}>
         My Machines
       </Text>
-      <TouchableWithoutFeedback onPress={syncWalletPools}>
-        <UiRow.C style={[components.secondaryBtn]}>
-          <Text
-            style={[{ color: colors.main }, gutters.marginRight_8, fonts.bold]}
-          >
-            Sync
-          </Text>
-          <Ionicons name="sync-outline" color={colors.main} size={18} />
-        </UiRow.C>
-      </TouchableWithoutFeedback>
+      <SyncButton syncFn={syncWalletPools} />
     </UiRow.LR>
   );
 
