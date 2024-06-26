@@ -13,10 +13,10 @@ export class Token {
   symbol: string;
   image: string;
   coingeckoId: string;
-  decimals?: number;
+  decimals: number;
 
   /** In Dollars */
-  estimatedValue?: number;
+  estimatedValue: number;
 }
 
 export const platformConfig = {

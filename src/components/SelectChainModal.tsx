@@ -8,13 +8,14 @@ import { ModalBackdrop } from "@/components/ModalBackdrop";
 import { Text } from "react-native";
 import { useTheme } from "@/theme";
 import { UiCol } from "@/components";
+import { SHARED_STYLES } from "@/theme/shared";
 
 interface Props extends Partial<BottomSheetModalProps> {}
 
 export const SelectChainModal = forwardRef(
   (props: Props, ref: ForwardedRef<BottomSheetModal>) => {
     const { containerStyle, snapPoints = ["40%"], ...rest } = props;
-    const { colors } = useTheme();
+    const { colors, fonts, gutters } = useTheme();
 
     return (
       <BottomSheetModalProvider>
@@ -30,9 +31,23 @@ export const SelectChainModal = forwardRef(
           backgroundStyle={{ backgroundColor: colors.purple50 }}
           {...rest}
         >
-          <UiCol.C.X>
-            <Text style={[{ color: colors.white }]}>Coming soon!</Text>
-          </UiCol.C.X>
+          <UiCol.L.X style={SHARED_STYLES.screenPadding}>
+            <Text style={[fonts.size_24, fonts.bold, { color: colors.main }]}>
+              Under Development!
+            </Text>
+            <Text
+              style={[
+                fonts.size_16,
+                gutters.marginTop_10,
+                { color: colors.white },
+              ]}
+            >
+              We are currently working hard to bring you the best experience
+              possible. This feature is under development and will be available
+              soon. Please stay tuned for updates and thank you for your
+              patience!
+            </Text>
+          </UiCol.L.X>
         </BottomSheetModal>
       </BottomSheetModalProvider>
     );

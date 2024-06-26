@@ -11,8 +11,9 @@ import { UiCol, UiRow } from "@/components";
 import { SHARED_STYLES } from "@/theme/shared";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useInput } from "@/hooks/useInput";
-import { PocketItemSection } from "@/components/PocketItemSection";
+import { MachineItemSection } from "@/components/MachineItemSection";
 import { HISTORY_DATA } from "@/dummy-data";
+import UiDivider from "@/components/UiDivider";
 
 function History() {
   const { fonts, colors, components, gutters } = useTheme();
@@ -79,16 +80,27 @@ function History() {
                 ]}
               >
                 {item.pair && (
-                  <PocketItemSection title="Pair" value={item.pair} />
+                  <>
+                    <MachineItemSection title="Pair" value={item.pair} />
+                    {(item.type || item.amount || item.tokenAmount) && (
+                      <UiDivider />
+                    )}
+                  </>
                 )}
                 {item.type && (
-                  <PocketItemSection title="Type" value={item.type} />
+                  <>
+                    <MachineItemSection title="Type" value={item.type} />
+                    {(item.amount || item.tokenAmount) && <UiDivider />}
+                  </>
                 )}
                 {item.amount && (
-                  <PocketItemSection title="Amount" value={item.amount} />
+                  <>
+                    <MachineItemSection title="Amount" value={item.amount} />
+                    {item.tokenAmount && <UiDivider />}
+                  </>
                 )}
                 {item.tokenAmount && (
-                  <PocketItemSection
+                  <MachineItemSection
                     title="Token amount"
                     value={item.tokenAmount}
                   />

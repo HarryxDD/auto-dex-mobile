@@ -39,6 +39,12 @@ target 'AutoDex' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  # Adding Firebase pods with modular headers
+  pod 'Firebase', :modular_headers => true
+  pod 'FirebaseCoreInternal', :modular_headers => true
+  pod 'GoogleUtilities', :modular_headers => true
+  pod 'FirebaseCore', :modular_headers => true
+
   target 'AutoDexTests' do
     inherit! :complete
     # Pods for testing

@@ -1,11 +1,11 @@
 import {
   BOTTOM_TABS,
   SCREEN_HISTORY,
-  SCREEN_MY_POCKETS,
+  SCREEN_MY_MACHINES,
   SCREEN_PROFILE,
   SCREEN_STRATEGY,
   STACK_MAIN,
-  SCREEN_POCKET_DETAIL,
+  SCREEN_MACHINE_DETAIL,
   SCREEN_PNL_ANALYSIS,
   SCREEN_SINGLE_TOKEN,
   SCREEN_ONBOARDING,
@@ -13,6 +13,7 @@ import {
   SCREEN_TWAP,
   SCREEN_LIMIT_ORDER,
   SCREEN_BASKET_DCA,
+  SCREEN_SETTINGS,
 } from "@/navigators/route-names";
 import type { StackScreenProps } from "@react-navigation/stack";
 
@@ -26,8 +27,9 @@ export type ApplicationScreenProps =
 
 export type MainParamList = {
   [BOTTOM_TABS]: undefined;
-  [SCREEN_POCKET_DETAIL]: { pocketId: string | number };
+  [SCREEN_MACHINE_DETAIL]: { machineId: string | number };
   [SCREEN_PNL_ANALYSIS]: undefined;
+  [SCREEN_SETTINGS]: undefined;
   [SCREEN_SINGLE_TOKEN]: undefined;
   [SCREEN_LIMIT_ORDER]: undefined;
   [SCREEN_TWAP]: undefined;
@@ -39,7 +41,7 @@ export type AuthParamList = {
 };
 
 export type BottomTabsParamList = {
-  [SCREEN_MY_POCKETS]: undefined;
+  [SCREEN_MY_MACHINES]: undefined;
   [SCREEN_STRATEGY]: undefined;
   [SCREEN_HISTORY]: undefined;
   [SCREEN_PROFILE]: undefined;

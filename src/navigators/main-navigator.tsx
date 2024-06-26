@@ -1,21 +1,23 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import {
   BOTTOM_TABS,
-  SCREEN_POCKET_DETAIL,
+  SCREEN_MACHINE_DETAIL,
   SCREEN_PNL_ANALYSIS,
   SCREEN_SINGLE_TOKEN,
   SCREEN_LIMIT_ORDER,
   SCREEN_TWAP,
   SCREEN_BASKET_DCA,
+  SCREEN_SETTINGS,
 } from "@/navigators/route-names";
 import { MainParamList } from "@/types/navigation";
 import BottomTabsNavigator from "@/navigators/bottom-tabs-navigator";
-import PocketDetail from "@/screens/PocketDetail/PocketDetail";
+import MachineDetail from "@/screens/MachineDetail/MachineDetail";
 import PNLAnalysis from "@/screens/PNLAnalysis/PNLAnalysis";
 import SingleTokenScreen from "@/screens/SingleToken/SingleToken";
 import LimitOrderScreen from "@/screens/LimitOrder/LimitOrder";
 import TWAPScreen from "@/screens/TWAP/TWAP";
 import BasketDCAScreen from "@/screens/BasketDCA/BasketDCA";
+import SettingsScreen from "@/screens/Settings/Settings";
 import { AppHeaderBackButton } from "./config";
 
 const MainStack = createStackNavigator<MainParamList>();
@@ -31,12 +33,12 @@ export const MainNavigator = () => {
         }}
       />
       <MainStack.Screen
-        name={SCREEN_POCKET_DETAIL}
-        component={PocketDetail}
+        name={SCREEN_MACHINE_DETAIL}
+        component={MachineDetail}
         options={{
           headerShown: true,
           headerLeft: () => <AppHeaderBackButton />,
-          headerTitle: "Pocket details",
+          headerTitle: "Machine details",
         }}
       />
       <MainStack.Screen
@@ -46,6 +48,15 @@ export const MainNavigator = () => {
           headerShown: true,
           headerLeft: () => <AppHeaderBackButton />,
           headerTitle: "PNL Analysis",
+        }}
+      />
+      <MainStack.Screen
+        name={SCREEN_SETTINGS}
+        component={SettingsScreen}
+        options={{
+          headerShown: true,
+          headerLeft: () => <AppHeaderBackButton />,
+          headerTitle: "Settings",
         }}
       />
       <MainStack.Screen
