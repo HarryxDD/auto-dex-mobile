@@ -37,6 +37,7 @@ import { MachineStatuses } from "@/constants/mymachine";
 import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { SyncButton } from "@/components/SyncButton";
+import CubeGridLoader from "@/components/CubeGridLoader";
 
 function MachineDetail() {
   const { colors, fonts, gutters, components } = useTheme();
@@ -45,6 +46,7 @@ function MachineDetail() {
   const { machineId } = params || {};
   const [pool, setPool] = useState<PoolEntity>();
   const [poolActivies, setPoolActivies] = useState<MachineActivity[]>([]);
+  const [syncLoading, setSyncLoading] = useState(false);
   const { whiteListedTokens } = useToken();
 
   // Extracted from useEvmWallet.tsx
@@ -65,6 +67,7 @@ function MachineDetail() {
   const syncMachine = async () => {
     if (!machineId) return;
     try {
+      setSyncLoading(true);
       await new MachineService().syncMachine(String(machineId));
       const res = await new MachineService().getMachineActivities(
         String(machineId)
@@ -73,6 +76,8 @@ function MachineDetail() {
       setPoolActivies(res);
     } catch {
       console.log("Sync failed");
+    } finally {
+      setSyncLoading(false);
     }
   };
 
@@ -485,6 +490,7 @@ function MachineDetail() {
 
   return (
     <SafeScreen>
+      <CubeGridLoader visible={syncLoading} />
       <ScrollView>
         <UiCol style={SHARED_STYLES.screenPadding}>
           <UiRow.LR
