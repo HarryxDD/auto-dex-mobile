@@ -87,11 +87,6 @@ function App() {
           PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
         );
       }
-      // messaging()
-      //   .getToken()
-      //   .then(token => {
-      //     console.log('fcmToken :>>', token);
-      //   });
     };
     requestUserPermission();
   }, []);

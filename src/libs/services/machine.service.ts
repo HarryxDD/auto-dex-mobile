@@ -1,12 +1,18 @@
 import { axiosInstance } from "@/services/instance";
 import { GetQuoteDto, MachineActivity } from "@/libs/entities/machine.entity";
-import { ChainID, PoolEntity, PoolStatus, UserToken } from "@/libs/entities/pool.entity";
+import {
+  ChainID,
+  PoolEntity,
+  PoolStatus,
+  UserToken,
+} from "@/libs/entities/pool.entity";
 import qs from "qs";
 
 export class MachineService {
   async createEmptyMachinePoolOffChain(walletAddress: string) {
     const response = await axiosInstance.post<any>(
-      `/api/pool/avaxc/${walletAddress}`, {}
+      `/api/pool/avaxc/${walletAddress}`,
+      {}
     );
 
     return response.data as unknown as PoolEntity;
@@ -14,9 +20,9 @@ export class MachineService {
 
   async syncMachine(machineId: string) {
     return axiosInstance.post(
-      `/api/pool/evm/${machineId}/sync`, {},
-      { headers: { "content-type": "text/plain;charset=UTF-8" },
-      }
+      `/api/pool/evm/${machineId}/sync`,
+      {},
+      { headers: { "content-type": "text/plain;charset=UTF-8" } }
     );
   }
 
@@ -53,8 +59,10 @@ export class MachineService {
 
   async syncWalletMachines(walletAddress: string) {
     return axiosInstance.post(
-      `/api/pool/user/evm/${walletAddress}/sync`, {},
-      { headers: { "content-type": "text/plain;charset=UTF-8" },
+      `/api/pool/user/evm/${walletAddress}/sync`,
+      {},
+      {
+        headers: { "content-type": "text/plain;charset=UTF-8" },
         params: {
           chainId: ChainID.AvaxC,
         },
@@ -63,7 +71,9 @@ export class MachineService {
   }
 
   async getMachine(machineId: string) {
-    const response = await axiosInstance.get<PoolEntity>(`/api/pool/${machineId}`);
+    const response = await axiosInstance.get<PoolEntity>(
+      `/api/pool/${machineId}`
+    );
     return response.data;
   }
 
@@ -82,12 +92,22 @@ export class MachineService {
   }
 
   async getPortfolioPnl(walletAddress: string) {
-    const response = await axiosInstance.get<Array<{
-      ownerAddress: string;
-      totalROIValueInUSD: number;
-    }>>(
-      `/api/portfolio/${walletAddress}/pnl?chainId=avaxc`
-    );
+    const response = await axiosInstance.get<
+      Array<{
+        ownerAddress: string;
+        totalROIValueInUSD: number;
+      }>
+    >(`/api/portfolio/${walletAddress}/pnl?chainId=avaxc`);
     return response.data;
+  }
+
+  async updateUserDeviceToken(walletAddress: string, deviceToken: string) {
+    await axiosInstance.post(
+      `/api/portfolio/${walletAddress}/user-device`,
+      { deviceToken },
+      {
+        headers: { "content-type": "application/json" },
+      }
+    );
   }
 }
