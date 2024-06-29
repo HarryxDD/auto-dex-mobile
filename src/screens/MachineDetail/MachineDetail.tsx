@@ -45,7 +45,7 @@ function MachineDetail() {
     useRoute<RouteProp<MainParamList, "SCREEN_MACHINE_DETAIL">>();
   const { machineId } = params || {};
   const [pool, setPool] = useState<PoolEntity>();
-  const [poolActivies, setPoolActivies] = useState<MachineActivity[]>([]);
+  const [poolActivities, setPoolActivities] = useState<MachineActivity[]>([]);
   const [syncLoading, setSyncLoading] = useState(false);
   const { whiteListedTokens } = useToken();
 
@@ -69,11 +69,15 @@ function MachineDetail() {
     try {
       setSyncLoading(true);
       await new MachineService().syncMachine(String(machineId));
-      const res = await new MachineService().getMachineActivities(
+      const syncedActivities = await new MachineService().getMachineActivities(
         String(machineId)
       );
-      console.log("Sync success");
-      setPoolActivies(res);
+      setPoolActivities(syncedActivities);
+
+      const syncedData = await new MachineService().getMachine(
+        String(machineId)
+      );
+      setPool(syncedData);
     } catch {
       console.log("Sync failed");
     } finally {
@@ -100,7 +104,7 @@ function MachineDetail() {
     new MachineService()
       .getMachineActivities(String(machineId))
       .then((res) => {
-        setPoolActivies(res);
+        setPoolActivities(res);
       })
       .catch((err) => {
         console.log(err);
@@ -150,22 +154,22 @@ function MachineDetail() {
 
   const handlePauseMachine = async () => {
     if (!contract.signer) return;
-    contract.pauseMachine(String(pool._id)).then((res) => console.log(res));
+    return contract.pauseMachine(String(pool._id));
   };
 
   const handleResumeMachine = async () => {
     if (!contract.signer) return;
-    contract.resumeMachine(String(pool._id)).then((res) => console.log(res));
+    return contract.resumeMachine(String(pool._id));
   };
 
   const handleCloseMachine = async () => {
     if (!contract.signer) return;
-    contract.closeMachine(String(pool._id)).then((res) => console.log(res));
+    return contract.closeMachine(String(pool._id));
   };
 
   const handleWithdrawMachine = async () => {
     if (!contract.signer) return;
-    contract.withdrawMachine(String(pool._id)).then((res) => console.log(res));
+    return contract.withdrawMachine(String(pool._id));
   };
 
   const renderActionButton = () => {
@@ -219,11 +223,21 @@ function MachineDetail() {
         {data.map((item) => (
           <TouchableWithoutFeedback
             disabled={false}
-            onPress={item.onPress}
+            onPress={() =>
+              item
+                .onPress()
+                .then((res) => console.log(res))
+                .catch((err) => console.log(`ERROR::MACHINE::ACTION: ${err}`))
+                .finally(() => syncMachine())
+            }
             key={Math.random().toString()}
           >
             <UiRow.C.X
-              style={[item.theme, gutters.paddingVertical_10, { marginBottom: 10 }]}
+              style={[
+                item.theme,
+                gutters.paddingVertical_10,
+                { marginBottom: 10 },
+              ]}
             >
               <Text style={[{ color: colors.white }, fonts.bold]}>
                 {item.title}
@@ -441,7 +455,7 @@ function MachineDetail() {
   );
 
   const renderTransactionsSection = useCallback(() => {
-    if (!poolActivies.length) return null;
+    if (!poolActivities.length) return null;
     return (
       <UiCol style={{ marginTop: 10 }}>
         <Text
@@ -457,7 +471,7 @@ function MachineDetail() {
         <UiCol
           style={[{ backgroundColor: colors.secondaryBlack }, styles.container]}
         >
-          {poolActivies.map((activity, index) => {
+          {poolActivities.map((activity, index) => {
             return (
               <SafeAreaView
                 key={`activity-${index}-${Math.random().toString()}`}
@@ -486,7 +500,7 @@ function MachineDetail() {
         </UiCol>
       </UiCol>
     );
-  }, [poolActivies, baseToken, targetToken]);
+  }, [poolActivities, baseToken, targetToken]);
 
   return (
     <SafeScreen>
