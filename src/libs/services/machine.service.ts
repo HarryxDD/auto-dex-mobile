@@ -39,13 +39,15 @@ export class MachineService {
 
   async getMachineList(
     ownerAddress: string,
-    statuses: PoolStatus[]
+    statuses: PoolStatus[],
+    searchValue: string
   ): Promise<PoolEntity[]> {
     const response = await axiosInstance.get<PoolEntity[]>("/api/pool", {
       params: {
         statuses,
         ownerAddress,
         chainId: "avaxc",
+        search: searchValue.toString(),
       },
       paramsSerializer: (params) => {
         return qs.stringify(params, {

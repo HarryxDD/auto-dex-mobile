@@ -117,6 +117,7 @@ function History() {
 const styles = StyleSheet.create({
   searchbarInput: {
     flex: 1,
+    color: "#fff",
     paddingVertical: 1,
   },
   itemContainer: {

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableWithoutFeedback } from "react-native";
+import { StyleSheet, Text, TouchableWithoutFeedback } from "react-native";
 import { useTheme } from "@/theme";
 import { SafeScreen } from "@/components/template";
 import { UiCol, UiMultiSwitch, UiRow } from "@/components";
@@ -23,29 +23,26 @@ import { platformConfig } from "@/libs/entities/platform-config.entity";
 import { useToken } from "@/hooks/useToken";
 import { UtilsProvider } from "@/utils/utils.provider";
 import BigDecimal from "js-big-decimal";
+import { useApp } from "@/contexts/app.context";
 
 function Profile() {
   const screenTabs = [EProfileTab.DETAILS];
-  
   const [showTip, setTip] = useState(false);
   const { colors, fonts, gutters } = useTheme();
   const [currentTab, setCurrentTab] = useState(EProfileTab.DETAILS);
-
   const { signer } = useEvmWallet();
   const { navigate } = useNavigation();
   const { whiteListedTokens } = useToken();
   const walletAddress = signer?.address || "";
-
+  const { userBalanceInfo, setUserBalanceInfo } = useApp();
   const [userTokens, setUserTokens] = useState<UserToken[]>([]);
   const [usdPnl, setUsdPnl] = useState(0);
-
 
   const nativeToken = useMemo(() => {
     return whiteListedTokens.find(
       (token) => token.address === platformConfig.BASE_TOKEN_ADDRESS
     );
   }, [whiteListedTokens]);
-
 
   const totalBalance = useMemo(() => {
     if (!nativeToken || !userTokens || !userTokens.length) {
@@ -61,7 +58,9 @@ function Profile() {
 
     return {
       usdValue: totalUsdValue.getValue(),
-      value: totalUsdValue.divide(new BigDecimal(nativeToken.estimatedValue)).getValue()
+      value: totalUsdValue
+        .divide(new BigDecimal(nativeToken.estimatedValue))
+        .getValue(),
     };
   }, [nativeToken, userTokens]);
 
@@ -77,18 +76,27 @@ function Profile() {
   };
 
   useEffect(() => {
+    setUserBalanceInfo({ ...userBalanceInfo, totalBalance });
+  }, [totalBalance]);
+
+  useEffect(() => {
     new MachineService()
       .getPortfolioUserTokens(walletAddress)
       .then((tokens) => {
         setUserTokens(tokens);
-      }).catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
 
     new MachineService()
       .getPortfolioPnl(walletAddress)
       .then((pnl) => {
-        console.log(pnl);
+        setUserBalanceInfo({
+          ...userBalanceInfo,
+          usdPnl: pnl?.[0]?.totalROIValueInUSD || 0,
+        });
         setUsdPnl(pnl?.[0]?.totalROIValueInUSD || 0);
-      }).catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
   }, [signer]);
 
   const renderInfoSection = () => (
@@ -137,10 +145,18 @@ function Profile() {
               { color: colors.white },
             ]}
           >
-            ~ {new UtilsProvider().getDisplayedDecimals(Number(totalBalance.value))} AVACX
+            ~{" "}
+            {new UtilsProvider().getDisplayedDecimals(
+              Number(totalBalance.value)
+            )}{" "}
+            AVACX
           </Text>
           <Text style={[fonts.size_10, { color: colors.white }]}>
-            (~ ${new UtilsProvider().getDisplayedDecimals(Number(totalBalance.usdValue))})
+            (~ $
+            {new UtilsProvider().getDisplayedDecimals(
+              Number(totalBalance.usdValue)
+            )}
+            )
           </Text>
         </UiCol>
       </UiRow>
@@ -189,21 +205,40 @@ function Profile() {
 
   const renderDetailContent = () => (
     <UiCol>
-      <Text style={[fonts.size_16, fonts.semiBold, { color: colors.white }]}>
+      <Text
+        style={[
+          fonts.size_16,
+          fonts.semiBold,
+          gutters.marginBottom_20,
+          { color: colors.white },
+        ]}
+      >
         Assets ({`${userTokens.length || 0}`})
       </Text>
       {userTokens.map((rawToken, index) => {
-        const token = whiteListedTokens.find((t) => t.address === rawToken.tokenAddress);
+        const token = whiteListedTokens.find(
+          (t) => t.address === rawToken.tokenAddress
+        );
 
         return (
-          <View key={index} style={{ marginTop: 20, flexDirection: "row"}}>
-            <View style={{ ...gutters.marginRight_10, flex: 2 }}>
+          <UiRow.LRT key={index} style={gutters.marginBottom_20}>
+            <UiCol style={gutters.marginRight_10}>
               <UiRow>
                 <UiCol>
-                  <ImageVariant source={{ uri: token.image }} width={30} height={30} />
+                  <ImageVariant
+                    source={{ uri: token.image }}
+                    width={30}
+                    height={30}
+                  />
                 </UiCol>
-                <UiCol style={{ marginLeft: 5 }}>
-                  <Text style={[fonts.size_14, fonts.semiBold, { color: colors.white }]}>
+                <UiCol style={gutters.marginLeft_4}>
+                  <Text
+                    style={[
+                      fonts.size_14,
+                      fonts.semiBold,
+                      { color: colors.white },
+                    ]}
+                  >
                     {token.name}
                   </Text>
                   <Text style={[fonts.size_10, { color: colors.grayText }]}>
@@ -211,21 +246,30 @@ function Profile() {
                   </Text>
                 </UiCol>
               </UiRow>
-            </View>
-            <View style={{ ...gutters.marginRight_10, flex: 2 }}>
-              <Text style={[fonts.size_14, fonts.semiBold, { color: colors.white }]}>
+            </UiCol>
+            <UiCol style={gutters.marginRight_10}>
+              <Text
+                style={[fonts.size_14, fonts.semiBold, { color: colors.white }]}
+              >
                 {truncateAddress(token.address)}
               </Text>
-            </View>
-            <View style={{ ...gutters.marginRight_10, flex: 1 }}>
-              <Text style={[fonts.size_14, fonts.semiBold, { color: colors.white }]}>
-                {new UtilsProvider().getDisplayedDecimals(Number(rawToken.decimalValue))}
+            </UiCol>
+            <UiCol style={[gutters.marginRight_10, {}]}>
+              <Text
+                style={[fonts.size_14, fonts.semiBold, { color: colors.white }]}
+              >
+                {new UtilsProvider().getDisplayedDecimals(
+                  Number(rawToken.decimalValue)
+                )}
               </Text>
               <Text style={[fonts.size_10, { color: colors.grayText }]}>
-                {new UtilsProvider().getDisplayedDecimals(Number(token.estimatedValue))}$
+                {new UtilsProvider().getDisplayedDecimals(
+                  Number(token.estimatedValue)
+                )}
+                $
               </Text>
-            </View>
-          </View>
+            </UiCol>
+          </UiRow.LRT>
         );
       })}
     </UiCol>
