@@ -14,6 +14,7 @@ import { Keypair } from "@solana/web3.js";
 import BigDecimal from "js-big-decimal"
 
 import { toBigInt } from "ethers";
+import { PoolEntity } from "./pool.entity";
 
 
 export const convertBigNumber = (value: string, decimals: number) => {
@@ -26,6 +27,10 @@ export const convertBigNumber = (value: string, decimals: number) => {
 
 export const convertDecimal = (value: number | string) => {
   return new BigDecimal(value).divide((new BigDecimal(10 ** 18))).getValue().toString();
+}
+
+export const convertDecimalINB = (value: number | string) => {
+  return new BigDecimal(value).divide((new BigDecimal(10 ** 18)));
 }
 
 export enum MachineStatus {
@@ -173,6 +178,28 @@ export enum ActivityType {
   MACHINE_CONFIG_UPDATED = 'ACTIVITY_TYPE::MACHINE_CONFIG_UPDATED',
 }
 
+export const ActivityTypeMap = {
+  [ActivityType.CREATED]: "Created",
+  [ActivityType.PAUSED]: "Paused",
+  [ActivityType.CONTINUE]: "Continue",
+  [ActivityType.CLOSED]: "Closed",
+  [ActivityType.DEPOSITED]: "Deposited",
+  [ActivityType.WITHDRAWN]: "Withdrawn",
+  [ActivityType.SWAPPED]: "Swapped",
+  [ActivityType.UPDATED]: "Updated",
+  [ActivityType.RESTARTED]: "Restarted",
+  [ActivityType.CLOSED_POSITION]: "Closed Position",
+  [ActivityType.STOP_LOSS]: "Stop Loss",
+  [ActivityType.TAKE_PROFIT]: "Take Profit",
+  [ActivityType.SKIPPED]: "Skipped",
+  [ActivityType.VAULT_CREATED]: "Vault Created",
+  [ActivityType.MACHINE_CONFIG_UPDATED]: "Machine Config Updated",
+
+};
+
+export type UserHistory = MachineActivity & {
+  pool: PoolEntity;
+};
 
 export type MachineActivity = {
   "_id": string,

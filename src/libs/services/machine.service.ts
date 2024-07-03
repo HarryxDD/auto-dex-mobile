@@ -1,5 +1,5 @@
 import { axiosInstance } from "@/services/instance";
-import { GetQuoteDto, MachineActivity } from "@/libs/entities/machine.entity";
+import { GetQuoteDto, MachineActivity, UserHistory } from "@/libs/entities/machine.entity";
 import { ChainID, PoolEntity, PoolStatus, UserToken } from "@/libs/entities/pool.entity";
 import qs from "qs";
 
@@ -134,7 +134,7 @@ export class MachineService {
    * @returns
    */
   async getUserActivities(walletAddress: string) {
-    const response = await axiosInstance.get<MachineActivity[]>(
+    const response = await axiosInstance.get<UserHistory[]>(
       `/api/pool/user-activities?ownerAddress=${walletAddress}`
     );
     return response.data;

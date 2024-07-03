@@ -2,12 +2,10 @@
 import {
   Text,
   Linking,
-  Animated,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableWithoutFeedback,
-  Easing,
 } from "react-native";
 import { useTheme } from "@/theme";
 import { SafeScreen } from "@/components/template";
@@ -16,7 +14,7 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { MainParamList } from "@/types/navigation";
 import { MachineItemSection } from "@/components/MachineItemSection";
 import { SHARED_STYLES, UI_CONSTANT } from "@/theme/shared";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MachineService } from "@/libs/services/machine.service";
 import { PoolEntity, PoolStatus } from "@/libs/entities/pool.entity";
 import { useToken } from "@/hooks/useToken";
@@ -35,7 +33,6 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import UiDivider from "@/components/UiDivider";
 import { MachineStatuses } from "@/constants/mymachine";
 import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import { SyncButton } from "@/components/SyncButton";
 import CubeGridLoader from "@/components/CubeGridLoader";
 

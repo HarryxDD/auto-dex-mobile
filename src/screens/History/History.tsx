@@ -12,13 +12,35 @@ import { SHARED_STYLES } from "@/theme/shared";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useInput } from "@/hooks/useInput";
 import { MachineItemSection } from "@/components/MachineItemSection";
-import { HISTORY_DATA } from "@/dummy-data";
 import UiDivider from "@/components/UiDivider";
+import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
+import { useEffect, useState } from "react";
+import { MachineService } from "@/libs/services/machine.service";
+import { ActivityTypeMap, UserHistory, convertDecimal } from "@/libs/entities/machine.entity";
+import moment from "moment";
+import { UtilsProvider } from "@/utils/utils.provider";
+import { useToken } from "@/hooks/useToken";
 
 function History() {
   const { fonts, colors, components, gutters } = useTheme();
   const [inputs, setInputs] = useInput({ searchValue: "" });
-  const historyData = HISTORY_DATA;
+  const [machineActivites, setMachineActivites] = useState<UserHistory[]>([]);
+  const { whiteListedTokens } = useToken();
+
+  const signer = useEvmWallet();
+
+  useEffect(() => {
+    if (!signer.signer.address) {
+      return;
+    }
+
+    new MachineService()
+      .getUserActivities(signer.signer.address)
+      .then((res) => {
+        if (!res) return;
+        setMachineActivites(res);
+      });
+  }, [signer]);
 
   const renderSearchAndFilter = () => (
     <>
@@ -61,53 +83,64 @@ function History() {
       <ScrollView>
         <UiCol style={SHARED_STYLES.screenPadding}>
           {renderSearchAndFilter()}
-          {historyData.map((item) => (
-            <UiCol key={item.id}>
-              <UiRow.LR style={gutters.marginBottom_10}>
-                <Text
-                  style={[fonts.bold, fonts.size_12, { color: colors.white }]}
+          {machineActivites.map((item, idx) => {
+            const baseToken = whiteListedTokens.find(
+              (token) => token.address === item.pool.baseTokenAddress
+            );
+            const targetToken = whiteListedTokens.find(
+              (token) => token.address === item.pool.targetTokenAddress
+            );
+
+            console.log(item.type);
+
+            return (
+              <UiCol key={`MACHINE::ACTIVIT::${idx}`}>
+                <UiRow.LR style={gutters.marginBottom_10}>
+                  <Text
+                    style={[fonts.bold, fonts.size_12, { color: colors.white }]}
+                  >
+                    {moment(item.createdAt).format("DD MMM YYYY")}
+                  </Text>
+                  <Text style={[fonts.semiBold, { color: colors.grayText }]}>
+                    {new UtilsProvider().makeShort(item.eventHash, 8)}
+                  </Text>
+                </UiRow.LR>
+                <UiCol
+                  style={[
+                    { backgroundColor: colors.secondaryBlack },
+                    styles.itemContainer,
+                  ]}
                 >
-                  {item.date}
-                </Text>
-                <Text style={[fonts.semiBold, { color: colors.grayText }]}>
-                  {item.hash}
-                </Text>
-              </UiRow.LR>
-              <UiCol
-                style={[
-                  { backgroundColor: colors.secondaryBlack },
-                  styles.itemContainer,
-                ]}
-              >
-                {item.pair && (
-                  <>
-                    <MachineItemSection title="Pair" value={item.pair} />
-                    {(item.type || item.amount || item.tokenAmount) && (
-                      <UiDivider />
-                    )}
-                  </>
-                )}
-                {item.type && (
-                  <>
-                    <MachineItemSection title="Type" value={item.type} />
-                    {(item.amount || item.tokenAmount) && <UiDivider />}
-                  </>
-                )}
-                {item.amount && (
-                  <>
-                    <MachineItemSection title="Amount" value={item.amount} />
-                    {item.tokenAmount && <UiDivider />}
-                  </>
-                )}
-                {item.tokenAmount && (
-                  <MachineItemSection
-                    title="Token amount"
-                    value={item.tokenAmount}
-                  />
-                )}
+                  {baseToken && (
+                    <>
+                      <MachineItemSection title="Pair" value={`${targetToken.symbol}/${baseToken.symbol}`} />
+                      {(item.type || convertDecimal(item.baseTokenAmount) || convertDecimal(item.targetTokenAmount)) && (
+                        <UiDivider />
+                      )}
+                    </>
+                  )}
+                  {item.type && (
+                    <>
+                      <MachineItemSection title="Type" value={ActivityTypeMap[item.type]} />
+                      {(convertDecimal(item.baseTokenAmount) || convertDecimal(item.targetTokenAmount)) && <UiDivider />}
+                    </>
+                  )}
+                  {item.baseTokenAmount && (
+                    <>
+                      <MachineItemSection title={`${baseToken.symbol} Amount`} value={new UtilsProvider().getDisplayedDecimals(item.baseTokenAmount)} />
+                      {item.baseTokenAmount && <UiDivider />}
+                    </>
+                  )}
+                  {item.targetTokenAmount && (
+                    <>
+                      <MachineItemSection title={`${targetToken.symbol} Amount`} value={new UtilsProvider().getDisplayedDecimals(item.targetTokenAmount)} />
+                      {item.targetTokenAmount && <UiDivider />}
+                    </>
+                  )}
+                </UiCol>
               </UiCol>
-            </UiCol>
-          ))}
+            );
+          })}
         </UiCol>
       </ScrollView>
     </SafeScreen>
