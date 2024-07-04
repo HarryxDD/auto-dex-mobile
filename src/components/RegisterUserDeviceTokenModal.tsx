@@ -6,13 +6,18 @@ import { SHARED_STYLES } from "@/theme/shared";
 import { UiRow } from "./elements/ui-grid/UiRow";
 
 interface Props {
-  visible: boolean;
-  onClose: () => void;
   title: string;
-  children: React.ReactNode;
+  visible: boolean;
+  onOk: () => void;
+  onClose: () => void;
 }
 
-const RegisterUserDeviceTokenModal = ({ visible, onClose, title, children }: Props) => {
+const RegisterUserDeviceTokenModal = ({
+  visible,
+  title,
+  onOk,
+  onClose,
+}: Props) => {
   const { fonts, colors, components, gutters } = useTheme();
 
   return (
@@ -33,16 +38,15 @@ const RegisterUserDeviceTokenModal = ({ visible, onClose, title, children }: Pro
           <Text
             style={[
               fonts.bold,
-              fonts.size_18,
+              fonts.size_14,
               gutters.marginVertical_10,
               SHARED_STYLES.selfCenter,
-              { color: colors.white },
+              { color: colors.white, textAlign: "center" },
             ]}
           >
             {title}
           </Text>
-          {children}
-          <TouchableOpacity onPress={onClose}>
+          <TouchableOpacity onPress={onOk}>
             <UiRow.C
               style={[
                 components.primaryBtn,
@@ -50,7 +54,20 @@ const RegisterUserDeviceTokenModal = ({ visible, onClose, title, children }: Pro
                 gutters.marginTop_14,
               ]}
             >
-              <Text style={[{ color: colors.white }, fonts.bold]}>Done</Text>
+              <Text style={[{ color: colors.white }, fonts.bold]}>
+                Register
+              </Text>
+            </UiRow.C>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onClose}>
+            <UiRow.C
+              style={[
+                components.secondaryBtn,
+                gutters.paddingVertical_10,
+                gutters.marginTop_14,
+              ]}
+            >
+              <Text style={[{ color: colors.white }, fonts.bold]}>Cancel</Text>
             </UiRow.C>
           </TouchableOpacity>
         </UiCol.LRC>

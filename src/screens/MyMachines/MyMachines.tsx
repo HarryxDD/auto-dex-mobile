@@ -1,6 +1,7 @@
 import { UiCol, UiMultiSwitch, UiRow } from "@/components";
 import CubeGridLoader from "@/components/CubeGridLoader";
 import { MachineItem } from "@/components/MachineItem";
+import RegisterUserDeviceTokenModal from "@/components/RegisterUserDeviceTokenModal";
 import { SyncButton } from "@/components/SyncButton";
 import { SafeScreen } from "@/components/template";
 import { EMachineTab } from "@/constants/mymachine";
@@ -23,6 +24,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import messaging from "@react-native-firebase/messaging";
 
 const styles = StyleSheet.create({
   topSection: {
@@ -50,22 +52,85 @@ function MyMachines() {
   const { fonts, colors, components, gutters } = useTheme();
   const screenTabs = [EMachineTab.RUNNING, EMachineTab.HISTORY];
   const [currentTab, setCurrentTab] = useState(EMachineTab.RUNNING);
-  const [inputs, setInputs] = useInput({ searchValue: "" });
-  const { filterTokenModalRef } = useApp();
-  const evmWallet = useEvmWallet();
   const [activePools, setActivePools] = useState<PoolEntity[]>([]);
   const [historyPools, setHistoryPools] = useState<PoolEntity[]>([]);
+  const [
+    registerUserDeviceTokenDisplayed,
+    setRegisterUserDeviceTokenDisplayed,
+  ] = useState(false);
+
+  const evmWallet = useEvmWallet();
   const navigation = useNavigation();
+  const { filterTokenModalRef } = useApp();
   const { boolBag, setBoolBag } = useBoolBag({
     loadingSyncWalletPools: false,
   });
   const { loadingSyncWalletPools } = boolBag;
+  const [inputs, setInputs] = useInput({ searchValue: "" });
 
   const searchValue = useDebounce(inputs.searchValue, 100);
 
   const handleSelectToken = () => {
     filterTokenModalRef.current?.present();
   };
+
+  const checkIsAbleToRegisterDevice = useCallback(() => {
+    if (!evmWallet.signer?.address) return;
+    try {
+      messaging()
+        .getToken()
+        .then(async (token) => {
+          const isExist = await new MachineService().checkDeviceToken(
+            evmWallet.signer.address,
+            token
+          );
+
+          if (!isExist) {
+            console.log("Registering device token");
+            setRegisterUserDeviceTokenDisplayed(true);
+          }
+        });
+      // eslint-disable-next-line no-empty
+    } catch {
+    } finally {
+      // eslint-disable-next-line no-empty
+    }
+  }, [evmWallet]);
+
+  const registerDevice = useCallback(() => {
+    try {
+      messaging()
+        .getToken()
+        .then(async (token) => {
+          const challenge = `REGISTER::DEVICE::${
+            evmWallet.signer.address
+          }::${token}::${new Date().getTime()}`;
+
+          const service = new MachineService();
+          const auth = await service.registerAuthChallenge(evmWallet.signer.address, challenge);
+
+          console.log(auth.data);
+          return;
+
+          const signature = await evmWallet.signer.signMessage(auth.data.challenge);
+
+          new MachineService().registerUserDeviceToken({
+            deviceToken: token,
+            walletAddress: evmWallet.signer.address,
+            authChallengeId: auth.data._id,
+            signature,
+          });
+        });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      // setRegisterUserDeviceTokenDisplayed(false);
+    }
+  }, [evmWallet]);
+
+  useEffect(() => {
+    checkIsAbleToRegisterDevice();
+  }, [evmWallet]);
 
   const fetchPools = useCallback(() => {
     if (!evmWallet.signer) return;
@@ -191,6 +256,12 @@ function MyMachines() {
           contentContainerStyle={SHARED_STYLES.growX}
         />
       </UiCol.X>
+      <RegisterUserDeviceTokenModal
+        visible={registerUserDeviceTokenDisplayed}
+        onOk={() => registerDevice()}
+        onClose={() => setRegisterUserDeviceTokenDisplayed(false)}
+        title="Registering this device will allow you to receive notifications for your machines."
+      />
     </SafeScreen>
   );
 }

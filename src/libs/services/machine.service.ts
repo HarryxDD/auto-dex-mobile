@@ -158,6 +158,14 @@ export class MachineService {
     return response.data;
   }
 
+  async registerAuthChallenge(walletAddress: string, challenge: string) {
+    return axiosInstance.post(
+      `/api/auth/challenge`,
+      { walletAddress, challenge },
+      { headers: { "content-type": "application/json" } }
+    );
+  }
+
   /**
    * Register user device token
    * @param walletAddress
@@ -176,6 +184,11 @@ export class MachineService {
     );
   }
 
+  /**
+   * Check device token
+   * @param walletAddress
+   * @param deviceToken
+   */
   async checkDeviceToken(walletAddress: string, deviceToken: string) {
     const response = await axiosInstance.post(
       `/api/portfolio/${walletAddress}/user-device/check`,
