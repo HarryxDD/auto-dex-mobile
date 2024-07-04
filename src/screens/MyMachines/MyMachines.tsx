@@ -107,24 +107,29 @@ function MyMachines() {
           }::${token}::${new Date().getTime()}`;
 
           const service = new MachineService();
-          const auth = await service.registerAuthChallenge(evmWallet.signer.address, challenge);
+          const auth = await service.registerAuthChallenge(
+            evmWallet.signer.address,
+            challenge
+          );
 
-          console.log(auth.data);
-          return;
+          const signature = await evmWallet.signer.signMessage(
+            auth.data.challenge
+          );
 
-          const signature = await evmWallet.signer.signMessage(auth.data.challenge);
-
-          new MachineService().registerUserDeviceToken({
+          await new MachineService().registerUserDeviceToken({
             deviceToken: token,
             walletAddress: evmWallet.signer.address,
             authChallengeId: auth.data._id,
             signature,
           });
+        })
+        .catch((err) => {
+          console.log(err);
         });
     } catch (err) {
       console.log(err);
     } finally {
-      // setRegisterUserDeviceTokenDisplayed(false);
+      setRegisterUserDeviceTokenDisplayed(false);
     }
   }, [evmWallet]);
 

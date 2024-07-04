@@ -179,7 +179,12 @@ export class MachineService {
   }) {
     await axiosInstance.post(
       `/api/portfolio/${registerDto.walletAddress}/user-device`,
-      { deviceToken: registerDto.deviceToken },
+      {
+        deviceToken: registerDto.deviceToken,
+        signature: registerDto.signature,
+        authChallengeId: registerDto.authChallengeId,
+        ownerAddress: registerDto.walletAddress,
+      },
       { headers: { "content-type": "application/json" } }
     );
   }
