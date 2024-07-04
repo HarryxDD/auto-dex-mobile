@@ -1,17 +1,27 @@
 import { axiosInstance } from "@/services/instance";
-import { GetQuoteDto, MachineActivity, UserHistory } from "@/libs/entities/machine.entity";
-import { ChainID, PoolEntity, PoolStatus, UserToken } from "@/libs/entities/pool.entity";
+import {
+  GetQuoteDto,
+  MachineActivity,
+  UserHistory,
+} from "@/libs/entities/machine.entity";
+import {
+  ChainID,
+  PoolEntity,
+  PoolStatus,
+  UserToken,
+} from "@/libs/entities/pool.entity";
 import qs from "qs";
 
 export class MachineService {
   /**
    * Create a new machine pool off-chain
-   * @param walletAddress 
-   * @returns 
+   * @param walletAddress
+   * @returns
    */
   async createEmptyMachinePoolOffChain(walletAddress: string) {
     const response = await axiosInstance.post<any>(
-      `/api/pool/avaxc/${walletAddress}`, {}
+      `/api/pool/avaxc/${walletAddress}`,
+      {}
     );
 
     return response.data as unknown as PoolEntity;
@@ -19,21 +29,21 @@ export class MachineService {
 
   /**
    * Sync machine pool
-   * @param machineId 
-   * @returns 
+   * @param machineId
+   * @returns
    */
   async syncMachine(machineId: string) {
     return axiosInstance.post(
-      `/api/pool/evm/${machineId}/sync`, {},
-      { headers: { "content-type": "text/plain;charset=UTF-8" },
-      }
+      `/api/pool/evm/${machineId}/sync`,
+      {},
+      { headers: { "content-type": "text/plain;charset=UTF-8" } }
     );
   }
 
   /**
    * Get quote
-   * @param getQuoteDto 
-   * @returns 
+   * @param getQuoteDto
+   * @returns
    */
   async getQuote(getQuoteDto: GetQuoteDto) {
     const response = await axiosInstance.get<any>(
@@ -53,13 +63,15 @@ export class MachineService {
    */
   async getMachineList(
     ownerAddress: string,
-    statuses: PoolStatus[]
+    statuses: PoolStatus[],
+    searchValue: string
   ): Promise<PoolEntity[]> {
     const response = await axiosInstance.get<PoolEntity[]>("/api/pool", {
       params: {
         statuses,
         ownerAddress,
         chainId: "avaxc",
+        search: searchValue.toString(),
       },
       paramsSerializer: (params) => {
         return qs.stringify(params, {
@@ -77,8 +89,10 @@ export class MachineService {
    */
   async syncWalletMachines(walletAddress: string) {
     return axiosInstance.post(
-      `/api/pool/user/evm/${walletAddress}/sync`, {},
-      { headers: { "content-type": "text/plain;charset=UTF-8" },
+      `/api/pool/user/evm/${walletAddress}/sync`,
+      {},
+      {
+        headers: { "content-type": "text/plain;charset=UTF-8" },
         params: {
           chainId: ChainID.AvaxC,
         },
@@ -91,7 +105,9 @@ export class MachineService {
    * @param ownerAddress
    */
   async getMachine(machineId: string) {
-    const response = await axiosInstance.get<PoolEntity>(`/api/pool/${machineId}`);
+    const response = await axiosInstance.get<PoolEntity>(
+      `/api/pool/${machineId}`
+    );
     return response.data;
   }
 
@@ -119,12 +135,12 @@ export class MachineService {
    * @returns
    */
   async getPortfolioPnl(walletAddress: string) {
-    const response = await axiosInstance.get<Array<{
-      ownerAddress: string;
-      totalROIValueInUSD: number;
-    }>>(
-      `/api/portfolio/${walletAddress}/pnl?chainId=avaxc`
-    );
+    const response = await axiosInstance.get<
+      Array<{
+        ownerAddress: string;
+        totalROIValueInUSD: number;
+      }>
+    >(`/api/portfolio/${walletAddress}/pnl?chainId=avaxc`);
     return response.data;
   }
 
@@ -138,5 +154,25 @@ export class MachineService {
       `/api/pool/user-activities?ownerAddress=${walletAddress}`
     );
     return response.data;
+  }
+
+  /**
+   * Register user device token
+   * @param walletAddress
+   * @param deviceToken
+   */
+  async registerUserDeviceToken(registerDto: {
+    walletAddress: string;
+    deviceToken: string;
+    authChallengeId: string;
+    signature: string;
+  }) {
+    await axiosInstance.post(
+      `/api/portfolio/${registerDto.walletAddress}/user-device`,
+      { deviceToken: registerDto.deviceToken },
+      {
+        headers: { "content-type": "application/json" },
+      }
+    );
   }
 }

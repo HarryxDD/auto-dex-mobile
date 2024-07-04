@@ -1,14 +1,17 @@
-import { ScrollView, StyleSheet, Text } from "react-native";
-import { useTheme } from "@/theme";
-import { SafeScreen } from "@/components/template";
 import { UiCol, UiRow } from "@/components";
-import { SHARED_STYLES } from "@/theme/shared";
-import { CircularDot, IconAvaxc, ProfileCard } from "@/theme/assets/icons/svg";
-import { LineChart } from "react-native-gifted-charts";
+import { SafeScreen } from "@/components/template";
+import { useApp } from "@/contexts/app.context";
 import { PROFILE_LINE_CHART } from "@/dummy-data";
+import { useTheme } from "@/theme";
+import { CircularDot, IconAvaxc, ProfileCard } from "@/theme/assets/icons/svg";
+import { SHARED_STYLES } from "@/theme/shared";
+import { UtilsProvider } from "@/utils/utils.provider";
+import { ScrollView, StyleSheet, Text } from "react-native";
+import { LineChart } from "react-native-gifted-charts";
 
 function PNLAnalysis() {
   const { colors, fonts, gutters } = useTheme();
+  const { userBalanceInfo } = useApp();
 
   const renderTotalBalanceSection = () => (
     <UiCol style={styles.cardWrapper}>
@@ -35,31 +38,40 @@ function PNLAnalysis() {
               { color: colors.white },
             ]}
           >
-            ~ 45.19 AVAXC
+            ~{" "}
+            {new UtilsProvider().getDisplayedDecimals(
+              Number(userBalanceInfo.totalBalance.value)
+            )}{" "}
+            AVACX
           </Text>
           <Text style={[fonts.size_10, { color: colors.white }]}>
-            (~ $8,803.24)
+            (~ $
+            {new UtilsProvider().getDisplayedDecimals(
+              Number(userBalanceInfo.totalBalance.usdValue)
+            )}
+            )
           </Text>
         </UiCol>
       </UiRow>
-      <UiRow.LR>
-        <UiCol.L>
+      <UiRow.R>
+        {/* <UiCol.L>
           <Text style={{ color: colors.gray200 }}>Today&apos;s PNL</Text>
           <UiRow.C style={gutters.marginTop_8}>
             <Text style={[fonts.bold, { color: colors.ufoGreen }]}>
               10.76$/6.23%
             </Text>
           </UiRow.C>
-        </UiCol.L>
+        </UiCol.L> */}
         <UiCol.R>
           <Text style={{ color: colors.gray200 }}>Today&apos;s PNL</Text>
           <UiRow.C style={gutters.marginTop_8}>
             <Text style={[fonts.bold, { color: colors.ufoGreen }]}>
-              10.76$/6.23%
+              {new UtilsProvider().getDisplayedDecimals(userBalanceInfo.usdPnl)}
+              $
             </Text>
           </UiRow.C>
         </UiCol.R>
-      </UiRow.LR>
+      </UiRow.R>
     </UiCol>
   );
 

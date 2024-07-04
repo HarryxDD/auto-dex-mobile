@@ -23,6 +23,7 @@ import { Notification } from "@notifee/react-native";
 import dynamicLinks, {
   FirebaseDynamicLinksTypes,
 } from "@react-native-firebase/dynamic-links";
+import { MachineService } from "@/libs/services/machine.service";
 
 const Stack = createStackNavigator<ApplicationStackParamList>();
 
@@ -32,13 +33,22 @@ export const RootStack = () => {
   const notifeeManager = NotifeeManager.getInstance();
 
   useEffect(() => {
-    // const run = async () => {
-    //   const savedCredential = await lookupSavedCredential();
-    //   if (savedCredential.token) {
-    //     await dispatch(onLoginSuccessMisc(savedCredential));
-    //   }
-    // };
-    // run();
+    if (address) {
+      messaging()
+        .getToken()
+        .then((token) => {
+          new MachineService().registerUserDeviceToken({
+            deviceToken: token,
+            walletAddress: address,
+            authChallengeId: "",
+            signature: "",
+          });
+          console.log("fcmToken :>>", token);
+        });
+    }
+  }, [address]);
+
+  useEffect(() => {
     const unsubscribe = messaging().onMessage(async (remoteMessage) => {
       const title =
         remoteMessage.notification?.title || remoteMessage.data?.title || "";

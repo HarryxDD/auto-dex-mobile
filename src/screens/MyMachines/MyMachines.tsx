@@ -6,6 +6,8 @@ import { SafeScreen } from "@/components/template";
 import { EMachineTab } from "@/constants/mymachine";
 import { useApp } from "@/contexts/app.context";
 import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
+import { useBoolBag } from "@/hooks/useBoolBag";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useInput } from "@/hooks/useInput";
 import { PoolEntity, PoolStatus } from "@/libs/entities/pool.entity";
 import { MachineService } from "@/libs/services/machine.service";
@@ -36,6 +38,7 @@ const styles = StyleSheet.create({
   searchbarInput: {
     flex: 1,
     paddingVertical: 1,
+    color: "#fff",
   },
   filterSectionText: {
     marginRight: 10,
@@ -52,8 +55,13 @@ function MyMachines() {
   const evmWallet = useEvmWallet();
   const [activePools, setActivePools] = useState<PoolEntity[]>([]);
   const [historyPools, setHistoryPools] = useState<PoolEntity[]>([]);
-  const [loadingSyncWalletPools, setLoadingSyncWalletPools] = useState(false);
   const navigation = useNavigation();
+  const { boolBag, setBoolBag } = useBoolBag({
+    loadingSyncWalletPools: false,
+  });
+  const { loadingSyncWalletPools } = boolBag;
+
+  const searchValue = useDebounce(inputs.searchValue, 100);
 
   const handleSelectToken = () => {
     filterTokenModalRef.current?.present();
@@ -62,7 +70,11 @@ function MyMachines() {
   const fetchPools = useCallback(() => {
     if (!evmWallet.signer) return;
     new MachineService()
-      .getMachineList(evmWallet.signer.address, [PoolStatus.ACTIVE])
+      .getMachineList(
+        evmWallet.signer.address,
+        [PoolStatus.ACTIVE],
+        searchValue
+      )
       .then((data) => {
         setActivePools(data);
       })
@@ -71,23 +83,23 @@ function MyMachines() {
       });
 
     new MachineService()
-      .getMachineList(evmWallet.signer.address, [
-        PoolStatus.PAUSED,
-        PoolStatus.CLOSED,
-        PoolStatus.ENDED,
-      ])
+      .getMachineList(
+        evmWallet.signer.address,
+        [PoolStatus.PAUSED, PoolStatus.CLOSED, PoolStatus.ENDED],
+        searchValue
+      )
       .then((data) => {
         setHistoryPools(data);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, [evmWallet, navigation]);
+  }, [evmWallet, navigation, searchValue]);
 
   const syncWalletPools = useCallback(async () => {
     return new Promise((resolve) => {
       if (!evmWallet.signer) resolve(false);
-      setLoadingSyncWalletPools(true);
+      setBoolBag({ loadingSyncWalletPools: true });
       new MachineService()
         .syncWalletMachines(evmWallet.signer.address)
         .then(() => {
@@ -97,7 +109,7 @@ function MyMachines() {
           console.log(error);
         })
         .finally(() => {
-          setLoadingSyncWalletPools(false);
+          setBoolBag({ loadingSyncWalletPools: false });
           resolve(true);
         });
     });
@@ -105,7 +117,12 @@ function MyMachines() {
 
   useEffect(() => {
     fetchPools();
-  }, [evmWallet, navigation]);
+  }, [evmWallet, navigation, searchValue]);
+
+  const handleChangePoolTab = (tab: EMachineTab) => {
+    setInputs({ searchValue: "" });
+    setCurrentTab(tab);
+  };
 
   const renderScreenHeader = () => (
     <UiRow.LR style={styles.topSection}>
@@ -154,7 +171,7 @@ function MyMachines() {
         <UiMultiSwitch
           items={screenTabs}
           value={currentTab}
-          onChange={setCurrentTab}
+          onChange={handleChangePoolTab}
           containerStyle={[
             {
               backgroundColor: colors.secondaryBlack,
