@@ -6,6 +6,7 @@ import {
 } from "@/libs/entities/machine.entity";
 import {
   ChainID,
+  FindPoolSortOption,
   PoolEntity,
   PoolStatus,
   UserToken,
@@ -72,6 +73,7 @@ export class MachineService {
         ownerAddress,
         chainId: "avaxc",
         search: searchValue.toString(),
+        sortBy: FindPoolSortOption.CURRENT_SPENT_BASE_TOKEN_AMOUNT_DESC,
       },
       paramsSerializer: (params) => {
         return qs.stringify(params, {
@@ -170,9 +172,16 @@ export class MachineService {
     await axiosInstance.post(
       `/api/portfolio/${registerDto.walletAddress}/user-device`,
       { deviceToken: registerDto.deviceToken },
-      {
-        headers: { "content-type": "application/json" },
-      }
+      { headers: { "content-type": "application/json" } }
     );
+  }
+
+  async checkDeviceToken(walletAddress: string, deviceToken: string) {
+    const response = await axiosInstance.post(
+      `/api/portfolio/${walletAddress}/user-device/check`,
+      { deviceToken },
+      { headers: { "content-type": "application/json" } }
+    );
+    return response.data;
   }
 }

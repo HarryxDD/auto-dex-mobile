@@ -1,60 +1,60 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable default-case */
 /* eslint-disable max-classes-per-file */
-import { DurationObjectUnits } from 'luxon';
+import { DurationObjectUnits } from "luxon";
 
 export enum PoolStatus {
-  CREATED = 'POOL_STATUS::CREATED',
-  ACTIVE = 'POOL_STATUS::ACTIVE',
-  PAUSED = 'POOL_STATUS::PAUSED',
-  CLOSED = 'POOL_STATUS::CLOSED',
-  ENDED = 'POOL_STATUS::ENDED',
+  CREATED = "POOL_STATUS::CREATED",
+  ACTIVE = "POOL_STATUS::ACTIVE",
+  PAUSED = "POOL_STATUS::PAUSED",
+  CLOSED = "POOL_STATUS::CLOSED",
+  ENDED = "POOL_STATUS::ENDED",
 }
 
 export enum PriceConditionType {
-  GT = 'GT',
-  GTE = 'GTE',
-  LT = 'LT',
-  LTE = 'LTE',
+  GT = "GT",
+  GTE = "GTE",
+  LT = "LT",
+  LTE = "LTE",
   /** Equal */
-  EQ = 'EQ',
+  EQ = "EQ",
   /** Not Equal */
-  NEQ = 'NEQ',
+  NEQ = "NEQ",
   /** Between */
-  BW = 'BW',
+  BW = "BW",
   /** Not Between */
-  NBW = 'NBW',
+  NBW = "NBW",
 }
 
 export const PriceConditionDisplay = {
-  [PriceConditionType.GT]: '>',
-  [PriceConditionType.GTE]: '>=',
-  [PriceConditionType.LT]: '<',
-  [PriceConditionType.LTE]: '<=',
-  [PriceConditionType.EQ]: '=',
-  [PriceConditionType.NEQ]: '<>',
-  [PriceConditionType.BW]: '<>',
+  [PriceConditionType.GT]: ">",
+  [PriceConditionType.GTE]: ">=",
+  [PriceConditionType.LT]: "<",
+  [PriceConditionType.LTE]: "<=",
+  [PriceConditionType.EQ]: "=",
+  [PriceConditionType.NEQ]: "<>",
+  [PriceConditionType.BW]: "<>",
 };
 
 export enum MainProgressBy {
-  END_TIME = 'MAIN_PROGRESS_BY::END_TIME',
-  SPENT_BASE_TOKEN = 'MAIN_PROGRESS_BY::SPENT_BASE_TOKEN',
-  RECEIVED_TARGET_TOKEN = 'MAIN_PROGRESS_BY::RECEIVED_TARGET_TOKEN',
-  BATCH_AMOUNT = 'MAIN_PROGRESS_BY::BATCH_AMOUNT',
+  END_TIME = "MAIN_PROGRESS_BY::END_TIME",
+  SPENT_BASE_TOKEN = "MAIN_PROGRESS_BY::SPENT_BASE_TOKEN",
+  RECEIVED_TARGET_TOKEN = "MAIN_PROGRESS_BY::RECEIVED_TARGET_TOKEN",
+  BATCH_AMOUNT = "MAIN_PROGRESS_BY::BATCH_AMOUNT",
 }
 export enum ChainID {
-  Solana = 'solana',
-  BSC = 'bnb',
-  Mumbai = 'polygon_mumbai',
-  OKT = 'okt',
-  Gnosis = 'gnosis',
-  XDC = 'xdc',
-  AvaxC = 'avaxc',
-  AptosTestnet = 'aptos_testnet',
-  AptosMainnet = 'aptos',
-  Klaytn = 'klaytn',
-  Mantle = 'mantle',
-  ScrollSepolia = 'scroll_sepolia',
+  Solana = "solana",
+  BSC = "bnb",
+  Mumbai = "polygon_mumbai",
+  OKT = "okt",
+  Gnosis = "gnosis",
+  XDC = "xdc",
+  AvaxC = "avaxc",
+  AptosTestnet = "aptos_testnet",
+  AptosMainnet = "aptos",
+  Klaytn = "klaytn",
+  Mantle = "mantle",
+  ScrollSepolia = "scroll_sepolia",
 }
 
 export const StoppedChains = [
@@ -76,10 +76,10 @@ export class StopConditions {
   batchAmountReach?: number;
 }
 export enum TradingStopType {
-  Unset = 'TRADING_STOP::UNSET',
-  Price = 'TRADING_STOP::PRICE',
-  PortfolioPercentageDiff = 'TRADING_STOP::PORTFOLIO_PERCENTAGE_DIFF',
-  PortfolioValueDiff = 'TRADING_STOP::PORTFOLIO_VALUE_DIFF',
+  Unset = "TRADING_STOP::UNSET",
+  Price = "TRADING_STOP::PRICE",
+  PortfolioPercentageDiff = "TRADING_STOP::PORTFOLIO_PERCENTAGE_DIFF",
+  PortfolioValueDiff = "TRADING_STOP::PORTFOLIO_VALUE_DIFF",
 }
 export class TradingStopCondition {
   stopType: TradingStopType;
@@ -166,7 +166,6 @@ export function calculateProgressPercent(machine: PoolEntity) {
   }
 }
 
-
 /**
  * "_id": "6666df80c343d1730ab1b79d",
         "ownerAddress": "0xE06916775b346612eD8AC5F8c205e5F955B3c509",
@@ -193,4 +192,15 @@ export interface UserToken {
   chainId: string;
   decimalValue: number;
   usdValue: number;
-};
+}
+
+export enum FindPoolSortOption {
+  PROGRESS_ASC = "PROGRESS_ASC",
+  PROGRESS_DESC = "PROGRESS_DESC",
+  DATE_START_DESC = "DATE_START_DESC",
+  DATE_CREATED_DESC = "DATE_CREATED_DESC",
+  TARGET_TOKEN_AMOUNT_DESC = "TARGET_TOKEN_AMOUNT_DESC",
+  TARGET_TOKEN_AMOUNT_ASC = "TARGET_TOKEN_AMOUNT_ASC",
+  CURRENT_SPENT_BASE_TOKEN_AMOUNT_ASC = "CURRENT_SPENT_BASE_TOKEN_AMOUNT_ASC",
+  CURRENT_SPENT_BASE_TOKEN_AMOUNT_DESC = "CURRENT_SPENT_BASE_TOKEN_AMOUNT_DESC",
+}

@@ -13,40 +13,54 @@ import { SelectChainModal } from "@/components/SelectChainModal";
 import { useApp } from "@/contexts/app.context";
 import { FilterTokenModal } from "@/components/FilterTokenModal";
 import NavigationRef from "@/utils/navigation-ref";
-import { useAccount } from "wagmi";
 import NotifeeManager from "@/services/notifee-manager";
 import { AuthNavigator } from "@/navigators/auth-navigator";
 import { isIos } from "@/constants/app";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Linking } from "react-native";
 import { Notification } from "@notifee/react-native";
 import dynamicLinks, {
   FirebaseDynamicLinksTypes,
 } from "@react-native-firebase/dynamic-links";
 import { MachineService } from "@/libs/services/machine.service";
+import { useEvmWallet } from "@/hooks/evm-context/useEvmWallet";
 
 const Stack = createStackNavigator<ApplicationStackParamList>();
 
 export const RootStack = () => {
   const { variant } = useTheme();
-  const { address } = useAccount();
+  const { signer } = useEvmWallet();
   const notifeeManager = NotifeeManager.getInstance();
 
-  useEffect(() => {
-    if (address) {
+  const registerDeviceToken = useCallback(() => {
+    if (!signer?.address) return;
+    try {
+      const service = new MachineService();
+
       messaging()
         .getToken()
-        .then((token) => {
-          new MachineService().registerUserDeviceToken({
-            deviceToken: token,
-            walletAddress: address,
-            authChallengeId: "",
-            signature: "",
-          });
-          console.log("fcmToken :>>", token);
+        .then(async (token) => {
+          const isExist = await service.checkDeviceToken(signer.address, token);
+          console.log({ isExist });
+          if (isExist) return;
+          console.log("Registering device token");
+          // new MachineService().registerUserDeviceToken({
+          //   deviceToken: token,
+          //   walletAddress: address,
+          //   authChallengeId: "",
+          //   signature: "",
+          // });
         });
+      // eslint-disable-next-line no-empty
+    } catch {
+    } finally {
+      // eslint-disable-next-line no-empty
     }
-  }, [address]);
+  }, [signer]);
+
+  useEffect(() => {
+    registerDeviceToken();
+  }, [signer]);
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async (remoteMessage) => {
@@ -71,7 +85,7 @@ export const RootStack = () => {
   const renderScreens = () => {
     const screens = [];
 
-    if (!address) {
+    if (!signer?.address) {
       screens.push(
         <Stack.Screen
           key={STACK_AUTH}
